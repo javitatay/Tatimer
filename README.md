@@ -2,6 +2,7 @@
 
 Temporizador standalone para monitor del ponente en eventos, conferencias y shows en vivo. Se abre directamente en cualquier navegador — sin instalación, sin conexión a internet, sin dependencias.
 
+Disponible en https://javitatay.github.io/Tatimer/
 ---
 
 ## Características

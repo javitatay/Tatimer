@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Temporizador · Timer</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a0a0a'/%3E%3Ccircle cx='16' cy='17' r='11' fill='none' stroke='%23e8ff00' stroke-width='2'/%3E%3Cline x1='16' y1='17' x2='16' y2='10' stroke='%23e8ff00' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='16' y1='17' x2='21' y2='20' stroke='%23f0f0f0' stroke-width='1.5' stroke-linecap='round'/%3E%3Crect x='13' y='4' width='6' height='2' rx='1' fill='%23e8ff00'/%3E%3C/svg%3E">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap');
 
@@ -14,6 +15,31 @@
     --danger: #ff3c00;
     --mid: #888;
     --border: #222;
+    --progress-overlay: rgba(0,0,0,0.75);
+    --credit-color: #333;
+    --btn-border: #444;
+    --btn-color: #aaa;
+    --marker-color: #fff;
+    --seg-green: #1a5c26;
+    --seg-yellow: #7a5000;
+    --seg-red: #6b1208;
+  }
+
+  body.light {
+    --bg: #f2f2f0;
+    --fg: #111111;
+    --accent: #c8a800;
+    --danger: #d42b00;
+    --mid: #666;
+    --border: #ccc;
+    --progress-overlay: rgba(242,242,240,0.78);
+    --credit-color: #bbb;
+    --btn-border: #bbb;
+    --btn-color: #888;
+    --marker-color: #222;
+    --seg-green: #3aaa50;
+    --seg-yellow: #d49000;
+    --seg-red: #d42b00;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,6 +56,7 @@
     grid-template-rows: auto 1fr auto;
     overflow: hidden;
     user-select: none;
+    transition: background 0.3s ease, color 0.3s ease;
   }
 
   /* ── PANELES ─────────────────────────────────────────── */
@@ -96,24 +123,65 @@
   @keyframes pulse-danger  { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
   /* ── BARRA DE PROGRESO ──────────────────────────────── */
+  /* ── BARRA DE PROGRESO ──────────────────────────────── */
   #progress-track {
-    width: min(80%, 700px);
-    height: 3px;
-    background: var(--border);
+    position: relative;
+    width: min(85%, 800px);
+    height: clamp(10px, 1.8vh, 18px);
     margin-top: clamp(1.5rem, 3vh, 3rem);
+    border-radius: 3px;
+    overflow: visible;
   }
 
-  #progress-bar {
-    height: 100%;
-    background: var(--accent);
-    width: 100%;
-    transform-origin: left;
+  /* Fondo segmentado fijo: verde | amarillo | rojo */
+  #progress-bg {
+    position: absolute;
+    inset: 0;
+    border-radius: 3px;
+    overflow: hidden;
+    display: flex;
+  }
+
+  #progress-seg-green  { background: var(--seg-green); flex: 1; }
+  #progress-seg-yellow { background: var(--seg-yellow); }
+  #progress-seg-red    { background: var(--seg-red); }
+
+  /* Overlay que cubre la parte consumida (derecha) */
+  #progress-overlay {
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    background: var(--progress-overlay);
+    border-radius: 0 3px 3px 0;
+    transition: width 1s linear;
+  }
+
+  /* Relleno activo brillante (izquierda, encima del fondo) */
+  #progress-fill {
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    border-radius: 3px 0 0 3px;
     transition: width 1s linear, background 0.3s ease;
+    background: #22a83c;
   }
 
-  #progress-bar.warning  { background: var(--accent); }
-  #progress-bar.danger   { background: var(--danger); }
-  #progress-bar.overtime { background: var(--danger); width: 0% !important; }
+  #progress-fill.warning { background: #e8a000; border-radius: 0; }
+  #progress-fill.danger  { background: #ff3c00; border-radius: 0; }
+  #progress-fill.overtime { width: 0% !important; }
+
+  /* Marcador triangular que viaja sobre la barra */
+  #progress-marker {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 8px solid var(--marker-color);
+    transition: left 1s linear;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4));
+    pointer-events: none;
+    z-index: 10;
+  }
 
   /* ── ESTADO ─────────────────────────────────────────── */
   #status {
@@ -353,8 +421,8 @@
     bottom: clamp(0.8rem, 1.5vh, 1.5rem);
     right: clamp(0.8rem, 1.5vw, 2rem);
     background: transparent;
-    border: 1px solid #444;
-    color: #aaa;
+    border: 1px solid var(--btn-border);
+    color: var(--btn-color);
     padding: 0;
     width: 2.2rem;
     height: 2.2rem;
@@ -374,6 +442,38 @@
   #btn-clean svg { width: 1rem; height: 1rem; fill: currentColor; }
   #btn-clean:hover { opacity: 1; border-color: var(--fg); color: var(--fg); }
   #btn-clean.active { opacity: 1; border-color: var(--accent); color: var(--accent); }
+
+  /* ── BLACKOUT ────────────────────────────────────────── */
+  #blackout {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 500;
+    cursor: pointer;
+  }
+
+  #blackout.show { display: flex; align-items: center; justify-content: center; }
+
+  #blackout-hint {
+    color: #222;
+    font-size: clamp(0.6rem, 1vw, 0.8rem);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 300;
+    transition: color 0.3s ease;
+  }
+
+  #blackout:hover #blackout-hint { color: #444; }
+
+  /* ── MODO RELOJ ─────────────────────────────────────── */
+  #display.clock-mode {
+    font-size: clamp(4rem, 18vw, 26rem);
+  }
+
+  body.clean #display.clock-mode {
+    font-size: clamp(6rem, 28vw, 40rem);
+  }
 
   /* ── MODO LIMPIO ────────────────────────────────────── */
   body.clean #panel-left,
@@ -415,7 +515,7 @@
     bottom: clamp(0.5rem, 1vh, 0.8rem);
     left: clamp(0.8rem, 1.5vw, 1.5rem);
     font-size: clamp(0.4rem, 0.6vw, 0.55rem);
-    color: #333;
+    color: var(--credit-color);
     letter-spacing: 0.08em;
     font-weight: 300;
     z-index: 100;
@@ -450,6 +550,7 @@
     <div class="shortcut"><span class="key">R</span> <span data-i18n="sc-reset">reset</span></div>
     <div class="shortcut"><span class="key">M</span> <span data-i18n="sc-addmin">+1 min</span></div>
     <div class="shortcut"><span class="key">S</span> <span data-i18n="sc-sub30">−30 seg</span></div>
+    <div class="shortcut"><span class="key">B</span> <span data-i18n="sc-blackout">blackout</span></div>
     <div class="shortcut"><span class="key">C</span> <span data-i18n="sc-clean">modo limpio</span></div>
   </div>
 </div>
@@ -457,7 +558,16 @@
 <div id="center">
   <div id="mode-label">CUENTA ATRÁS</div>
   <div id="display">05:00</div>
-  <div id="progress-track"><div id="progress-bar"></div></div>
+  <div id="progress-track">
+    <div id="progress-bg">
+      <div id="progress-seg-green"></div>
+      <div id="progress-seg-yellow"></div>
+      <div id="progress-seg-red"></div>
+    </div>
+    <div id="progress-fill"></div>
+    <div id="progress-overlay"></div>
+    <div id="progress-marker"></div>
+  </div>
   <div id="status"></div>
   <div id="message-display"></div>
   <div id="controls">
@@ -466,6 +576,7 @@
     <button id="btn-pause" onclick="pauseTimer()" style="display:none" data-i18n="btn-pause"></button>
     <button onclick="subtractThirty()" data-i18n="btn-sub30">−30 seg</button>
     <button onclick="addMinute()" data-i18n="btn-addmin">+1 min</button>
+    <button id="btn-blackout" onclick="toggleBlackout()" data-i18n="btn-blackout">Blackout</button>
   </div>
   <div id="message-area">
     <input type="text" id="message-input">
@@ -479,10 +590,15 @@
     <div id="mode-toggle">
       <button class="mode-btn active" onclick="setMode('countdown')" id="btn-countdown" data-i18n="mode-countdown">Cuenta atrás</button>
       <button class="mode-btn" onclick="setMode('countup')" id="btn-countup" data-i18n="mode-countup">Cuenta adelante</button>
+      <button class="mode-btn" onclick="setMode('clock')" id="btn-clock" data-i18n="mode-clock">Reloj</button>
     </div>
     <div id="lang-toggle">
       <button class="lang-btn active" onclick="setLang('es')" id="btn-lang-es">ES</button>
       <button class="lang-btn" onclick="setLang('en')" id="btn-lang-en">EN</button>
+    </div>
+    <div id="theme-toggle">
+      <button class="lang-btn active" onclick="setTheme('dark')" id="btn-dark" title="Tema oscuro">◐</button>
+      <button class="lang-btn" onclick="setTheme('light')" id="btn-light" title="Tema claro">○</button>
     </div>
   </div>
   <div id="alerts">
@@ -492,6 +608,8 @@
     <input type="number" id="input-danger" value="1" min="0" max="99">
   </div>
 </div>
+
+<div id="blackout" onclick="toggleBlackout()"><span id="blackout-hint" data-i18n="blackout-hint">B · click para salir</span></div>
 
 <div id="overtime-banner"></div>
 
@@ -523,9 +641,11 @@
       'sc-reset':      'reset',
       'sc-addmin':     '+1 min',
       'sc-sub30':      '−30 seg',
+      'sc-blackout':   'blackout',
       'sc-clean':      'modo limpio',
       'label-countdown':'CUENTA ATRÁS',
       'label-countup': 'CUENTA ADELANTE',
+      'label-clock':   'RELOJ',
       'status-ready':  'listo',
       'status-running':'en curso',
       'status-paused': 'pausado',
@@ -535,6 +655,9 @@
       'overtime-msg':  '⚠ tiempo consumido',
       'placeholder-msg':'Mensaje al ponente… (Enter para enviar, Esc para borrar)',
       'clean-title':   'Modo limpio (C)',
+      'mode-clock':    'Reloj',
+      'btn-blackout':  'Blackout',
+      'blackout-hint': 'B · click para salir',
     },
     en: {
       'minutes':       'Minutes',
@@ -553,9 +676,11 @@
       'sc-reset':      'reset',
       'sc-addmin':     '+1 min',
       'sc-sub30':      '−30 sec',
+      'sc-blackout':   'blackout',
       'sc-clean':      'clean mode',
       'label-countdown':'COUNTDOWN',
       'label-countup': 'COUNT UP',
+      'label-clock':   'CLOCK',
       'status-ready':  'ready',
       'status-running':'running',
       'status-paused': 'paused',
@@ -565,6 +690,9 @@
       'overtime-msg':  '⚠ time over',
       'placeholder-msg':'Message to speaker… (Enter to send, Esc to clear)',
       'clean-title':   'Clean mode (C)',
+      'mode-clock':    'Clock',
+      'btn-blackout':  'Blackout',
+      'blackout-hint': 'B · click to exit',
     }
   };
 
@@ -588,7 +716,10 @@
     overtimeBanner.textContent = i18n[l]['overtime-msg'];
 
     // Etiqueta del modo actual
-    modeLabel.textContent = i18n[l][mode === 'countdown' ? 'label-countdown' : 'label-countup'];
+    const labelKey = mode === 'countdown' ? 'label-countdown'
+                   : mode === 'countup'   ? 'label-countup'
+                   : 'label-clock';
+    modeLabel.textContent = i18n[l][labelKey];
 
     // Estado actual
     const statusKey = running ? 'status-running'
@@ -615,10 +746,16 @@
   let elapsed = 0;
   let totalSeconds = 300;
   let cleanMode = false;
+  let blackoutOn = false;
+  let clockInterval = null;
 
   const display        = document.getElementById('display');
   const statusEl       = document.getElementById('status');
-  const progressBar    = document.getElementById('progress-bar');
+  const progressFill   = document.getElementById('progress-fill');
+  const progressOverlay = document.getElementById('progress-overlay');
+  const progressMarker = document.getElementById('progress-marker');
+  const progressSegY   = document.getElementById('progress-seg-yellow');
+  const progressSegR   = document.getElementById('progress-seg-red');
   const btnStart       = document.getElementById('btn-startstop');
   const modeLabel      = document.getElementById('mode-label');
   const overtimeBanner = document.getElementById('overtime-banner');
@@ -626,6 +763,27 @@
   const inputMin       = document.getElementById('input-minutes');
   const inputSec       = document.getElementById('input-seconds');
   const btnClean       = document.getElementById('btn-clean');
+
+  function getAlertSeconds() {
+    const w = (parseInt(document.getElementById('input-warning').value) || 3) * 60;
+    const d = (parseInt(document.getElementById('input-danger').value)  || 1) * 60;
+    return { warningSeconds: w, dangerSeconds: d };
+  }
+
+  function updateSegments() {
+    // Recalcula el ancho visual de los segmentos amarillo y rojo en función de los umbrales
+    const { warningSeconds, dangerSeconds } = getAlertSeconds();
+    const wPct = Math.min(100, (warningSeconds / totalSeconds) * 100);
+    const dPct = Math.min(wPct, (dangerSeconds  / totalSeconds) * 100);
+    const gPct = 100 - wPct;
+    const yPct = wPct - dPct;
+    // green flex cubre el resto, fijamos yellow y red en px relativos
+    progressSegY.style.width = yPct + '%';
+    progressSegY.style.flex  = 'none';
+    progressSegR.style.width = dPct + '%';
+    progressSegR.style.flex  = 'none';
+    document.getElementById('progress-seg-green').style.flex = '1';
+  }
 
   function t(key) { return i18n[lang][key] || key; }
 
@@ -641,14 +799,69 @@
     btnClean.classList.toggle('active', cleanMode);
   }
 
+  function toggleBlackout() {
+    blackoutOn = !blackoutOn;
+    document.getElementById('blackout').classList.toggle('show', blackoutOn);
+    document.getElementById('btn-blackout').classList.toggle('primary', blackoutOn);
+  }
+
+  function setTheme(t) {
+    document.body.classList.toggle('light', t === 'light');
+    document.getElementById('btn-dark').classList.toggle('active', t === 'dark');
+    document.getElementById('btn-light').classList.toggle('active', t === 'light');
+  }
+
   function setMode(m) {
     if (running) return;
     mode = m;
     document.getElementById('btn-countdown').classList.toggle('active', m === 'countdown');
     document.getElementById('btn-countup').classList.toggle('active', m === 'countup');
-    modeLabel.textContent = t(m === 'countdown' ? 'label-countdown' : 'label-countup');
+    document.getElementById('btn-clock').classList.toggle('active', m === 'clock');
+    const labelKey = m === 'countdown' ? 'label-countdown'
+                   : m === 'countup'   ? 'label-countup'
+                   : 'label-clock';
+    modeLabel.textContent = t(labelKey);
+    // Config de minutos/segundos solo visible en countdown
     document.getElementById('config').style.opacity = m === 'countdown' ? '1' : '0.3';
-    resetTimer();
+    // La barra de progreso y alertas solo aplican en countdown/countup
+    document.getElementById('progress-track').style.opacity = m === 'clock' ? '0' : '1';
+    document.getElementById('alerts').style.opacity = m === 'clock' ? '0.3' : '1';
+    // Botón start no tiene sentido en reloj
+    btnStart.style.display = m === 'clock' ? 'none' : '';
+    document.getElementById('btn-pause').style.display = 'none';
+    if (m === 'clock') {
+      startClock();
+    } else {
+      stopClock();
+      resetTimer();
+    }
+  }
+
+  function fmtClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const min = String(now.getMinutes()).padStart(2, '0');
+    const sec = String(now.getSeconds()).padStart(2, '0');
+    return `${h}:${min}:${sec}`;
+  }
+
+  function startClock() {
+    stopClock();
+    display.className = 'clock-mode';
+    display.textContent = fmtClock();
+    statusEl.textContent = '';
+    progressFill.style.width = '100%';
+    progressOverlay.style.width = '0%';
+    progressMarker.style.left = '100%';
+    overtimeBanner.classList.remove('show');
+    clockInterval = setInterval(() => {
+      display.textContent = fmtClock();
+    }, 500); // cada 500ms para no perder segundos
+  }
+
+  function stopClock() {
+    if (clockInterval) { clearInterval(clockInterval); clockInterval = null; }
+    display.classList.remove('clock-mode');
   }
 
   function updateDisplay() {
@@ -656,32 +869,38 @@
       const remaining = totalSeconds - elapsed;
       display.textContent = remaining < 0 ? '−' + fmt(Math.abs(remaining)) : fmt(remaining);
       const pct = Math.max(0, (remaining / totalSeconds) * 100);
-      progressBar.style.width = pct + '%';
 
-      const warningSeconds = (parseInt(document.getElementById('input-warning').value) || 3) * 60;
-      const dangerSeconds  = (parseInt(document.getElementById('input-danger').value)  || 1) * 60;
+      // Fill (parte iluminada) y overlay (parte oscura)
+      progressFill.style.width    = pct + '%';
+      progressOverlay.style.width = (100 - pct) + '%';
+      progressMarker.style.left   = pct + '%';
+
+      const { warningSeconds, dangerSeconds } = getAlertSeconds();
 
       if (remaining < 0) {
         display.className = 'overtime';
-        progressBar.className = 'overtime';
+        progressFill.className = 'overtime';
+        progressMarker.style.left = '0%';
         overtimeBanner.classList.add('show');
         statusEl.textContent = t('status-overtime');
       } else if (remaining <= dangerSeconds) {
         display.className = 'danger';
-        progressBar.className = 'danger';
+        progressFill.className = 'danger';
         overtimeBanner.classList.remove('show');
       } else if (remaining <= warningSeconds) {
         display.className = 'warning';
-        progressBar.className = 'warning';
+        progressFill.className = 'warning';
         overtimeBanner.classList.remove('show');
       } else {
         display.className = '';
-        progressBar.className = '';
+        progressFill.className = '';
         overtimeBanner.classList.remove('show');
       }
     } else {
       display.textContent = fmt(elapsed);
-      progressBar.style.width = '100%';
+      progressFill.style.width    = '100%';
+      progressOverlay.style.width = '0%';
+      progressMarker.style.left   = '100%';
       display.className = '';
       overtimeBanner.classList.remove('show');
     }
@@ -735,18 +954,23 @@
     document.getElementById('btn-pause').style.display = 'none';
     statusEl.textContent = t('status-ready');
     display.className = '';
-    progressBar.className = '';
+    progressFill.className = '';
 
     if (mode === 'countdown') {
       const m = parseInt(inputMin.value) || 0;
       const s = parseInt(inputSec.value) || 0;
       totalSeconds = m * 60 + s || 300;
       display.textContent = fmt(totalSeconds);
-      progressBar.style.width = '100%';
+      progressFill.style.width    = '100%';
+      progressOverlay.style.width = '0%';
+      progressMarker.style.left   = '100%';
     } else {
       display.textContent = '00:00';
-      progressBar.style.width = '100%';
+      progressFill.style.width    = '100%';
+      progressOverlay.style.width = '0%';
+      progressMarker.style.left   = '100%';
     }
+    updateSegments();
   }
 
   function sendMessage() {
@@ -794,6 +1018,7 @@
     if (e.code === 'KeyR')  resetTimer();
     if (e.code === 'KeyM')  addMinute();
     if (e.code === 'KeyS')  subtractThirty();
+    if (e.code === 'KeyB')  toggleBlackout();
     if (e.code === 'KeyC')  toggleClean();
   });
 
@@ -804,6 +1029,9 @@
 
   inputMin.addEventListener('input', () => { if (!running) resetTimer(); });
   inputSec.addEventListener('input', () => { if (!running) resetTimer(); });
+
+  document.getElementById('input-warning').addEventListener('input', () => { updateSegments(); });
+  document.getElementById('input-danger').addEventListener('input',  () => { updateSegments(); });
 </script>
 </body>
 </html>

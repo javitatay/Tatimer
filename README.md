@@ -49,11 +49,11 @@ Las fuentes de Google Fonts quedan en caché tras la primera carga. Para uso com
 | Alerta amarilla (min) | Panel derecho | Minutos restantes para activar el aviso amarillo |
 | Alerta roja (min) | Panel derecho | Minutos restantes para activar el aviso rojo |
 | ES / EN | Panel derecho | Cambia el idioma de la interfaz |
-| ◐ / ○ | Panel derecho | Cambia entre tema oscuro y tema claro |
+| ◐ | Panel derecho | Alterna entre tema oscuro y tema claro |
 | Iniciar / Reanudar | Centro inferior | Arranca o reanuda el contador |
 | Pausar | Centro inferior | Pausa sin perder el tiempo |
-| −30 seg | Centro inferior | Resta 30 segundos al tiempo restante |
-| +1 min | Centro inferior | Añade 1 minuto al tiempo restante |
+| −30 seg | Centro inferior | Resta 30 segundos al tiempo (en cuenta atrás: adelanta el fin; en cuenta adelante: retrocede el contador) |
+| +1 min | Centro inferior | Añade 1 minuto al tiempo (en cuenta atrás: retrasa el fin; en cuenta adelante: avanza el contador) |
 | Reset | Centro inferior | Vuelve al estado inicial |
 | Blackout | Centro inferior | Cubre la pantalla con negro. El contador sigue corriendo. |
 | ⊞ | Esquina inferior derecha | Activa / desactiva el modo limpio |

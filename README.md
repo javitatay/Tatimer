@@ -1,6 +1,10 @@
 # Timer · Temporizador para shows en vivo
 
-Temporizador standalone para monitor del ponente en eventos, conferencias y shows en vivo. Se abre directamente en cualquier navegador — sin instalación, sin conexión a internet, sin dependencias.
+Temporizador standalone para monitor del ponente en eventos, conferencias y shows en vivo.
+
+**→ [javitatay.github.io/Tatimer](https://javitatay.github.io/Tatimer/)**
+
+Disponible online sin instalación. También funciona descargando `timer.html` y abriéndolo localmente en cualquier navegador — sin dependencias, sin servidor.
 
 ---
 
@@ -22,11 +26,17 @@ Temporizador standalone para monitor del ponente en eventos, conferencias y show
 
 ## Uso
 
+### Online
+
+Abre [javitatay.github.io/Tatimer](https://javitatay.github.io/Tatimer/) en Safari o Chrome y arrastra la ventana al monitor del ponente. No necesita instalación ni conexión posterior.
+
+### Local (offline)
+
 1. Descarga `timer.html`
 2. Ábrelo en Safari o Chrome
 3. Arrastra la ventana al monitor del ponente
 
-No necesita servidor, ni conexión a internet después de cargar las fuentes de Google Fonts la primera vez. Para uso completamente offline, las fuentes se cargarán con las del sistema.
+Las fuentes de Google Fonts quedan en caché tras la primera carga. Para uso completamente offline desde el primer momento, las fuentes se cargarán con las del sistema.
 
 ---
 
@@ -110,18 +120,18 @@ El botón de maximizar (esquina inferior derecha) oculta todos los controles y m
 
 ## Control por URL
 
-El temporizador acepta parámetros en la URL para integrarse con herramientas de show control:
+El temporizador acepta parámetros en la URL para integrarse con herramientas de show control como QLab:
 
 ```
-timer.html?action=start
-timer.html?action=pause
-timer.html?action=reset
-timer.html?action=addminute
-timer.html?action=subtractthirty
-timer.html?action=start&minutes=10&seconds=0
-timer.html?action=start&mode=countup
-timer.html?action=start&mode=clock
-timer.html?lang=en
+https://javitatay.github.io/Tatimer/?action=start
+https://javitatay.github.io/Tatimer/?action=pause
+https://javitatay.github.io/Tatimer/?action=reset
+https://javitatay.github.io/Tatimer/?action=addminute
+https://javitatay.github.io/Tatimer/?action=subtractthirty
+https://javitatay.github.io/Tatimer/?action=start&minutes=10&seconds=0
+https://javitatay.github.io/Tatimer/?action=start&mode=countup
+https://javitatay.github.io/Tatimer/?action=start&mode=clock
+https://javitatay.github.io/Tatimer/?lang=en
 ```
 
 ---
@@ -129,7 +139,7 @@ timer.html?lang=en
 ## Estructura del repositorio
 
 ```
-timer/
+Tatimer/
 │
 ├── README.md
 ├── LICENSE

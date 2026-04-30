@@ -6,23 +6,28 @@
 <title>Temporizador · Timer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a0a0a'/%3E%3Ccircle cx='16' cy='17' r='11' fill='none' stroke='%23e8ff00' stroke-width='2'/%3E%3Cline x1='16' y1='17' x2='16' y2='10' stroke='%23e8ff00' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='16' y1='17' x2='21' y2='20' stroke='%23f0f0f0' stroke-width='1.5' stroke-linecap='round'/%3E%3Crect x='13' y='4' width='6' height='2' rx='1' fill='%23e8ff00'/%3E%3C/svg%3E">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
   :root {
-    --bg: #0a0a0a;
-    --fg: #f0f0f0;
-    --accent: #e8ff00;
-    --danger: #ff3c00;
-    --mid: #888;
-    --border: #222;
-    --progress-overlay: rgba(0,0,0,0.75);
-    --credit-color: #333;
-    --btn-border: #444;
-    --btn-color: #aaa;
-    --marker-color: #fff;
-    --seg-green: #1a5c26;
-    --seg-yellow: #7a5000;
-    --seg-red: #6b1208;
+    --bg: #07080a;
+    --fg: #f9f9f9;
+    --accent: #FF6363;
+    --danger: #FF6363;
+    --mid: #9c9c9d;
+    --border: hsl(195,5%,15%);
+    --border-subtle: rgba(255,255,255,0.06);
+    --progress-overlay: rgba(7,8,10,0.78);
+    --credit-color: #434345;
+    --btn-border: rgba(255,255,255,0.1);
+    --btn-color: #6a6b6c;
+    --marker-color: #f9f9f9;
+    --seg-green: #1a3d20;
+    --seg-yellow: #4a3500;
+    --seg-red: #4a1010;
+    --surface: #101111;
+    --card-surface: #1b1c1e;
+    --raycast-blue: hsl(202,100%,67%);
+    --ot: "calt" on, "kern" on, "liga" on, "ss03" on;
   }
 
   body.light {
@@ -49,7 +54,8 @@
   body {
     background: var(--bg);
     color: var(--fg);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: "calt" on, "kern" on, "liga" on, "ss03" on;
     min-height: 100vh;
     overflow: hidden;
     user-select: none;
@@ -107,16 +113,16 @@
     text-transform: uppercase;
     color: var(--mid);
     margin-bottom: clamp(1rem, 2vh, 2rem);
-    font-weight: 300;
+    font-weight: 500;
     text-align: center;
   }
 
   /* ── DISPLAY PRINCIPAL ──────────────────────────────── */
   #display {
-    font-family: 'Bebas Neue', sans-serif;
+    font-family: 'Bebas Neue', 'Inter', sans-serif;
     font-size: clamp(5rem, 22vw, 32rem);
     line-height: 0.9;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
     color: var(--fg);
     transition: color 0.3s ease, font-size 0.4s ease;
     text-align: center;
@@ -137,7 +143,7 @@
     width: min(85%, 800px);
     height: clamp(10px, 1.8vh, 18px);
     margin-top: clamp(1.5rem, 3vh, 3rem);
-    border-radius: 3px;
+    border-radius: 4px;
     overflow: visible;
   }
 
@@ -145,7 +151,7 @@
   #progress-bg {
     position: absolute;
     inset: 0;
-    border-radius: 3px;
+    border-radius: 4px;
     overflow: hidden;
     display: flex;
   }
@@ -159,7 +165,7 @@
     position: absolute;
     top: 0; right: 0; bottom: 0;
     background: var(--progress-overlay);
-    border-radius: 0 3px 3px 0;
+    border-radius: 0 4px 4px 0;
     transition: width 1s linear;
   }
 
@@ -167,13 +173,14 @@
   #progress-fill {
     position: absolute;
     top: 0; left: 0; bottom: 0;
-    border-radius: 3px 0 0 3px;
+    border-radius: 4px 0 0 4px;
     transition: width 1s linear, background 0.3s ease;
     background: #22a83c;
+    box-shadow: rgba(255,255,255,0.05) 0px 1px 0px 0px inset;
   }
 
   #progress-fill.warning { background: #e8a000; border-radius: 0; }
-  #progress-fill.danger  { background: #ff3c00; border-radius: 0; }
+  #progress-fill.danger  { background: #FF6363; border-radius: 0; }
   #progress-fill.overtime { width: 0% !important; }
 
   /* Marcador triangular que viaja sobre la barra */
@@ -198,7 +205,7 @@
     letter-spacing: 0.2em;
     color: var(--mid);
     text-transform: uppercase;
-    font-weight: 300;
+    font-weight: 500;
     height: 1em;
     text-align: center;
   }
@@ -241,41 +248,57 @@
   }
 
   #message-input {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: "calt" on, "kern" on, "liga" on, "ss03" on;
     font-size: clamp(0.7rem, 1.2vw, 0.85rem);
-    background: transparent;
-    border: 1px solid var(--border);
+    background: #07080a;
+    border: 1px solid rgba(255,255,255,0.08);
     color: var(--fg);
     padding: 0.5rem 0.8rem;
     flex: 1;
     min-width: 150px;
     outline: none;
-    letter-spacing: 0.02em;
-    transition: border-color 0.15s ease;
+    letter-spacing: 0.2px;
+    border-radius: 8px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
 
-  #message-input::placeholder { color: var(--mid); }
-  #message-input:focus { border-color: var(--accent); }
+  #message-input::placeholder { color: #6a6b6c; }
+  #message-input:focus {
+    border-color: hsl(202,100%,67%);
+    box-shadow: 0 0 0 3px hsla(202,100%,67%,0.15);
+  }
 
   /* ── BOTONES ────────────────────────────────────────── */
   button {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: "calt" on, "kern" on, "liga" on, "ss03" on;
     font-size: clamp(0.6rem, 0.9vw, 0.75rem);
-    letter-spacing: 0.1em;
+    letter-spacing: 0.2px;
     text-transform: uppercase;
-    font-weight: 500;
+    font-weight: 600;
     background: transparent;
-    border: 1px solid var(--border);
+    border: 1px solid var(--btn-border);
     color: var(--mid);
     padding: clamp(0.4rem, 0.8vh, 0.6rem) clamp(0.8rem, 1.5vw, 1.4rem);
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: opacity 0.15s ease, color 0.15s ease;
     white-space: nowrap;
+    border-radius: 6px;
+    box-shadow: rgba(255,255,255,0.05) 0px 1px 0px 0px inset,
+                rgba(0,0,0,0.2) 0px -1px 0px 0px inset;
   }
 
-  button:hover { border-color: var(--fg); color: var(--fg); }
-  button.primary { border-color: var(--accent); color: var(--accent); }
-  button.primary:hover { background: var(--accent); color: var(--bg); }
+  button:hover { opacity: 0.6; color: var(--fg); border-color: rgba(255,255,255,0.2); }
+  button.primary {
+    border-color: rgba(255,255,255,0.25);
+    color: #f9f9f9;
+    box-shadow: rgba(255,255,255,0.1) 0px 1px 0px 0px inset,
+                rgba(0,0,0,0.25) 0px -1px 0px 0px inset,
+                rgba(255,255,255,0.25) 0px 0px 0px 1px;
+    border-radius: 86px;
+  }
+  button.primary:hover { opacity: 0.7; background: rgba(255,255,255,0.06); }
 
   /* ── CONFIG ─────────────────────────────────────────── */
   #config {
@@ -299,25 +322,31 @@
 
   #config label {
     font-size: clamp(0.55rem, 0.9vw, 0.7rem);
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2px;
     color: var(--mid);
     text-transform: uppercase;
-    font-weight: 400;
+    font-weight: 500;
   }
 
   #config input {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: "calt" on, "kern" on, "liga" on, "ss03" on;
     font-size: clamp(0.8rem, 1.2vw, 0.95rem);
-    background: transparent;
-    border: 1px solid var(--border);
+    background: #07080a;
+    border: 1px solid rgba(255,255,255,0.08);
     color: var(--fg);
     padding: 0.3rem 0.5rem;
     width: clamp(60px, 6vw, 85px);
     text-align: center;
     outline: none;
+    border-radius: 8px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
 
-  #config input:focus { border-color: var(--accent); }
+  #config input:focus {
+    border-color: var(--raycast-blue, hsl(202,100%,67%));
+    box-shadow: 0 0 0 3px hsla(202,100%,67%,0.15);
+  }
 
   /* ── SELECTOR DE MODO + IDIOMA ──────────────────────── */
   #top-right {
@@ -374,45 +403,53 @@
 
   #alerts label {
     font-size: clamp(0.55rem, 0.9vw, 0.7rem);
-    letter-spacing: 0.1em;
+    letter-spacing: 0.2px;
     text-transform: uppercase;
-    font-weight: 400;
+    font-weight: 500;
     text-align: right;
     white-space: nowrap;
   }
 
-  #alerts label.lbl-warning { color: var(--accent); opacity: 0.8; }
+  #alerts label.lbl-warning { color: hsl(43,100%,60%); opacity: 0.9; }
   #alerts label.lbl-danger  { color: var(--danger);  opacity: 0.8; }
+  body.light #alerts label.lbl-warning { color: var(--accent); opacity: 0.8; }
 
   #alerts input {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: "calt" on, "kern" on, "liga" on, "ss03" on;
     font-size: clamp(0.8rem, 1.2vw, 0.95rem);
-    background: transparent;
-    border: 1px solid var(--border);
+    background: #07080a;
+    border: 1px solid rgba(255,255,255,0.08);
     color: var(--fg);
     padding: 0.3rem 0.5rem;
     width: clamp(55px, 5vw, 72px);
     text-align: center;
     outline: none;
+    border-radius: 8px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
 
-  #alerts input:focus { border-color: var(--accent); }
+  #alerts input:focus {
+    border-color: var(--raycast-blue, hsl(202,100%,67%));
+    box-shadow: 0 0 0 3px hsla(202,100%,67%,0.15);
+  }
 
   /* ── BANNER TIEMPO CONSUMIDO ────────────────────────── */
   #overtime-banner {
     display: none;
     position: fixed;
     top: 0; left: 0; right: 0;
-    background: var(--danger);
+    background: #FF6363;
     color: #fff;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: clamp(1rem, 3vw, 3rem);
-    font-weight: 500;
-    letter-spacing: 0.15em;
+    font-weight: 600;
+    letter-spacing: 0.2px;
     text-transform: uppercase;
     text-align: center;
     padding: clamp(0.4rem, 1vh, 0.8rem);
     z-index: 100;
+    box-shadow: rgba(255,99,99,0.3) 0px 4px 20px;
   }
 
   #overtime-banner.show { display: block; }
@@ -434,20 +471,26 @@
     align-items: center;
     gap: 0.4rem;
     font-size: clamp(0.5rem, 0.8vw, 0.65rem);
-    letter-spacing: 0.05em;
+    letter-spacing: 0.2px;
     color: var(--mid);
-    font-weight: 400;
+    font-weight: 500;
   }
 
   .key {
-    border: 1px solid var(--mid);
-    border-radius: 3px;
+    background: linear-gradient(to bottom, #121212, #0d0d0d);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 4px;
     padding: 0.1rem 0.35rem;
     font-size: clamp(0.5rem, 0.8vw, 0.65rem);
-    color: var(--mid);
+    color: #cecece;
     line-height: 1.4;
     min-width: 1.6rem;
     text-align: center;
+    box-shadow: rgba(0,0,0,0.4) 0px 1.5px 0.5px 2.5px,
+                rgba(255,255,255,0.06) 0px 1px 0px 0px inset,
+                rgba(0,0,0,0.3) 0px -1px 0px 0px inset;
+    font-weight: 600;
+    letter-spacing: 0px;
   }
 
   /* ── BOTÓN MODO LIMPIO ──────────────────────────────── */
@@ -455,28 +498,31 @@
     position: fixed;
     bottom: clamp(0.8rem, 1.5vh, 1.5rem);
     right: clamp(0.8rem, 1.5vw, 2rem);
-    background: transparent;
-    border: 1px solid var(--btn-border);
-    color: var(--btn-color);
+    background: rgba(16,17,17,0.8);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #6a6b6c;
     padding: 0;
     width: 2.2rem;
     height: 2.2rem;
     cursor: pointer;
     opacity: 0.7;
-    transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    transition: opacity 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     text-transform: none;
     font-weight: 400;
     letter-spacing: 0;
-    border-radius: 4px;
+    border-radius: 6px;
     z-index: 200;
+    box-shadow: rgba(255,255,255,0.05) 0px 1px 0px 0px inset,
+                rgba(0,0,0,0.2) 0px -1px 0px 0px inset;
   }
 
   #btn-clean svg { width: 1rem; height: 1rem; fill: currentColor; }
-  #btn-clean:hover { opacity: 1; border-color: var(--fg); color: var(--fg); }
-  #btn-clean.active { opacity: 1; border-color: var(--accent); color: var(--accent); }
+  #btn-clean:hover { opacity: 1; color: #f9f9f9; border-color: rgba(255,255,255,0.15); }
+  #btn-clean.active { opacity: 1; border-color: rgba(255,99,99,0.4); color: #FF6363;
+    box-shadow: rgba(255,99,99,0.15) 0px 0px 0px 3px; }
 
   /* ── BLACKOUT ────────────────────────────────────────── */
   #blackout {
@@ -566,8 +612,8 @@
     left: clamp(0.8rem, 1.5vw, 1.5rem);
     font-size: clamp(0.4rem, 0.6vw, 0.55rem);
     color: var(--credit-color);
-    letter-spacing: 0.08em;
-    font-weight: 300;
+    letter-spacing: 0.2px;
+    font-weight: 500;
     z-index: 100;
     line-height: 1.5;
     transition: color 0.2s ease;
@@ -584,6 +630,64 @@
   }
 
   body.clean #credit { display: none; }
+
+  /* ── LIGHT MODE OVERRIDES (no tocar tokens del tema claro) ── */
+  body.light button {
+    border: 1px solid var(--btn-border);
+    box-shadow: none;
+    border-radius: 4px;
+  }
+  body.light button.primary {
+    border-color: var(--accent);
+    color: var(--accent);
+    border-radius: 4px;
+    box-shadow: none;
+  }
+  body.light button.primary:hover {
+    background: var(--accent);
+    color: var(--bg);
+    opacity: 1;
+  }
+  body.light button:hover {
+    border-color: var(--fg);
+    color: var(--fg);
+    opacity: 1;
+  }
+  body.light #config input,
+  body.light #alerts input,
+  body.light #message-input {
+    background: transparent;
+    border: 1px solid var(--border);
+    box-shadow: none;
+    border-radius: 0;
+  }
+  body.light #config input:focus,
+  body.light #alerts input:focus,
+  body.light #message-input:focus {
+    border-color: var(--accent);
+    box-shadow: none;
+  }
+  body.light .key {
+    background: none;
+    border: 1px solid var(--mid);
+    color: var(--mid);
+    box-shadow: none;
+    font-weight: 400;
+  }
+  body.light #btn-clean {
+    background: transparent;
+    border: 1px solid var(--btn-border);
+    box-shadow: none;
+  }
+  body.light #btn-clean.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: none;
+  }
+  body.light #overtime-banner {
+    background: var(--danger);
+    box-shadow: none;
+  }
 </style>
 </head>
 <body>

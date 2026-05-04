@@ -1236,6 +1236,219 @@
 </div>
 
 <script>
+  // ── DETECCIÓN DE VISTA (?view=escenario | ?view=audience) ──
+  (function() {
+    const viewParam = new URLSearchParams(window.location.search).get('view');
+    if (!viewParam) return;
+
+    // Ocultar todo el DOM del operador inmediatamente
+    document.documentElement.style.visibility = 'hidden';
+
+    const LS_TIMER    = 'tatimer_bc_timer';
+    const LS_AUDIENCE = 'tatimer_bc_audience';
+    const LS_MESSAGE  = 'tatimer_bc_message';
+
+    if (viewParam === 'escenario') {
+      document.title = 'Escenario · Tatimer';
+      document.head.insertAdjacentHTML('beforeend',
+        '<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">');
+      document.body.innerHTML = `
+        <style>
+          *{margin:0;padding:0;box-sizing:border-box}
+          html,body{width:100%;height:100%;background:#000;color:#f9f9f9;overflow:hidden;user-select:none}
+          body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif}
+          #esc-timer{font-size:clamp(8rem,28vw,38rem);line-height:0.9;letter-spacing:-0.01em;text-align:center;transition:color 0.3s}
+          #esc-timer.warning{color:#e8a000;animation:pw 1s ease-in-out infinite}
+          #esc-timer.danger {color:#FF6363;animation:pd 0.5s ease-in-out infinite}
+          #esc-timer.overtime{color:#FF6363}
+          @keyframes pw{0%,100%{opacity:1}50%{opacity:0.7}}
+          @keyframes pd{0%,100%{opacity:1}50%{opacity:0.4}}
+          #esc-bar-wrap{width:min(88%,900px);height:clamp(10px,1.8vh,18px);margin-top:2rem;border-radius:4px;position:relative;overflow:hidden}
+          #esc-bar-bg{position:absolute;inset:0;display:flex}
+          #esc-bar-green{background:#1a3d20;flex:1}
+          #esc-bar-yellow{background:#4a3500}
+          #esc-bar-red{background:#4a1010}
+          #esc-bar-overlay{position:absolute;top:0;right:0;bottom:0;background:rgba(0,0,0,0.78);border-radius:0 4px 4px 0;transition:width 1s linear}
+          #esc-bar-fill{position:absolute;top:0;left:0;bottom:0;border-radius:4px 0 0 4px;background:#22a83c;transition:width 1s linear,background 0.3s}
+          #esc-bar-fill.warning{background:#e8a000;border-radius:0}
+          #esc-bar-fill.danger{background:#FF6363;border-radius:0}
+          #esc-bar-fill.overtime{width:0%!important}
+          #esc-overtime{display:none;position:fixed;top:0;left:0;right:0;background:#FF6363;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:clamp(1.5rem,4vw,4rem);letter-spacing:0.1em;text-align:center;padding:0.3rem;z-index:10}
+          #esc-overtime.show{display:block}
+          #esc-message{display:none;position:fixed;bottom:clamp(2rem,8vh,6rem);left:0;right:0;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,6vw,7rem);color:#e8ff00;letter-spacing:0.05em;line-height:1.1;padding:0 5vw;text-shadow:0 2px 20px rgba(0,0,0,0.8);z-index:20}
+          #esc-message.visible{display:block}
+          #esc-nosignal{display:flex;flex-direction:column;align-items:center;gap:1rem;opacity:0.25}
+          #esc-nosignal p{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.2em}
+          body.light{background:#f2f2f0;color:#111}
+          body.light #esc-bar-green{background:#3aaa50}
+          body.light #esc-bar-yellow{background:#d49000}
+          body.light #esc-bar-red{background:#d42b00}
+          body.light #esc-bar-overlay{background:rgba(242,242,240,0.78)}
+          body.light #esc-timer.warning{color:#c8a800}
+          body.light #esc-timer.danger{color:#d42b00}
+          body.light #esc-overtime{background:#d42b00}
+          body.light #esc-message{color:#c8a800}
+        </style>
+        <div id="esc-nosignal">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#f9f9f9" stroke-width="1.5" stroke-linecap="round"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0 1 19 12.55M5 12.55a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.56 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
+          <p>ESPERANDO SEÑAL…</p>
+        </div>
+        <div id="esc-timer" style="display:none"></div>
+        <div id="esc-bar-wrap" style="display:none">
+          <div id="esc-bar-bg"><div id="esc-bar-green"></div><div id="esc-bar-yellow"></div><div id="esc-bar-red"></div></div>
+          <div id="esc-bar-overlay"></div>
+          <div id="esc-bar-fill"></div>
+        </div>
+        <div id="esc-overtime"></div>
+        <div id="esc-message"></div>
+      `;
+      document.documentElement.style.visibility = '';
+
+      const timerEl   = document.getElementById('esc-timer');
+      const barWrap   = document.getElementById('esc-bar-wrap');
+      const barFill   = document.getElementById('esc-bar-fill');
+      const barOverlay= document.getElementById('esc-bar-overlay');
+      const barYellow = document.getElementById('esc-bar-yellow');
+      const barRed    = document.getElementById('esc-bar-red');
+      const noSignal  = document.getElementById('esc-nosignal');
+      const overtime  = document.getElementById('esc-overtime');
+      const messageEl = document.getElementById('esc-message');
+      let connected = false, connTimeout;
+
+      function applyTimer(d) {
+        if (!connected) {
+          connected = true;
+          noSignal.style.display = 'none';
+          timerEl.style.display = '';
+          barWrap.style.display = '';
+        }
+        clearTimeout(connTimeout);
+        connTimeout = setTimeout(() => {
+          connected = false;
+          noSignal.style.display = '';
+          timerEl.style.display = 'none';
+          barWrap.style.display = 'none';
+        }, 4000);
+        document.body.className = d.theme === 'light' ? 'light' : '';
+        timerEl.textContent = d.display;
+        timerEl.className = d.state === 'overtime' ? 'overtime'
+                          : d.state === 'danger'   ? 'danger'
+                          : d.state === 'warning'  ? 'warning' : '';
+        barFill.className = d.state === 'overtime' ? 'overtime'
+                          : d.state === 'danger'   ? 'danger'
+                          : d.state === 'warning'  ? 'warning' : '';
+        barFill.style.width    = d.pct + '%';
+        barOverlay.style.width = (100 - d.pct) + '%';
+        overtime.className   = d.state === 'overtime' ? 'show' : '';
+        overtime.textContent = d.state === 'overtime' ? '⚠ TIEMPO CONSUMIDO' : '';
+        if (d.totalSeconds > 0) {
+          barYellow.style.width = (d.warningPct || 0) + '%';
+          barRed.style.width    = (d.dangerPct  || 0) + '%';
+        }
+      }
+
+      function applyMessage(d) {
+        if (d.text) {
+          messageEl.textContent = d.text;
+          messageEl.classList.add('visible');
+        } else {
+          messageEl.classList.remove('visible');
+          messageEl.textContent = '';
+        }
+      }
+
+      window.addEventListener('storage', e => {
+        if (e.key === LS_TIMER && e.newValue)   { try { applyTimer(JSON.parse(e.newValue));   } catch(_){} }
+        if (e.key === LS_MESSAGE && e.newValue) { try { applyMessage(JSON.parse(e.newValue)); } catch(_){} }
+      });
+
+      // Poll inicial para recoger el último estado conocido
+      setInterval(() => {
+        const raw = localStorage.getItem(LS_TIMER);
+        if (!raw) return;
+        try { const d = JSON.parse(raw); if (Date.now() - (d.ts||0) < 3000) applyTimer(d); } catch(_){}
+      }, 500);
+
+      // Recoger mensaje actual al abrir
+      const rawMsg = localStorage.getItem(LS_MESSAGE);
+      if (rawMsg) { try { applyMessage(JSON.parse(rawMsg)); } catch(_){} }
+
+    } else if (viewParam === 'audience') {
+      document.title = 'Audience · Tatimer';
+      document.head.insertAdjacentHTML('beforeend',
+        '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">');
+      document.body.innerHTML = `
+        <style>
+          *{margin:0;padding:0;box-sizing:border-box}
+          html,body{width:100%;height:100%;background:#07080a;color:#f9f9f9;overflow:hidden;user-select:none}
+          body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Inter',system-ui,sans-serif}
+          #aud-session{font-size:clamp(0.6rem,1.2vw,1rem);letter-spacing:0.35em;text-transform:uppercase;color:#434345;margin-bottom:clamp(2rem,5vh,4rem);font-weight:500;transition:opacity 0.5s,transform 0.5s}
+          #aud-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,10vw,10rem);line-height:1;letter-spacing:0.02em;text-align:center;padding:0 5vw;transition:opacity 0.5s,transform 0.5s}
+          #aud-divider{width:3rem;height:2px;background:#FF6363;margin:clamp(1.5rem,4vh,3rem) auto;opacity:0.6;border-radius:2px;transition:opacity 0.5s}
+          #aud-title{font-size:clamp(0.9rem,2.5vw,2.2rem);font-weight:300;color:#9c9c9d;text-align:center;padding:0 8vw;line-height:1.3;margin-top:clamp(1rem,2.5vh,2rem);transition:opacity 0.5s,transform 0.5s}
+          #aud-duration{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,3vw,2.8rem);letter-spacing:0.15em;color:#434345;text-align:center;margin-top:clamp(1rem,2vh,1.5rem);transition:opacity 0.5s}
+          .aud-fade{opacity:0!important;transform:translateY(10px)}
+          #aud-nosignal{display:flex;flex-direction:column;align-items:center;gap:1.5rem;opacity:0.15}
+          #aud-nosignal p{font-size:0.9rem;letter-spacing:0.3em;text-transform:uppercase;font-weight:300}
+          #aud-content{display:none;width:100%;text-align:center}
+          body.light{background:#f2f2f0;color:#111}
+          body.light #aud-session{color:#bbb}
+          body.light #aud-title{color:#666}
+          body.light #aud-duration{color:#bbb}
+          body.light #aud-divider{background:#c8a800}
+        </style>
+        <div id="aud-nosignal">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#f9f9f9" stroke-width="1.5" stroke-linecap="round"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0 1 19 12.55M5 12.55a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.56 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
+          <p>Esperando señal del operador…</p>
+        </div>
+        <div id="aud-content">
+          <div id="aud-session"></div>
+          <div id="aud-name"></div>
+          <div id="aud-divider"></div>
+          <div id="aud-title"></div>
+          <div id="aud-duration"></div>
+        </div>
+      `;
+      document.documentElement.style.visibility = '';
+
+      const noSignal  = document.getElementById('aud-nosignal');
+      const content   = document.getElementById('aud-content');
+      const sessEl    = document.getElementById('aud-session');
+      const nameEl    = document.getElementById('aud-name');
+      const dividerEl = document.getElementById('aud-divider');
+      const titleEl   = document.getElementById('aud-title');
+      const durEl     = document.getElementById('aud-duration');
+      const animated  = [sessEl, nameEl, dividerEl, titleEl, durEl];
+
+      function fmtDur(m,s){ return String(m||0).padStart(2,'0')+':'+String(s||0).padStart(2,'0'); }
+
+      function applyAudience(d) {
+        noSignal.style.display = 'none';
+        content.style.display  = 'block';
+        document.body.className = d.theme === 'light' ? 'light' : '';
+        animated.forEach(el => el.classList.add('aud-fade'));
+        setTimeout(() => {
+          sessEl.textContent   = d.session || '';
+          nameEl.textContent   = d.name    || '';
+          titleEl.textContent  = d.title   || '';
+          durEl.textContent    = (d.min||d.sec) ? fmtDur(d.min,d.sec) : '';
+          animated.forEach(el => el.classList.remove('aud-fade'));
+        }, 450);
+      }
+
+      window.addEventListener('storage', e => {
+        if (e.key === LS_AUDIENCE && e.newValue) { try { applyAudience(JSON.parse(e.newValue)); } catch(_){} }
+      });
+
+      // Cargar último estado publicado al abrir la ventana
+      const raw = localStorage.getItem(LS_AUDIENCE);
+      if (raw) { try { applyAudience(JSON.parse(raw)); } catch(_){} }
+    }
+
+    // Bloquear ejecución del resto del script del operador
+    throw new Error('__view_mode__');
+  })();
+
   // ── TRADUCCIONES ──────────────────────────────────────
   const i18n = {
     es: {
@@ -1647,12 +1860,14 @@
     if (!text) return;
     messageDisplay.textContent = text;
     messageDisplay.classList.add('visible');
+    localStorage.setItem('tatimer_bc_message', JSON.stringify({ text, ts: Date.now() }));
   }
 
   function clearMessage() {
     document.getElementById('message-input').value = '';
     messageDisplay.textContent = '';
     messageDisplay.classList.remove('visible');
+    localStorage.setItem('tatimer_bc_message', JSON.stringify({ text: '', ts: Date.now() }));
   }
 
   function handleURLParams() {
@@ -2025,12 +2240,12 @@
 
   const LS_TIMER    = 'tatimer_bc_timer';
   const LS_AUDIENCE = 'tatimer_bc_audience';
+  const LS_MESSAGE  = 'tatimer_bc_message';
 
   let escenarioWin = null;
   let audienceWin  = null;
 
   function broadcastTimerState() {
-    if (!escenarioWin || escenarioWin.closed) return;
     const remaining = mode === 'countdown' ? totalSeconds - elapsed : elapsed;
     const pct       = mode === 'countdown' ? Math.max(0, (remaining / totalSeconds) * 100) : 100;
     const { warningSeconds, dangerSeconds } = getAlertSeconds();
@@ -2040,20 +2255,19 @@
       else if (remaining <= dangerSeconds)  state = 'danger';
       else if (remaining <= warningSeconds) state = 'warning';
     }
-    const payload = JSON.stringify({
+    localStorage.setItem(LS_TIMER, JSON.stringify({
       type: 'timer', mode, running, elapsed, totalSeconds, remaining, pct, state,
       display: display.textContent, theme: currentTheme, lang,
       warningPct: totalSeconds > 0 ? Math.min(100, ((parseInt(document.getElementById('input-warning').value)||3)*60 / totalSeconds)*100) : 0,
       dangerPct:  totalSeconds > 0 ? Math.min(100, ((parseInt(document.getElementById('input-danger').value)||1)*60  / totalSeconds)*100) : 0,
       ts: Date.now(),
-    });
-    localStorage.setItem(LS_TIMER, payload);
+    }));
   }
 
   function publishToAudience() {
     const sess = getActiveSession();
     const sp   = sess && activeSpeakerIdx !== null ? sess.speakers[activeSpeakerIdx] : null;
-    const payload = JSON.stringify({
+    localStorage.setItem(LS_AUDIENCE, JSON.stringify({
       type: 'speaker',
       name:    sp ? sp.name  : '',
       title:   sp ? sp.title : '',
@@ -2062,264 +2276,35 @@
       session: sess ? sess.name : '',
       theme:   currentTheme,
       ts: Date.now(),
-    });
-    localStorage.setItem(LS_AUDIENCE, payload);
+    }));
     const btn = document.getElementById('btn-publicar');
     btn.style.color = '#22c55e';
     btn.style.borderColor = 'rgba(34,197,94,0.4)';
     setTimeout(() => { btn.style.color = ''; btn.style.borderColor = ''; }, 800);
   }
 
-  // Genera el HTML de la vista Escenario (inline, sin archivos externos)
-  function buildEscenarioHTML() {
-    return `<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Escenario · Tatimer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-<style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  html,body{width:100%;height:100%;background:#000;color:#f9f9f9;overflow:hidden;user-select:none}
-  body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif}
-  #timer{font-size:clamp(8rem,30vw,42rem);line-height:0.9;letter-spacing:-0.01em;text-align:center;transition:color 0.3s}
-  #timer.warning{color:#e8a000;animation:pw 1s ease-in-out infinite}
-  #timer.danger {color:#FF6363;animation:pd 0.5s ease-in-out infinite}
-  #timer.overtime{color:#FF6363}
-  @keyframes pw{0%,100%{opacity:1}50%{opacity:0.7}}
-  @keyframes pd{0%,100%{opacity:1}50%{opacity:0.4}}
-  #bar-wrap{width:min(88%,900px);height:clamp(10px,1.8vh,18px);margin-top:2rem;border-radius:4px;position:relative;overflow:hidden}
-  #bar-bg{position:absolute;inset:0;display:flex}
-  #bar-green{background:#1a3d20;flex:1}
-  #bar-yellow{background:#4a3500}
-  #bar-red{background:#4a1010}
-  #bar-overlay{position:absolute;top:0;right:0;bottom:0;background:rgba(0,0,0,0.78);border-radius:0 4px 4px 0;transition:width 1s linear}
-  #bar-fill{position:absolute;top:0;left:0;bottom:0;border-radius:4px 0 0 4px;background:#22a83c;transition:width 1s linear,background 0.3s}
-  #bar-fill.warning{background:#e8a000;border-radius:0}
-  #bar-fill.danger{background:#FF6363;border-radius:0}
-  #bar-fill.overtime{width:0%!important}
-  #overtime-banner{display:none;position:fixed;top:0;left:0;right:0;background:#FF6363;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:clamp(1.5rem,4vw,4rem);letter-spacing:0.1em;text-align:center;padding:0.3rem;z-index:10}
-  #overtime-banner.show{display:block}
-  #no-signal{display:flex;flex-direction:column;align-items:center;gap:1rem;opacity:0.25}
-  #no-signal svg{width:4rem;height:4rem;fill:#f9f9f9}
-  #no-signal p{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.2em}
-  body.light{background:#f2f2f0;color:#111}
-  body.light #bar-green{background:#3aaa50}
-  body.light #bar-yellow{background:#d49000}
-  body.light #bar-red{background:#d42b00}
-  body.light #bar-overlay{background:rgba(242,242,240,0.78)}
-  body.light #timer.warning{color:#c8a800}
-  body.light #timer.danger{color:#d42b00}
-  body.light #overtime-banner{background:#d42b00}
-</style>
-</head>
-<body>
-<div id="no-signal">
-  <svg viewBox="0 0 24 24"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0 1 19 12.55M5 12.55a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.56 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01" stroke="#f9f9f9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
-  <p>Esperando señal del operador…</p>
-</div>
-<div id="timer" style="display:none"></div>
-<div id="bar-wrap" style="display:none">
-  <div id="bar-bg"><div id="bar-green"></div><div id="bar-yellow"></div><div id="bar-red"></div></div>
-  <div id="bar-overlay"></div>
-  <div id="bar-fill"></div>
-</div>
-<div id="overtime-banner">⚠ TIEMPO CONSUMIDO</div>
-<script>
-  const LS_KEY = 'tatimer_bc_timer';
-  const timerEl = document.getElementById('timer');
-  const barWrap = document.getElementById('bar-wrap');
-  const barFill = document.getElementById('bar-fill');
-  const barOverlay = document.getElementById('bar-overlay');
-  const barYellow = document.getElementById('bar-yellow');
-  const barRed = document.getElementById('bar-red');
-  const noSignal = document.getElementById('no-signal');
-  const overtimeBanner = document.getElementById('overtime-banner');
-  let connected = false;
-  let timeout;
-
-  function applyState(d) {
-    if (!connected) {
-      connected = true;
-      noSignal.style.display = 'none';
-      timerEl.style.display = '';
-      barWrap.style.display = '';
-    }
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      connected = false;
-      noSignal.style.display = '';
-      timerEl.style.display = 'none';
-      barWrap.style.display = 'none';
-    }, 4000);
-
-    document.body.className = d.theme === 'light' ? 'light' : '';
-    timerEl.textContent = d.display;
-    timerEl.className = d.state === 'overtime' ? 'overtime'
-                      : d.state === 'danger'   ? 'danger'
-                      : d.state === 'warning'  ? 'warning' : '';
-    barFill.className = d.state === 'overtime' ? 'overtime'
-                      : d.state === 'danger'   ? 'danger'
-                      : d.state === 'warning'  ? 'warning' : '';
-    barFill.style.width = d.pct + '%';
-    barOverlay.style.width = (100 - d.pct) + '%';
-    overtimeBanner.className = d.state === 'overtime' ? 'show' : '';
-    overtimeBanner.textContent = d.state === 'overtime' ? '⚠ TIEMPO CONSUMIDO' : '';
-    if (d.totalSeconds > 0) {
-      barYellow.style.width = (d.warningPct || 0) + '%';
-      barRed.style.width    = (d.dangerPct  || 0) + '%';
-    }
-  }
-
-  window.addEventListener('storage', e => {
-    if (e.key !== LS_KEY || !e.newValue) return;
-    try { applyState(JSON.parse(e.newValue)); } catch(err) {}
-  });
-
-  // Poll por si la ventana abre después del último storage event
-  setInterval(() => {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return;
-    try {
-      const d = JSON.parse(raw);
-      if (Date.now() - (d.ts || 0) < 3000) applyState(d);
-    } catch(err) {}
-  }, 500);
-<\/script>
-</body></html>`;
-  }
-
-  // Genera el HTML de la vista Audience
-  function buildAudienceHTML() {
-    return `<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Audience · Tatimer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
-<style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  html,body{width:100%;height:100%;background:#07080a;color:#f9f9f9;overflow:hidden;user-select:none}
-  body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Inter',system-ui,sans-serif;gap:0}
-  #session-label{font-size:clamp(0.6rem,1.2vw,1rem);letter-spacing:0.35em;text-transform:uppercase;color:#434345;margin-bottom:clamp(2rem,5vh,4rem);font-weight:500;transition:opacity 0.6s}
-  #speaker-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,10vw,10rem);line-height:1;letter-spacing:0.02em;text-align:center;padding:0 5vw;transition:opacity 0.6s,transform 0.6s}
-  #speaker-title{font-size:clamp(0.9rem,2.5vw,2.2rem);font-weight:300;color:#9c9c9d;text-align:center;margin-top:clamp(1rem,2.5vh,2rem);padding:0 8vw;line-height:1.3;transition:opacity 0.6s,transform 0.6s}
-  #divider{width:3rem;height:2px;background:#FF6363;margin:clamp(1.5rem,4vh,3rem) auto;opacity:0.6;border-radius:2px;transition:opacity 0.6s}
-  #duration{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,3vw,2.8rem);letter-spacing:0.15em;color:#434345;text-align:center;transition:opacity 0.6s}
-  .fade-out{opacity:0!important;transform:translateY(8px)}
-  #no-signal{display:flex;flex-direction:column;align-items:center;gap:1.5rem;opacity:0.15}
-  #no-signal svg{width:5rem;height:5rem}
-  #no-signal p{font-size:0.9rem;letter-spacing:0.3em;text-transform:uppercase;font-weight:300}
-  #content{display:none;width:100%;text-align:center}
-  body.light{background:#f2f2f0;color:#111}
-  body.light #session-label{color:#bbb}
-  body.light #speaker-title{color:#666}
-  body.light #duration{color:#bbb}
-  body.light #divider{background:#c8a800}
-</style>
-</head>
-<body>
-<div id="no-signal">
-  <svg viewBox="0 0 24 24" fill="none" stroke="#f9f9f9" stroke-width="1.5" stroke-linecap="round"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0 1 19 12.55M5 12.55a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.56 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
-  <p>Esperando señal del operador…</p>
-</div>
-<div id="content">
-  <div id="session-label"></div>
-  <div id="speaker-name"></div>
-  <div id="divider"></div>
-  <div id="speaker-title"></div>
-  <div id="duration"></div>
-</div>
-<script>
-  const LS_KEY = 'tatimer_bc_audience';
-  const content      = document.getElementById('content');
-  const noSignal     = document.getElementById('no-signal');
-  const sessionLabel = document.getElementById('session-label');
-  const speakerName  = document.getElementById('speaker-name');
-  const speakerTitle = document.getElementById('speaker-title');
-  const durationEl   = document.getElementById('duration');
-  const divider      = document.getElementById('divider');
-
-  function fmtDur(min,sec){
-    return String(min||0).padStart(2,'0') + ':' + String(sec||0).padStart(2,'0');
-  }
-
-  function animateIn(fn) {
-    [speakerName, speakerTitle, sessionLabel, durationEl, divider].forEach(el => el.classList.add('fade-out'));
-    setTimeout(() => {
-      fn();
-      [speakerName, speakerTitle, sessionLabel, durationEl, divider].forEach(el => el.classList.remove('fade-out'));
-    }, 500);
-  }
-
-  function applyState(d) {
-    noSignal.style.display = 'none';
-    content.style.display  = 'block';
-    document.body.className = d.theme === 'light' ? 'light' : '';
-    animateIn(() => {
-      sessionLabel.textContent = d.session || '';
-      speakerName.textContent  = d.name    || '';
-      speakerTitle.textContent = d.title   || '';
-      durationEl.textContent   = (d.min || d.sec) ? fmtDur(d.min, d.sec) : '';
-    });
-  }
-
-  window.addEventListener('storage', e => {
-    if (e.key !== LS_KEY || !e.newValue) return;
-    try { applyState(JSON.parse(e.newValue)); } catch(err) {}
-  });
-
-  // Cargar último estado al abrir la ventana
-  const raw = localStorage.getItem(LS_KEY);
-  if (raw) { try { applyState(JSON.parse(raw)); } catch(err) {} }
-<\/script>
-</body></html>`;
-  }
-
-  // Abre o enfoca una vista
+  // Abre o enfoca una vista usando ?view= en la misma URL
   function openView(type) {
     const btnId = type === 'escenario' ? 'btn-view-escenario' : 'btn-view-audience';
     const btn   = document.getElementById(btnId);
+    const url   = window.location.pathname + '?view=' + type;
 
     if (type === 'escenario') {
-      if (escenarioWin && !escenarioWin.closed) {
-        escenarioWin.focus();
-        return;
-      }
-      const html = buildEscenarioHTML();
-      escenarioWin = window.open('', 'tatimer_escenario', 'width=1280,height=720');
-      escenarioWin.document.open();
-      escenarioWin.document.write(html);
-      escenarioWin.document.close();
+      if (escenarioWin && !escenarioWin.closed) { escenarioWin.focus(); return; }
+      escenarioWin = window.open(url, 'tatimer_escenario', 'width=1280,height=720');
       btn.classList.add('live');
-      // Detectar cierre
       const poll = setInterval(() => {
         if (escenarioWin && escenarioWin.closed) {
-          clearInterval(poll);
-          btn.classList.remove('live');
-          escenarioWin = null;
+          clearInterval(poll); btn.classList.remove('live'); escenarioWin = null;
         }
       }, 1000);
     } else {
-      if (audienceWin && !audienceWin.closed) {
-        audienceWin.focus();
-        return;
-      }
-      const html = buildAudienceHTML();
-      audienceWin = window.open('', 'tatimer_audience', 'width=1280,height=720');
-      audienceWin.document.open();
-      audienceWin.document.write(html);
-      audienceWin.document.close();
+      if (audienceWin && !audienceWin.closed) { audienceWin.focus(); return; }
+      audienceWin = window.open(url, 'tatimer_audience', 'width=1280,height=720');
       btn.classList.add('live');
       const poll = setInterval(() => {
         if (audienceWin && audienceWin.closed) {
-          clearInterval(poll);
-          btn.classList.remove('live');
-          audienceWin = null;
+          clearInterval(poll); btn.classList.remove('live'); audienceWin = null;
         }
       }, 1000);
     }

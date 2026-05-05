@@ -414,6 +414,40 @@
   #alerts label.lbl-danger  { color: var(--danger);  opacity: 0.8; }
   body.light #alerts label.lbl-warning { color: var(--accent); opacity: 0.8; }
 
+  #alerts-toggle-row { margin-top: 0.2rem; border-top: 1px solid var(--border-subtle); padding-top: 0.5rem; }
+
+  .lbl-alerts-toggle {
+    font-size: clamp(0.55rem, 0.9vw, 0.7rem);
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--mid);
+  }
+
+  #btn-alerts-toggle {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent;
+    color: #22c55e;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, opacity 0.15s;
+    box-shadow: none;
+  }
+  #btn-alerts-toggle.off {
+    color: var(--mid);
+    border-color: rgba(255,255,255,0.06);
+    opacity: 0.6;
+  }
+  #btn-alerts-toggle:hover { opacity: 1; }
+  body.light #btn-alerts-toggle { border-color: var(--btn-border); }
+  body.light #btn-alerts-toggle.off { color: var(--btn-color); }
+
   #alerts input {
     font-family: 'Inter', system-ui, sans-serif;
     font-feature-settings: "calt" on, "kern" on, "liga" on, "ss03" on;
@@ -588,6 +622,23 @@
   body.light .btn-view.live {
     color: #16a34a;
     border-color: rgba(22,163,74,0.4);
+    box-shadow: none;
+  }
+
+  #btn-escenario-clock {
+    width: 2.2rem;
+    padding: 0;
+    justify-content: center;
+  }
+  #btn-escenario-clock.active {
+    opacity: 1;
+    color: var(--raycast-blue);
+    border-color: hsla(202,100%,67%,0.35);
+    box-shadow: 0 0 0 3px hsla(202,100%,67%,0.1);
+  }
+  body.light #btn-escenario-clock.active {
+    color: #0284c7;
+    border-color: rgba(2,132,199,0.35);
     box-shadow: none;
   }
 
@@ -779,15 +830,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.65rem;
+    font-size: 1rem;
     letter-spacing: 0;
-    font-weight: 600;
+    font-weight: 400;
     padding: 0;
     text-transform: none;
     box-shadow: 2px 0 8px rgba(0,0,0,0.3);
     transition: color 0.15s, background 0.15s, left 0.35s cubic-bezier(0.4,0,0.2,1);
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
   }
   #btn-sessions:hover { color: var(--fg); background: var(--card-surface); opacity: 1; }
   #btn-sessions.open  { left: 360px; }
@@ -1163,6 +1212,10 @@
       <label class="lbl-danger" data-i18n="alert-danger">Alerta roja (min)</label>
       <input type="number" id="input-danger" value="1" min="0" max="99">
     </div>
+    <div class="alert-row" id="alerts-toggle-row">
+      <label class="lbl-alerts-toggle" data-i18n="alert-toggle">Alertas</label>
+      <button id="btn-alerts-toggle" onclick="toggleAlerts()" data-i18n="alert-on">ON</button>
+    </div>
   </div>
 </div>
 
@@ -1173,7 +1226,13 @@
 <div id="credit">Javier Tatay Rubio · <a href="mailto:javitatay@gmail.com">javitatay@gmail.com</a></div>
 
 <!-- ── SESSIONS PANEL ──────────────────────────────────── -->
-<button id="btn-sessions" onclick="toggleSessionsPanel()" title="Sesiones">❮❮</button>
+<button id="btn-sessions" onclick="toggleSessionsPanel()" title="Sesiones">
+  <svg id="icon-sessions" width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+    <rect x="1" y="2" width="12" height="1.5" rx="0.75"/>
+    <rect x="1" y="6.25" width="12" height="1.5" rx="0.75"/>
+    <rect x="1" y="10.5" width="12" height="1.5" rx="0.75"/>
+  </svg>
+</button>
 
 <div id="sessions-panel">
   <div id="sessions-header">
@@ -1227,6 +1286,9 @@
 </button>
 
 <div id="view-buttons">
+  <button class="btn-view" id="btn-escenario-clock" onclick="toggleEscenarioClock()" title="Reloj en Escenario">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 15.5"/></svg>
+  </button>
   <button class="btn-view" id="btn-view-escenario" onclick="openView('escenario')" title="Vista Escenario (E)">
     <span class="live-dot"></span>Escenario
   </button>
@@ -1277,6 +1339,9 @@
           #esc-overtime.show{display:block}
           #esc-message{display:none;position:fixed;bottom:clamp(2rem,8vh,6rem);left:0;right:0;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,6vw,7rem);color:#e8ff00;letter-spacing:0.05em;line-height:1.1;padding:0 5vw;text-shadow:0 2px 20px rgba(0,0,0,0.8);z-index:20}
           #esc-message.visible{display:block}
+          #esc-clock{display:none;position:fixed;bottom:clamp(1rem,3vh,2.5rem);right:clamp(1.5rem,3vw,3rem);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.4rem,3.5vw,3rem);letter-spacing:0.12em;color:rgba(249,249,249,0.25);z-index:15;font-variant-numeric:tabular-nums}
+          #esc-clock.visible{display:block}
+          body.light #esc-clock{color:rgba(17,17,17,0.2)}
           #esc-nosignal{display:flex;flex-direction:column;align-items:center;gap:1rem;opacity:0.25}
           #esc-nosignal p{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.2em}
           body.light{background:#f2f2f0;color:#111}
@@ -1301,6 +1366,7 @@
         </div>
         <div id="esc-overtime"></div>
         <div id="esc-message"></div>
+        <div id="esc-clock"></div>
       `;
       document.documentElement.style.visibility = '';
 
@@ -1313,7 +1379,8 @@
       const noSignal  = document.getElementById('esc-nosignal');
       const overtime  = document.getElementById('esc-overtime');
       const messageEl = document.getElementById('esc-message');
-      let connected = false, connTimeout;
+      const clockEl   = document.getElementById('esc-clock');
+      let connected = false, connTimeout, clockInterval;
 
       function applyTimer(d) {
         if (!connected) {
@@ -1331,10 +1398,12 @@
         }, 4000);
         document.body.className = d.theme === 'light' ? 'light' : '';
         timerEl.textContent = d.display;
-        timerEl.className = d.state === 'overtime' ? 'overtime'
+        timerEl.className = (!d.alertsEnabled) ? ''
+                          : d.state === 'overtime' ? 'overtime'
                           : d.state === 'danger'   ? 'danger'
                           : d.state === 'warning'  ? 'warning' : '';
-        barFill.className = d.state === 'overtime' ? 'overtime'
+        barFill.className = (!d.alertsEnabled) ? ''
+                          : d.state === 'overtime' ? 'overtime'
                           : d.state === 'danger'   ? 'danger'
                           : d.state === 'warning'  ? 'warning' : '';
         barFill.style.width    = d.pct + '%';
@@ -1344,6 +1413,21 @@
         if (d.totalSeconds > 0) {
           barYellow.style.width = (d.warningPct || 0) + '%';
           barRed.style.width    = (d.dangerPct  || 0) + '%';
+        }
+        // Clock
+        if (d.showClock) {
+          if (!clockInterval) {
+            clockEl.classList.add('visible');
+            clockInterval = setInterval(() => {
+              const n = new Date();
+              clockEl.textContent = String(n.getHours()).padStart(2,'0') + ':' +
+                                    String(n.getMinutes()).padStart(2,'0') + ':' +
+                                    String(n.getSeconds()).padStart(2,'0');
+            }, 500);
+          }
+        } else {
+          if (clockInterval) { clearInterval(clockInterval); clockInterval = null; }
+          clockEl.classList.remove('visible');
         }
       }
 
@@ -1458,6 +1542,9 @@
       'mode-countup':  'Cuenta adelante',
       'alert-warning': 'Alerta amarilla (min)',
       'alert-danger':  'Alerta roja (min)',
+      'alert-toggle':  'Alertas',
+      'alert-on':      'ON',
+      'alert-off':     'OFF',
       'btn-reset':     'Reset',
       'btn-pause':     'Pausar',
       'btn-sub30':     '−30 seg',
@@ -1513,6 +1600,9 @@
       'mode-countup':  'Count up',
       'alert-warning': 'Yellow alert (min)',
       'alert-danger':  'Red alert (min)',
+      'alert-toggle':  'Alerts',
+      'alert-on':      'ON',
+      'alert-off':     'OFF',
       'btn-reset':     'Reset',
       'btn-pause':     'Pause',
       'btn-sub30':     '−30 sec',
@@ -1631,21 +1721,41 @@
   const inputSec       = document.getElementById('input-seconds');
   const btnClean       = document.getElementById('btn-clean');
 
+  let alertsEnabled = true;
+
+  function toggleAlerts() {
+    alertsEnabled = !alertsEnabled;
+    const btn = document.getElementById('btn-alerts-toggle');
+    btn.textContent = alertsEnabled ? t('alert-on') : t('alert-off');
+    btn.classList.toggle('off', !alertsEnabled);
+    // Dim the alert inputs visually
+    document.getElementById('input-warning').style.opacity = alertsEnabled ? '' : '0.3';
+    document.getElementById('input-danger').style.opacity  = alertsEnabled ? '' : '0.3';
+    document.querySelectorAll('.lbl-warning, .lbl-danger').forEach(el => {
+      el.style.opacity = alertsEnabled ? '' : '0.3';
+    });
+    updateSegments();
+    broadcastTimerState();
+  }
+
   function getAlertSeconds() {
+    if (!alertsEnabled) return { warningSeconds: 0, dangerSeconds: 0 };
     const w = (parseInt(document.getElementById('input-warning').value) || 3) * 60;
     const d = (parseInt(document.getElementById('input-danger').value)  || 1) * 60;
     return { warningSeconds: w, dangerSeconds: d };
   }
 
   function updateSegments() {
-    // Recalcula el ancho visual de los segmentos amarillo y rojo en función de los umbrales
     const { warningSeconds, dangerSeconds } = getAlertSeconds();
+    if (!alertsEnabled || totalSeconds === 0) {
+      progressSegY.style.width = '0%'; progressSegY.style.flex = 'none';
+      progressSegR.style.width = '0%'; progressSegR.style.flex = 'none';
+      document.getElementById('progress-seg-green').style.flex = '1';
+      return;
+    }
     const wPct = Math.min(100, (warningSeconds / totalSeconds) * 100);
     const dPct = Math.min(wPct, (dangerSeconds  / totalSeconds) * 100);
-    const gPct = 100 - wPct;
-    const yPct = wPct - dPct;
-    // green flex cubre el resto, fijamos yellow y red en px relativos
-    progressSegY.style.width = yPct + '%';
+    progressSegY.style.width = (wPct - dPct) + '%';
     progressSegY.style.flex  = 'none';
     progressSegR.style.width = dPct + '%';
     progressSegR.style.flex  = 'none';
@@ -1957,7 +2067,10 @@
     const btn   = document.getElementById('btn-sessions');
     panel.classList.toggle('open', sessionsPanelOpen);
     btn.classList.toggle('open', sessionsPanelOpen);
-    btn.textContent = sessionsPanelOpen ? '❯❯' : '❮❮';
+    // Hamburger → X
+    document.getElementById('icon-sessions').innerHTML = sessionsPanelOpen
+      ? '<line x1="2" y1="2" x2="12" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="2" x2="2" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>'
+      : '<rect x="1" y="2" width="12" height="1.5" rx="0.75"/><rect x="1" y="6.25" width="12" height="1.5" rx="0.75"/><rect x="1" y="10.5" width="12" height="1.5" rx="0.75"/>';
     renderSessionsPanel();
   }
 
@@ -2244,6 +2357,13 @@
 
   let escenarioWin = null;
   let audienceWin  = null;
+  let escenarioClock = false;
+
+  function toggleEscenarioClock() {
+    escenarioClock = !escenarioClock;
+    document.getElementById('btn-escenario-clock').classList.toggle('active', escenarioClock);
+    broadcastTimerState();
+  }
 
   function broadcastTimerState() {
     const remaining = mode === 'countdown' ? totalSeconds - elapsed : elapsed;
@@ -2258,8 +2378,10 @@
     localStorage.setItem(LS_TIMER, JSON.stringify({
       type: 'timer', mode, running, elapsed, totalSeconds, remaining, pct, state,
       display: display.textContent, theme: currentTheme, lang,
-      warningPct: totalSeconds > 0 ? Math.min(100, ((parseInt(document.getElementById('input-warning').value)||3)*60 / totalSeconds)*100) : 0,
-      dangerPct:  totalSeconds > 0 ? Math.min(100, ((parseInt(document.getElementById('input-danger').value)||1)*60  / totalSeconds)*100) : 0,
+      showClock: escenarioClock,
+      alertsEnabled,
+      warningPct: alertsEnabled && totalSeconds > 0 ? Math.min(100, ((parseInt(document.getElementById('input-warning').value)||3)*60 / totalSeconds)*100) : 0,
+      dangerPct:  alertsEnabled && totalSeconds > 0 ? Math.min(100, ((parseInt(document.getElementById('input-danger').value)||1)*60  / totalSeconds)*100) : 0,
       ts: Date.now(),
     }));
   }

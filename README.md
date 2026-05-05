@@ -14,10 +14,11 @@ Disponible online sin instalación. También funciona descargando `index.html` y
 - **Gestión de sesiones** — panel lateral con ponentes, títulos y tiempos individuales
 - **Vista Escenario** — timer a pantalla completa sincronizado para el monitor del ponente
 - **Vista Audience** — pantalla de sala con nombre y título del ponente activo, controlada manualmente por el operador
-- Alertas visuales configurables en directo (amarillo y rojo)
+- Alertas visuales configurables en directo (amarillo y rojo), activables o desactivables globalmente
 - Barra de progreso segmentada en tres zonas de color con marcador triangular de posición
 - Continúa en negativo al terminar el tiempo, con aviso de tiempo consumido
 - Mensajes al ponente en pantalla en tiempo real, visibles también en la vista Escenario
+- Reloj de hora actual en la vista Escenario, activable desde el operador
 - Modo limpio — solo el contador y la barra de progreso a tamaño máximo
 - Blackout — pantalla negra completa, el contador sigue corriendo por debajo
 - Tema oscuro / claro
@@ -51,6 +52,8 @@ El operador puede abrir dos vistas independientes desde los botones de la esquin
 
 Pensada para el **monitor del ponente** en el escenario. Muestra únicamente el timer a pantalla completa con fondo negro, la barra de progreso con los mismos umbrales de color configurados en el operador, el banner de tiempo consumido al pasar de cero, y los mensajes que el operador envía desde la interfaz principal. Se actualiza en tiempo real, tick a tick.
 
+El operador puede activar un **reloj de hora actual** que aparece en la esquina inferior derecha de la vista Escenario, en gris muy tenue para no distraer al ponente. Se activa y desactiva desde el botón de icono de reloj situado junto al botón Escenario en la interfaz del operador.
+
 Si la ventana pierde la señal más de 4 segundos muestra un indicador de conexión perdida.
 
 ### Vista Audience (`A`)
@@ -70,7 +73,7 @@ Al abrir la ventana carga el último ponente publicado, si lo hay.
 
 ## Panel de sesiones
 
-El panel lateral de sesiones permite organizar un congreso o evento con varias ponencias antes del show. Se abre desde el tab `❮❮` del borde izquierdo o con la tecla `P`.
+El panel lateral de sesiones permite organizar un congreso o evento con varias ponencias antes del show. Se abre desde el botón `☰` del borde izquierdo o con la tecla `P`.
 
 ### Estructura
 
@@ -83,7 +86,7 @@ Se pueden crear y gestionar múltiples sesiones — una por bloque del evento, p
 
 ### Flujo de trabajo habitual
 
-1. Abre el panel (`P` o el tab lateral)
+1. Abre el panel (`P` o el botón `☰` lateral)
 2. Crea una sesión nueva y ponle nombre
 3. Añade los ponentes con sus tiempos desde el formulario inferior
 4. Reordena las tarjetas arrastrando si es necesario
@@ -127,11 +130,12 @@ También se acepta un array plano de ponentes sin envoltura de sesión.
 
 | Elemento | Ubicación | Función |
 |---|---|---|
-| `❮❮` / `❯❯` | Borde izquierdo | Abre / cierra el panel de sesiones |
+| `☰` / `✕` | Borde izquierdo | Abre / cierra el panel de sesiones |
 | Minutos / Segundos | Panel izquierdo | Configura el tiempo inicial. Se actualiza en tiempo real al editar. |
 | Cuenta atrás / Cuenta adelante / Reloj | Panel derecho | Cambia el modo del temporizador |
 | Alerta amarilla (min) | Panel derecho | Minutos restantes para activar el aviso amarillo |
 | Alerta roja (min) | Panel derecho | Minutos restantes para activar el aviso rojo |
+| Alertas ON / OFF | Panel derecho | Activa o desactiva todas las alertas globalmente |
 | ES / EN | Panel derecho | Cambia el idioma de la interfaz |
 | ◐ | Panel derecho | Alterna entre tema oscuro y tema claro |
 | Iniciar / Reanudar | Centro inferior | Arranca o reanuda el contador |
@@ -140,6 +144,7 @@ También se acepta un array plano de ponentes sin envoltura de sesión.
 | +1 min | Centro inferior | Añade 1 minuto al tiempo |
 | Reset | Centro inferior | Vuelve al estado inicial |
 | Blackout | Centro inferior | Cubre la pantalla con negro. El contador sigue corriendo. |
+| 🕐 | Esquina inferior derecha | Activa / desactiva el reloj de hora en la vista Escenario |
 | Escenario | Esquina inferior derecha | Abre / enfoca la vista Escenario |
 | Audience | Esquina inferior derecha | Abre / enfoca la vista Audience |
 | ⊞ | Esquina inferior derecha | Activa / desactiva el modo limpio |
@@ -174,9 +179,9 @@ También se acepta un array plano de ponentes sin envoltura de sesión.
 
 ## Barra de progreso
 
-La barra muestra tres zonas de color fijas — verde, amarillo y rojo — cuyo tamaño proporcional se calcula a partir de los umbrales de alerta configurados. Un marcador triangular blanco indica la posición actual del tiempo. A medida que avanza el cronómetro, la zona ya consumida se oscurece y el marcador viaja hacia la izquierda.
+La barra muestra tres zonas de color — verde, amarillo y rojo — cuyo tamaño proporcional se calcula a partir de los umbrales de alerta configurados. Un marcador triangular blanco indica la posición actual del tiempo. A medida que avanza el cronómetro, la zona ya consumida se oscurece y el marcador viaja hacia la izquierda.
 
-Los umbrales se pueden ajustar en directo durante el show sin reiniciar el contador; la barra se recalcula al instante. La vista Escenario refleja los mismos umbrales y colores.
+Los umbrales se pueden ajustar en directo durante el show sin reiniciar el contador; la barra se recalcula al instante. Si las alertas están desactivadas, la barra se muestra completamente en verde. La vista Escenario refleja los mismos umbrales y colores.
 
 ---
 
@@ -186,6 +191,8 @@ Dos umbrales independientes configurables en el panel derecho:
 
 - **Alerta amarilla** — minutos restantes para que el display y el marcador cambien a amarillo
 - **Alerta roja** — minutos restantes para que el display y el marcador cambien a rojo
+
+El toggle **Alertas ON / OFF** debajo de alerta roja desactiva ambas alertas globalmente. Con alertas OFF el timer permanece en blanco independientemente del tiempo restante, la barra de progreso no muestra segmentos de color, y la vista Escenario no cambia de color. Útil para ponentes que prefieren no ver ningún aviso visual.
 
 ---
 

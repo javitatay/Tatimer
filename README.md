@@ -1,34 +1,44 @@
-# Timer · Temporizador para shows en vivo
+<div align="center">
 
-Temporizador standalone para monitor del ponente en eventos, conferencias y shows en vivo. Incluye gestión de sesiones con ponentes, tiempos y títulos de ponencia, y vistas independientes para escenario y sala.
+# Tatimer — Temporizador para shows en vivo
 
-**→ [javitatay.github.io/Tatimer](https://javitatay.github.io/Tatimer/)**
+**Temporizador para el monitor del ponente en eventos, conferencias y shows en vivo.**
 
-Disponible online sin instalación. También funciona descargando `index.html` y abriéndolo localmente en cualquier navegador — sin dependencias, sin servidor.
+Timer standalone con gestión de sesiones (ponentes, tiempos y títulos de ponencia) y vistas independientes para escenario y sala. Sin dependencias, sin servidor: funciona online o abriendo `index.html` en cualquier navegador.
 
----
+[![Abrir en el navegador](https://img.shields.io/badge/🌐_Abrir_en_el_navegador-141210?style=for-the-badge)](https://javitatay.github.io/Tatimer/)
 
-## Características
+![plataforma](https://img.shields.io/badge/plataforma-Web%20·%20standalone-c89838?style=flat-square) ![offline](https://img.shields.io/badge/offline-sí-green?style=flat-square) ![show%20control](https://img.shields.io/badge/show%20control-URL%20·%20QLab-orange?style=flat-square) [![Licencia: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-c89838?style=flat-square)](LICENSE)
 
-- Cuenta atrás, cuenta adelante y reloj en tiempo real
-- **Gestión de sesiones** — panel lateral con ponentes, títulos y tiempos individuales
-- **Vista Escenario** — timer a pantalla completa sincronizado para el monitor del ponente
-- **Vista Audience** — pantalla de sala con nombre y título del ponente activo, controlada manualmente por el operador
-- Alertas visuales configurables en directo (amarillo y rojo), activables o desactivables globalmente
-- Barra de progreso segmentada en tres zonas de color con marcador triangular de posición
-- Continúa en negativo al terminar el tiempo, con aviso de tiempo consumido
-- Mensajes al ponente en pantalla en tiempo real, visibles también en la vista Escenario
-- Reloj de hora actual en la vista Escenario, activable desde el operador
-- Modo limpio — solo el contador y la barra de progreso a tamaño máximo
-- Blackout — pantalla negra completa, el contador sigue corriendo por debajo
-- Tema oscuro / claro
-- Selector de idioma ES / EN
-- Totalmente adaptativo — funciona en cualquier resolución y tamaño de ventana
-- Control por URL para integración con QLab u otras herramientas de show control
+</div>
 
 ---
 
-## Uso
+## ¿Qué es Tatimer?
+
+Tatimer es un temporizador pensado para el monitor del ponente en eventos, conferencias y shows en vivo. Permite organizar un congreso entero con sus ponentes y tiempos, mostrar una cuenta atrás a pantalla completa en el escenario y proyectar en la sala quién interviene a continuación, todo controlado por un operador desde una única interfaz.
+
+Está disponible online sin instalación y también funciona descargando `index.html` y abriéndolo localmente en cualquier navegador: **sin dependencias y sin servidor**.
+
+### Funciones principales
+
+- ⏱️ **Tres modos** — cuenta atrás, cuenta adelante y reloj en tiempo real.
+- 👥 **Gestión de sesiones** — panel lateral con ponentes, títulos y tiempos individuales.
+- 🖥️ **Vista Escenario** — timer a pantalla completa sincronizado para el monitor del ponente.
+- 📢 **Vista Audience** — pantalla de sala con nombre y título del ponente activo, publicada manualmente por el operador.
+- 🟡🔴 **Alertas visuales configurables** en directo (amarillo y rojo), activables o desactivables globalmente.
+- 📊 **Barra de progreso segmentada** en tres zonas de color con marcador triangular de posición.
+- ⏳ **Continúa en negativo** al terminar el tiempo, con aviso de tiempo consumido.
+- 💬 **Mensajes al ponente** en pantalla en tiempo real, visibles también en la vista Escenario.
+- 🕐 **Reloj de hora actual** en la vista Escenario, activable desde el operador.
+- 🧹 **Modo limpio** — solo el contador y la barra de progreso a tamaño máximo.
+- ⬛ **Blackout** — pantalla negra completa; el contador sigue corriendo por debajo.
+- 🌙 **Tema oscuro / claro** y selector de idioma **ES / EN**.
+- 🔗 **Control por URL** para integración con QLab u otras herramientas de show control.
+
+---
+
+## 🌐 Uso
 
 ### Online
 
@@ -36,15 +46,15 @@ Abre [javitatay.github.io/Tatimer](https://javitatay.github.io/Tatimer/) en Safa
 
 ### Local (offline)
 
-1. Descarga `index.html`
-2. Ábrelo en Safari o Chrome
-3. Arrastra la ventana al monitor del ponente
+1. Descarga `index.html`.
+2. Ábrelo en Safari o Chrome.
+3. Arrastra la ventana al monitor del ponente.
 
-Las fuentes de Google Fonts quedan en caché tras la primera carga. Para uso completamente offline desde el primer momento, las fuentes se cargarán con las del sistema.
+Las fuentes de Google Fonts quedan en caché tras la primera carga. Para uso completamente offline desde el primer momento, se cargan las fuentes del sistema como alternativa.
 
 ---
 
-## Vistas adicionales
+## 🖥️ Vistas adicionales
 
 El operador puede abrir dos vistas independientes desde los botones de la esquina inferior derecha o con los atajos de teclado. Cada vista se abre en una ventana nueva que se puede arrastrar a otra pantalla y poner en pantalla completa (`F11`). La comunicación entre ventanas usa `localStorage` y funciona tanto en local (`file://`) como publicado en cualquier servidor.
 
@@ -52,9 +62,9 @@ El operador puede abrir dos vistas independientes desde los botones de la esquin
 
 Pensada para el **monitor del ponente** en el escenario. Muestra únicamente el timer a pantalla completa con fondo negro, la barra de progreso con los mismos umbrales de color configurados en el operador, el banner de tiempo consumido al pasar de cero, y los mensajes que el operador envía desde la interfaz principal. Se actualiza en tiempo real, tick a tick.
 
-El operador puede activar un **reloj de hora actual** que aparece en la esquina inferior derecha de la vista Escenario, en gris muy tenue para no distraer al ponente. Se activa y desactiva desde el botón de icono de reloj situado junto al botón Escenario en la interfaz del operador.
+El operador puede activar un **reloj de hora actual** que aparece en la esquina inferior derecha de la vista Escenario, en gris muy tenue para no distraer al ponente. Se activa y desactiva desde el botón con icono de reloj situado junto al botón Escenario en la interfaz del operador.
 
-Si la ventana pierde la señal más de 4 segundos muestra un indicador de conexión perdida.
+Si la ventana pierde la señal más de 4 segundos, muestra un indicador de conexión perdida.
 
 ### Vista Audience (`A`)
 
@@ -64,35 +74,32 @@ Al abrir la ventana carga el último ponente publicado, si lo hay.
 
 ### Flujo de trabajo con vistas
 
-1. Pulsa `E` — se abre la vista Escenario; arrástrala al monitor del escenario y pon pantalla completa
-2. Pulsa `A` — se abre la vista Audience; arrástrala al proyector de sala y pon pantalla completa
-3. Trabaja desde la ventana principal del operador con normalidad
-4. Cuando llegue el turno de un ponente, cárgalo desde el panel de sesiones, pulsa **Publicar** para que aparezca en la sala, y arranca el timer
+1. Pulsa `E` — se abre la vista Escenario; arrástrala al monitor del escenario y pon pantalla completa.
+2. Pulsa `A` — se abre la vista Audience; arrástrala al proyector de sala y pon pantalla completa.
+3. Trabaja desde la ventana principal del operador con normalidad.
+4. Cuando llegue el turno de un ponente, cárgalo desde el panel de sesiones, pulsa **Publicar** para que aparezca en la sala, y arranca el timer.
 
 ---
 
-## Panel de sesiones
+## 📋 Panel de sesiones
 
 El panel lateral de sesiones permite organizar un congreso o evento con varias ponencias antes del show. Se abre desde el botón `☰` del borde izquierdo o con la tecla `P`.
 
 ### Estructura
 
-Cada **sesión** agrupa una lista de **ponentes**, cada uno con:
-- Nombre del ponente
-- Título de la ponencia
-- Duración asignada (minutos : segundos)
+Cada **sesión** agrupa una lista de **ponentes**, cada uno con nombre del ponente, título de la ponencia y duración asignada (minutos : segundos).
 
 Se pueden crear y gestionar múltiples sesiones — una por bloque del evento, por ejemplo. Las sesiones se guardan automáticamente en el navegador (`localStorage`) y persisten entre recargas.
 
 ### Flujo de trabajo habitual
 
-1. Abre el panel (`P` o el botón `☰` lateral)
-2. Crea una sesión nueva y ponle nombre
-3. Añade los ponentes con sus tiempos desde el formulario inferior
-4. Reordena las tarjetas arrastrando si es necesario
-5. Durante el evento, haz clic en la tarjeta del ponente activo: el tiempo se carga automáticamente en el timer y hace reset
-6. Pulsa **Publicar** para enviar ese ponente a la vista Audience
-7. Pulsa `Space` para arrancar
+1. Abre el panel (`P` o el botón `☰` lateral).
+2. Crea una sesión nueva y ponle nombre.
+3. Añade los ponentes con sus tiempos desde el formulario inferior.
+4. Reordena las tarjetas arrastrando si es necesario.
+5. Durante el evento, haz clic en la tarjeta del ponente activo: el tiempo se carga automáticamente en el timer y hace reset.
+6. Pulsa **Publicar** para enviar ese ponente a la vista Audience.
+7. Pulsa `Space` para arrancar.
 
 ### Opciones del panel
 
@@ -126,7 +133,7 @@ También se acepta un array plano de ponentes sin envoltura de sesión.
 
 ---
 
-## Controles en pantalla
+## 🎛️ Controles en pantalla
 
 | Elemento | Ubicación | Función |
 |---|---|---|
@@ -151,7 +158,7 @@ También se acepta un array plano de ponentes sin envoltura de sesión.
 
 ---
 
-## Atajos de teclado
+## ⌨️ Atajos de teclado
 
 | Tecla | Acción |
 |---|---|
@@ -167,7 +174,7 @@ También se acepta un array plano de ponentes sin envoltura de sesión.
 
 ---
 
-## Modos
+## ⏲️ Modos
 
 **Cuenta atrás** — introduce minutos y segundos antes de empezar. Al llegar a cero el contador continúa en negativo para no interrumpir, y aparece un aviso de tiempo consumido en la parte superior.
 
@@ -177,7 +184,7 @@ También se acepta un array plano de ponentes sin envoltura de sesión.
 
 ---
 
-## Barra de progreso
+## 📊 Barra de progreso
 
 La barra muestra tres zonas de color — verde, amarillo y rojo — cuyo tamaño proporcional se calcula a partir de los umbrales de alerta configurados. Un marcador triangular blanco indica la posición actual del tiempo. A medida que avanza el cronómetro, la zona ya consumida se oscurece y el marcador viaja hacia la izquierda.
 
@@ -185,36 +192,36 @@ Los umbrales se pueden ajustar en directo durante el show sin reiniciar el conta
 
 ---
 
-## Alertas de tiempo
+## 🚦 Alertas de tiempo
 
 Dos umbrales independientes configurables en el panel derecho:
 
-- **Alerta amarilla** — minutos restantes para que el display y el marcador cambien a amarillo
-- **Alerta roja** — minutos restantes para que el display y el marcador cambien a rojo
+- **Alerta amarilla** — minutos restantes para que el display y el marcador cambien a amarillo.
+- **Alerta roja** — minutos restantes para que el display y el marcador cambien a rojo.
 
-El toggle **Alertas ON / OFF** debajo de alerta roja desactiva ambas alertas globalmente. Con alertas OFF el timer permanece en blanco independientemente del tiempo restante, la barra de progreso no muestra segmentos de color, y la vista Escenario no cambia de color. Útil para ponentes que prefieren no ver ningún aviso visual.
+El toggle **Alertas ON / OFF** debajo de la alerta roja desactiva ambas alertas globalmente. Con alertas OFF el timer permanece en blanco independientemente del tiempo restante, la barra de progreso no muestra segmentos de color, y la vista Escenario no cambia de color. Útil para ponentes que prefieren no ver ningún aviso visual.
 
 ---
 
-## Mensajes al ponente
+## 💬 Mensajes al ponente
 
 El operador escribe en la caja de texto inferior y pulsa `Enter`. El texto aparece en pantalla grande en amarillo tanto en la ventana principal como en la vista Escenario, visible desde el escenario. `Esc` o el botón *Borrar* lo eliminan en ambas pantallas simultáneamente.
 
 ---
 
-## Blackout
+## ⬛ Blackout
 
 El botón *Blackout* (o la tecla `B`) cubre toda la pantalla con negro. El contador sigue corriendo por debajo. Pulsar de nuevo el botón, la tecla `B` o hacer clic en cualquier parte de la pantalla negra desactiva el blackout y muestra el tiempo real transcurrido.
 
 ---
 
-## Modo limpio
+## 🧹 Modo limpio
 
 El botón de maximizar (esquina inferior derecha) oculta todos los controles y muestra únicamente el contador y la barra de progreso a tamaño máximo. El panel de sesiones y los botones de vistas también se ocultan en este modo. Útil cuando el monitor del ponente está cerca del público. La tecla `C` hace lo mismo.
 
 ---
 
-## Control por URL
+## 🔗 Control por URL
 
 El temporizador acepta parámetros en la URL para integrarse con herramientas de show control como QLab:
 
@@ -239,7 +246,9 @@ https://javitatay.github.io/Tatimer/?view=audience
 
 ---
 
-## Estructura del repositorio
+## 🛠️ Para desarrolladores
+
+Tatimer es una aplicación web autocontenida en un único archivo `index.html`, sin dependencias externas ni framework. La persistencia y la comunicación entre ventanas se hacen con `localStorage`, por lo que funciona igual servido (GitHub Pages) o en local (`file://`).
 
 ```
 Tatimer/
@@ -251,13 +260,23 @@ Tatimer/
 
 ---
 
-## Licencia
+## 📄 Licencia
 
-MIT — libre para uso en producción comercial y no comercial.
+Tatimer se distribuye bajo la licencia **[GNU General Public License v3.0](LICENSE)**.
+
+Eres libre de usar, estudiar, modificar y compartir este software. La única condición importante es que, si distribuyes una versión modificada, debe mantenerse también como código abierto bajo esta misma licencia, para que las mejoras sigan estando disponibles para todos.
+
+[![Licencia: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-c89838?style=flat-square)](LICENSE)
 
 ---
 
-## Autor
+## ✉️ Contacto
 
-Javier Tatay Rubio
-*Probado en macOS Sonoma 14 · Safari · Google Chrome 124+*
+**Javier Tatay Rubio**
+📧 j.tatayrubio@edu.gva.es
+
+---
+
+<div align="center">
+<sub>Probado en macOS Sonoma 14 · Safari · Google Chrome 124+ · Tatimer · 2026</sub>
+</div>

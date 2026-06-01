@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="banner.png" alt="Tatimer" width="100%">
+
 # Tatimer — Temporizador para shows en vivo
 
 **Temporizador para el monitor del ponente en eventos, conferencias y shows en vivo.**

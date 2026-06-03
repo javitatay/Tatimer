@@ -9,6 +9,7 @@
 Timer standalone con gestión de sesiones (ponentes, tiempos y títulos de ponencia) y vistas independientes para escenario y sala. Sin dependencias, sin servidor: funciona online o abriendo `index.html` en cualquier navegador.
 
 [![Abrir en el navegador](https://img.shields.io/badge/🌐_Abrir_en_el_navegador-141210?style=for-the-badge)](https://javitatay.github.io/Tatimer/)
+[![Invítame a un café](https://img.shields.io/badge/☕_Invítame_a_un_café-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=000)](https://buymeacoffee.com/javitatay)
 
 ![plataforma](https://img.shields.io/badge/plataforma-Web%20·%20standalone-c89838?style=flat-square) ![offline](https://img.shields.io/badge/offline-sí-green?style=flat-square) ![show%20control](https://img.shields.io/badge/show%20control-URL%20·%20QLab-orange?style=flat-square) [![Licencia: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-c89838?style=flat-square)](LICENSE)
 

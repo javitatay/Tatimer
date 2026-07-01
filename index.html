@@ -1165,13 +1165,51 @@
     .speaker-del { opacity: 0.5; }
     .drag-handle { opacity: 0.4; }
   }
+
+  /* ── TOAST DESHACER ──────────────────────────────────── */
+  #undo-toast {
+    position: fixed;
+    left: 50%;
+    bottom: clamp(1.5rem, 4vh, 3rem);
+    z-index: 400;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.6rem 0.6rem 0.6rem 1rem;
+    background: var(--card-surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    font-size: 0.75rem;
+    color: var(--fg);
+    opacity: 0;
+    transform: translate(-50%, 8px);
+    pointer-events: none;
+    transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+  }
+  #undo-toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  #undo-toast-btn {
+    background: none;
+    border: 1px solid var(--raycast-blue);
+    color: var(--raycast-blue);
+    padding: 0.3rem 0.7rem;
+    border-radius: 5px;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    font-weight: 600;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    #undo-toast-btn:hover { background: hsla(202,100%,67%,0.1); opacity: 1; }
+  }
+  body.clean #undo-toast { display: none; }
 </style>
 </head>
 <body>
 
 <div id="panel-left">
   <div id="config">
-    <div class="config-row">
+    <div class="config-row" id="config-row-minsec">
       <div class="config-field">
         <label data-i18n="minutes">Minutos</label>
         <input type="number" id="input-minutes" value="5" min="0" max="99">
@@ -1179,6 +1217,12 @@
       <div class="config-field">
         <label data-i18n="seconds">Segundos</label>
         <input type="number" id="input-seconds" value="0" min="0" max="59">
+      </div>
+    </div>
+    <div class="config-row" id="config-row-target" style="display:none">
+      <div class="config-field">
+        <label data-i18n="target-time">Hora objetivo</label>
+        <input type="time" id="input-target-time">
       </div>
     </div>
   </div>
@@ -1229,6 +1273,7 @@
   <div id="top-right">
     <div id="mode-toggle">
       <button class="mode-btn active" onclick="setMode('countdown')" id="btn-countdown" data-i18n="mode-countdown" aria-pressed="true">Cuenta atrás</button>
+      <button class="mode-btn" onclick="setMode('untiltime')" id="btn-untiltime" data-i18n="mode-untiltime" aria-pressed="false">Hasta hora</button>
       <button class="mode-btn" onclick="setMode('countup')" id="btn-countup" data-i18n="mode-countup" aria-pressed="false">Cuenta adelante</button>
       <button class="mode-btn" onclick="setMode('clock')" id="btn-clock" data-i18n="mode-clock" aria-pressed="false">Reloj</button>
     </div>
@@ -1261,6 +1306,11 @@
 <div id="overtime-banner"></div>
 
 <div id="credit">Javier Tatay Rubio · <a href="mailto:javitatay@gmail.com">javitatay@gmail.com</a></div>
+
+<div id="undo-toast" role="status" aria-live="polite">
+  <span id="undo-toast-msg"></span>
+  <button id="undo-toast-btn" onclick="performUndo()"></button>
+</div>
 
 <!-- ── SESSIONS PANEL ──────────────────────────────────── -->
 <button id="btn-sessions" onclick="toggleSessionsPanel()" title="Sesiones" aria-label="Panel de sesiones" aria-expanded="false" aria-controls="sessions-panel">
@@ -1419,6 +1469,14 @@
       const clockEl   = document.getElementById('esc-clock');
       let connected = false, connTimeout, clockInterval;
 
+      // Heartbeat de presencia: el operador lo usa para saber si esta
+      // ventana sigue abierta, sin depender de la referencia window.open().
+      const LS_PRESENCE = 'tatimer_bc_presence_escenario';
+      const sendPresence = () => localStorage.setItem(LS_PRESENCE, JSON.stringify({ ts: Date.now() }));
+      sendPresence();
+      setInterval(sendPresence, 1500);
+      window.addEventListener('beforeunload', () => localStorage.removeItem(LS_PRESENCE));
+
       function applyTimer(d) {
         if (!connected) {
           connected = true;
@@ -1561,6 +1619,14 @@
         if (e.key === LS_AUDIENCE && e.newValue) { try { applyAudience(JSON.parse(e.newValue)); } catch(_){} }
       });
 
+      // Heartbeat de presencia: el operador lo usa para saber si esta
+      // ventana sigue abierta, sin depender de la referencia window.open().
+      const LS_PRESENCE = 'tatimer_bc_presence_audience';
+      const sendPresence = () => localStorage.setItem(LS_PRESENCE, JSON.stringify({ ts: Date.now() }));
+      sendPresence();
+      setInterval(sendPresence, 1500);
+      window.addEventListener('beforeunload', () => localStorage.removeItem(LS_PRESENCE));
+
       // Cargar último estado publicado al abrir la ventana
       const raw = localStorage.getItem(LS_AUDIENCE);
       if (raw) { try { applyAudience(JSON.parse(raw)); } catch(_){} }
@@ -1576,7 +1642,9 @@
       'minutes':       'Minutos',
       'seconds':       'Segundos',
       'mode-countdown':'Cuenta atrás',
+      'mode-untiltime':'Hasta hora',
       'mode-countup':  'Cuenta adelante',
+      'target-time':   'Hora objetivo',
       'alert-warning': 'Alerta amarilla (min)',
       'alert-danger':  'Alerta roja (min)',
       'alert-toggle':  'Alertas',
@@ -1596,6 +1664,7 @@
       'sc-clean':      'modo limpio',
       'sc-sessions':   'sesiones',
       'label-countdown':'CUENTA ATRÁS',
+      'label-untiltime':'HASTA',
       'label-countup': 'CUENTA ADELANTE',
       'label-clock':   'RELOJ',
       'status-ready':  'listo',
@@ -1629,12 +1698,15 @@
       'sess-btn-publicar':    '⬆ Publicar',
       'sc-escenario':         'vista escenario',
       'sc-audience':          'vista audience',
+      'undo':                 'Deshacer',
     },
     en: {
       'minutes':       'Minutes',
       'seconds':       'Seconds',
       'mode-countdown':'Countdown',
+      'mode-untiltime':'Until time',
       'mode-countup':  'Count up',
+      'target-time':   'Target time',
       'alert-warning': 'Yellow alert (min)',
       'alert-danger':  'Red alert (min)',
       'alert-toggle':  'Alerts',
@@ -1654,6 +1726,7 @@
       'sc-clean':      'clean mode',
       'sc-sessions':   'sessions',
       'label-countdown':'COUNTDOWN',
+      'label-untiltime':'UNTIL',
       'label-countup': 'COUNT UP',
       'label-clock':   'CLOCK',
       'status-ready':  'ready',
@@ -1687,6 +1760,7 @@
       'sess-btn-publicar':    '⬆ Publish',
       'sc-escenario':         'stage view',
       'sc-audience':          'audience view',
+      'undo':                 'Undo',
     }
   };
 
@@ -1712,10 +1786,7 @@
     overtimeBanner.textContent = i18n[l]['overtime-msg'];
 
     // Etiqueta del modo actual
-    const labelKey = mode === 'countdown' ? 'label-countdown'
-                   : mode === 'countup'   ? 'label-countup'
-                   : 'label-clock';
-    modeLabel.textContent = i18n[l][labelKey];
+    updateModeLabel();
 
     // Estado actual
     const statusKey = running ? 'status-running'
@@ -1841,18 +1912,19 @@
     if (running) return;
     mode = m;
     document.getElementById('btn-countdown').classList.toggle('active', m === 'countdown');
+    document.getElementById('btn-untiltime').classList.toggle('active', m === 'untiltime');
     document.getElementById('btn-countup').classList.toggle('active', m === 'countup');
     document.getElementById('btn-clock').classList.toggle('active', m === 'clock');
     document.getElementById('btn-countdown').setAttribute('aria-pressed', String(m === 'countdown'));
+    document.getElementById('btn-untiltime').setAttribute('aria-pressed', String(m === 'untiltime'));
     document.getElementById('btn-countup').setAttribute('aria-pressed', String(m === 'countup'));
     document.getElementById('btn-clock').setAttribute('aria-pressed', String(m === 'clock'));
-    const labelKey = m === 'countdown' ? 'label-countdown'
-                   : m === 'countup'   ? 'label-countup'
-                   : 'label-clock';
-    modeLabel.textContent = t(labelKey);
-    // Config de minutos/segundos solo visible en countdown
-    document.getElementById('config').style.opacity = m === 'countdown' ? '1' : '0.3';
-    // La barra de progreso y alertas solo aplican en countdown/countup
+    updateModeLabel();
+    // Campos de configuración: minutos/segundos en countdown, hora objetivo en untiltime
+    document.getElementById('config-row-minsec').style.display = m === 'countdown' ? '' : 'none';
+    document.getElementById('config-row-target').style.display = m === 'untiltime' ? '' : 'none';
+    document.getElementById('config').style.opacity = (m === 'countdown' || m === 'untiltime') ? '1' : '0.3';
+    // La barra de progreso y alertas solo aplican en countdown/untiltime/countup
     document.getElementById('progress-track').style.opacity = m === 'clock' ? '0' : '1';
     document.getElementById('alerts').style.opacity = m === 'clock' ? '0.3' : '1';
     // Botón start no tiene sentido en reloj
@@ -1863,6 +1935,29 @@
     } else {
       stopClock();
       resetTimer();
+    }
+  }
+
+  // Calcula los segundos hasta la próxima hora HH:MM (si ya pasó hoy, salta a mañana)
+  function computeUntilTimeSeconds() {
+    const val = document.getElementById('input-target-time').value;
+    if (!val) return 300;
+    const [hh, mm] = val.split(':').map(Number);
+    const now = new Date();
+    const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0, 0);
+    if (target <= now) target.setDate(target.getDate() + 1);
+    return Math.max(1, Math.round((target - now) / 1000));
+  }
+
+  function updateModeLabel() {
+    if (mode === 'untiltime') {
+      const val = document.getElementById('input-target-time').value;
+      modeLabel.textContent = t('label-untiltime') + (val ? ' ' + val : '');
+    } else {
+      const labelKey = mode === 'countdown' ? 'label-countdown'
+                     : mode === 'countup'   ? 'label-countup'
+                     : 'label-clock';
+      modeLabel.textContent = t(labelKey);
     }
   }
 
@@ -1894,7 +1989,7 @@
   }
 
   function updateDisplay() {
-    if (mode === 'countdown') {
+    if (mode === 'countdown' || mode === 'untiltime') {
       const remaining = totalSeconds - elapsed;
       display.textContent = remaining < 0 ? '−' + fmt(Math.abs(remaining)) : fmt(remaining);
       const pct = Math.max(0, (remaining / totalSeconds) * 100);
@@ -1941,6 +2036,8 @@
         const m = parseInt(inputMin.value) || 0;
         const s = parseInt(inputSec.value) || 0;
         totalSeconds = m * 60 + s || 300;
+      } else if (mode === 'untiltime' && elapsed === 0) {
+        totalSeconds = computeUntilTimeSeconds();
       }
       running = true;
       btnStart.textContent = t('btn-resume');
@@ -1963,7 +2060,7 @@
   }
 
   function addMinute() {
-    if (mode === 'countdown') {
+    if (mode === 'countdown' || mode === 'untiltime') {
       totalSeconds += 60;
       updateDisplay();
     } else if (mode === 'countup') {
@@ -1973,7 +2070,7 @@
   }
 
   function subtractThirty() {
-    if (mode === 'countdown') {
+    if (mode === 'countdown' || mode === 'untiltime') {
       totalSeconds = Math.max(elapsed + 1, totalSeconds - 30);
       updateDisplay();
     } else if (mode === 'countup') {
@@ -2002,6 +2099,13 @@
       progressFill.style.transform    = 'scaleX(1)';
       progressOverlay.style.transform = 'scaleX(0)';
       progressMarker.style.left   = '100%';
+    } else if (mode === 'untiltime') {
+      totalSeconds = computeUntilTimeSeconds();
+      display.textContent = fmt(totalSeconds);
+      progressFill.style.transform    = 'scaleX(1)';
+      progressOverlay.style.transform = 'scaleX(0)';
+      progressMarker.style.left   = '100%';
+      updateModeLabel();
     } else {
       display.textContent = '00:00';
       progressFill.style.transform    = 'scaleX(1)';
@@ -2299,11 +2403,24 @@
       ? `¿Eliminar la sesión "${sess.name}"?`
       : `Delete session "${sess.name}"?`;
     if (!confirm(label)) return;
+    const removedSession = sess;
+    const removedIndex = sessionsData.findIndex(s => s.id === activeSessionId);
     sessionsData = sessionsData.filter(s => s.id !== activeSessionId);
     activeSessionId = sessionsData.length ? sessionsData[0].id : null;
     activeSpeakerIdx = null;
     saveSessions();
     renderSessionsPanel();
+
+    showUndoToast(
+      lang === 'es' ? `Sesión "${removedSession.name}" eliminada` : `Session "${removedSession.name}" deleted`,
+      () => {
+        sessionsData.splice(Math.min(removedIndex, sessionsData.length), 0, removedSession);
+        activeSessionId = removedSession.id;
+        activeSpeakerIdx = null;
+        saveSessions();
+        renderSessionsPanel();
+      }
+    );
   }
 
   // ── Speaker CRUD ───────────────────────────────────────
@@ -2340,11 +2457,50 @@
     e.stopPropagation();
     const sess = getActiveSession();
     if (!sess) return;
+    const removed = sess.speakers[idx];
+    const removedSessionId = sess.id;
     sess.speakers.splice(idx, 1);
     if (activeSpeakerIdx === idx) activeSpeakerIdx = null;
     else if (activeSpeakerIdx > idx) activeSpeakerIdx--;
     saveSessions();
     renderSessionsPanel();
+
+    showUndoToast(
+      lang === 'es'
+        ? `Ponente "${removed.name || '(sin nombre)'}" eliminado`
+        : `Speaker "${removed.name || '(untitled)'}" removed`,
+      () => {
+        const s = sessionsData.find(x => x.id === removedSessionId);
+        if (!s) return;
+        s.speakers.splice(Math.min(idx, s.speakers.length), 0, removed);
+        saveSessions();
+        renderSessionsPanel();
+      }
+    );
+  }
+
+  // ── TOAST DESHACER ──────────────────────────────────────
+  let pendingUndo = null;
+  let undoTimer = null;
+
+  function showUndoToast(message, undoFn) {
+    clearTimeout(undoTimer);
+    pendingUndo = undoFn;
+    document.getElementById('undo-toast-msg').textContent = message;
+    document.getElementById('undo-toast-btn').textContent = t('undo');
+    document.getElementById('undo-toast').classList.add('show');
+    undoTimer = setTimeout(hideUndoToast, 5000);
+  }
+
+  function hideUndoToast() {
+    document.getElementById('undo-toast').classList.remove('show');
+    pendingUndo = null;
+    clearTimeout(undoTimer);
+  }
+
+  function performUndo() {
+    if (pendingUndo) pendingUndo();
+    hideUndoToast();
   }
 
   // ── Import / Export ────────────────────────────────────
@@ -2440,6 +2596,9 @@
   const LS_TIMER    = 'tatimer_bc_timer';
   const LS_AUDIENCE = 'tatimer_bc_audience';
   const LS_MESSAGE  = 'tatimer_bc_message';
+  const LS_PRESENCE_ESC = 'tatimer_bc_presence_escenario';
+  const LS_PRESENCE_AUD = 'tatimer_bc_presence_audience';
+  let lastSeenEsc = 0, lastSeenAud = 0;
 
   let escenarioWin = null;
   let audienceWin  = null;
@@ -2454,11 +2613,12 @@
   }
 
   function broadcastTimerState() {
-    const remaining = mode === 'countdown' ? totalSeconds - elapsed : elapsed;
-    const pct       = mode === 'countdown' ? Math.max(0, (remaining / totalSeconds) * 100) : 100;
+    const isCountdownLike = mode === 'countdown' || mode === 'untiltime';
+    const remaining = isCountdownLike ? totalSeconds - elapsed : elapsed;
+    const pct       = isCountdownLike ? Math.max(0, (remaining / totalSeconds) * 100) : 100;
     const { warningSeconds, dangerSeconds } = getAlertSeconds();
     let state = 'normal';
-    if (mode === 'countdown') {
+    if (isCountdownLike) {
       if (remaining < 0)                    state = 'overtime';
       else if (remaining <= dangerSeconds)  state = 'danger';
       else if (remaining <= warningSeconds) state = 'warning';
@@ -2495,30 +2655,45 @@
 
   // Abre o enfoca una vista usando ?view= en la misma URL
   function openView(type) {
-    const btnId = type === 'escenario' ? 'btn-view-escenario' : 'btn-view-audience';
-    const btn   = document.getElementById(btnId);
-    const url   = window.location.pathname + '?view=' + type;
+    const url = window.location.pathname + '?view=' + type;
 
     if (type === 'escenario') {
       if (escenarioWin && !escenarioWin.closed) { escenarioWin.focus(); return; }
       escenarioWin = window.open(url, 'tatimer_escenario', 'width=1280,height=720');
-      btn.classList.add('live');
       const poll = setInterval(() => {
-        if (escenarioWin && escenarioWin.closed) {
-          clearInterval(poll); btn.classList.remove('live'); escenarioWin = null;
-        }
+        if (escenarioWin && escenarioWin.closed) { clearInterval(poll); escenarioWin = null; }
       }, 1000);
     } else {
       if (audienceWin && !audienceWin.closed) { audienceWin.focus(); return; }
       audienceWin = window.open(url, 'tatimer_audience', 'width=1280,height=720');
-      btn.classList.add('live');
       const poll = setInterval(() => {
-        if (audienceWin && audienceWin.closed) {
-          clearInterval(poll); btn.classList.remove('live'); audienceWin = null;
-        }
+        if (audienceWin && audienceWin.closed) { clearInterval(poll); audienceWin = null; }
       }, 1000);
     }
   }
+
+  // ── INDICADOR DE VENTANAS CONECTADAS ──────────────────
+  // Se basa en el heartbeat por localStorage que emiten las vistas
+  // Escenario/Audience, no en la referencia window.open() — así funciona
+  // aunque el operador recargue la página o la ventana se abriera por URL.
+  function updateLiveIndicators() {
+    const now = Date.now();
+    const escLive = (now - lastSeenEsc) < 4000;
+    const audLive = (now - lastSeenAud) < 4000;
+    document.getElementById('btn-view-escenario').classList.toggle('live', escLive);
+    document.getElementById('btn-view-audience').classList.toggle('live', audLive);
+  }
+
+  window.addEventListener('storage', e => {
+    if (e.key === LS_PRESENCE_ESC) { lastSeenEsc = e.newValue ? (JSON.parse(e.newValue).ts || 0) : 0; updateLiveIndicators(); }
+    if (e.key === LS_PRESENCE_AUD) { lastSeenAud = e.newValue ? (JSON.parse(e.newValue).ts || 0) : 0; updateLiveIndicators(); }
+  });
+
+  // Semilla inicial por si las ventanas ya estaban abiertas al cargar/recargar el operador
+  try { const r = localStorage.getItem(LS_PRESENCE_ESC); if (r) lastSeenEsc = JSON.parse(r).ts || 0; } catch(_){}
+  try { const r = localStorage.getItem(LS_PRESENCE_AUD); if (r) lastSeenAud = JSON.parse(r).ts || 0; } catch(_){}
+  updateLiveIndicators();
+  setInterval(updateLiveIndicators, 1000);
 
   // Engancha al loop del timer para emitir estado continuo
   const _origUpdateDisplay = updateDisplay;
@@ -2551,6 +2726,7 @@
 
   inputMin.addEventListener('input', () => { if (!running) resetTimer(); });
   inputSec.addEventListener('input', () => { if (!running) resetTimer(); });
+  document.getElementById('input-target-time').addEventListener('input', () => { if (!running) resetTimer(); });
 
   document.getElementById('input-warning').addEventListener('input', () => { updateSegments(); });
   document.getElementById('input-danger').addEventListener('input',  () => { updateSegments(); });

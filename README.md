@@ -25,7 +25,7 @@ Está disponible online sin instalación y también funciona descargando `index.
 
 ### Funciones principales
 
-- ⏱️ **Tres modos** — cuenta atrás, cuenta adelante y reloj en tiempo real.
+- ⏱️ **Cuatro modos** — cuenta atrás, cuenta atrás hasta una hora fija, cuenta adelante y reloj en tiempo real.
 - 👥 **Gestión de sesiones** — panel lateral con ponentes, títulos y tiempos individuales.
 - 🖥️ **Vista Escenario** — timer a pantalla completa sincronizado para el monitor del ponente.
 - 📢 **Vista Audience** — pantalla de sala con nombre y título del ponente activo, publicada manualmente por el operador.
@@ -40,6 +40,8 @@ Está disponible online sin instalación y también funciona descargando `index.
 - 🔗 **Control por URL** para integración con QLab u otras herramientas de show control.
 - 📴 **Funciona offline e instalable como app (PWA)** — service worker propio, sin depender de la caché del navegador.
 - 🔆 **Pantalla siempre encendida** durante el show (Wake Lock) — no se apaga ni activa el salvapantallas mientras el timer está en pantalla.
+- ↩️ **Deshacer** al eliminar un ponente o una sesión — 5 segundos para recuperarlo antes de que se pierda.
+- 🟢 **Indicador de ventanas conectadas** — el operador ve de un vistazo si las vistas Escenario y Audience siguen abiertas y recibiendo datos.
 
 ---
 
@@ -62,6 +64,8 @@ Un service worker propio (`sw.js`) cachea la aplicación en la primera carga, as
 ## 🖥️ Vistas adicionales
 
 El operador puede abrir dos vistas independientes desde los botones de la esquina inferior derecha o con los atajos de teclado. Cada vista se abre en una ventana nueva que se puede arrastrar a otra pantalla y poner en pantalla completa (`F11`). La comunicación entre ventanas usa `localStorage` y funciona tanto en local (`file://`) como publicado en cualquier servidor.
+
+Los botones **Escenario** y **Audience** de la interfaz del operador llevan un punto de estado: se pone verde en cuanto la ventana correspondiente está abierta y recibiendo datos, y vuelve a apagarse a los pocos segundos si se cierra o pierde la conexión. Es independiente de cómo se abrió la ventana (botón, atajo o URL directa) y sobrevive a recargar la página del operador.
 
 ### Vista Escenario (`E`)
 
@@ -112,14 +116,16 @@ Se pueden crear y gestionar múltiples sesiones — una por bloque del evento, p
 |---|---|
 | Campo de nombre | Nombre de la sesión activa. `Enter` o *Guardar* para confirmar |
 | *Nueva* | Crea una sesión vacía |
-| *Eliminar sesión* | Borra la sesión activa con confirmación |
+| *Eliminar sesión* | Borra la sesión activa con confirmación (deshacer disponible 5 seg) |
 | Tarjeta de ponente | Click para cargar su tiempo en el timer |
 | `⠿` (asa de arrastre) | Reordena ponentes por drag & drop |
-| `✕` | Elimina el ponente de la lista |
+| `✕` | Elimina el ponente de la lista (deshacer disponible 5 seg) |
 | Total | Duración acumulada de todos los ponentes de la sesión |
 | **Publicar** | Envía el ponente actualmente cargado a la vista Audience |
 | `↓ JSON` | Exporta la sesión activa como archivo `.json` |
 | `↑ JSON` | Importa una sesión desde un archivo `.json` |
+
+> Solo se puede deshacer la última eliminación: si borras dos elementos seguidos, la posibilidad de recuperar el primero desaparece.
 
 ### Formato de exportación / importación
 
@@ -143,8 +149,9 @@ También se acepta un array plano de ponentes sin envoltura de sesión.
 | Elemento | Ubicación | Función |
 |---|---|---|
 | `☰` / `✕` | Borde izquierdo | Abre / cierra el panel de sesiones |
-| Minutos / Segundos | Panel izquierdo | Configura el tiempo inicial. Se actualiza en tiempo real al editar. |
-| Cuenta atrás / Cuenta adelante / Reloj | Panel derecho | Cambia el modo del temporizador |
+| Minutos / Segundos | Panel izquierdo | Configura el tiempo inicial (modo cuenta atrás). Se actualiza en tiempo real al editar. |
+| Hora objetivo | Panel izquierdo | Configura la hora de llegada (modo Hasta hora). Se actualiza en tiempo real al editar. |
+| Cuenta atrás / Hasta hora / Cuenta adelante / Reloj | Panel derecho | Cambia el modo del temporizador |
 | Alerta amarilla (min) | Panel derecho | Minutos restantes para activar el aviso amarillo |
 | Alerta roja (min) | Panel derecho | Minutos restantes para activar el aviso rojo |
 | Alertas ON / OFF | Panel derecho | Activa o desactiva todas las alertas globalmente |
@@ -183,6 +190,8 @@ También se acepta un array plano de ponentes sin envoltura de sesión.
 ## ⏲️ Modos
 
 **Cuenta atrás** — introduce minutos y segundos antes de empezar. Al llegar a cero el contador continúa en negativo para no interrumpir, y aparece un aviso de tiempo consumido en la parte superior.
+
+**Hasta hora** — introduce una hora fija (HH:MM) y el timer cuenta atrás hasta llegar a ella. Si la hora indicada ya pasó hoy, se asume automáticamente para mañana. Útil para "el show empieza a las 10:00" o "volvemos del descanso a las 17:30". Comparte el resto del comportamiento con cuenta atrás: alertas, barra de progreso, tiempo consumido en negativo.
 
 **Cuenta adelante** — arranca desde cero y cuenta el tiempo transcurrido.
 

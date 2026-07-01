@@ -11,7 +11,7 @@ Timer standalone con gestión de sesiones (ponentes, tiempos y títulos de ponen
 [![Abrir en el navegador](https://img.shields.io/badge/🌐_Abrir_en_el_navegador-141210?style=for-the-badge)](https://javitatay.github.io/Tatimer/)
 [![Invítame a un café](https://img.shields.io/badge/☕_Invítame_a_un_café-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=000)](https://buymeacoffee.com/javitatay)
 
-![plataforma](https://img.shields.io/badge/plataforma-Web%20·%20standalone-c89838?style=flat-square) ![offline](https://img.shields.io/badge/offline-sí-green?style=flat-square) ![show%20control](https://img.shields.io/badge/show%20control-URL%20·%20QLab-orange?style=flat-square) [![Licencia: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-c89838?style=flat-square)](LICENSE)
+![plataforma](https://img.shields.io/badge/plataforma-Web%20·%20standalone-c89838?style=flat-square) ![offline](https://img.shields.io/badge/offline-sí%20·%20PWA-green?style=flat-square) ![show%20control](https://img.shields.io/badge/show%20control-URL%20·%20QLab-orange?style=flat-square) [![Licencia: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-c89838?style=flat-square)](LICENSE)
 
 </div>
 
@@ -38,6 +38,8 @@ Está disponible online sin instalación y también funciona descargando `index.
 - ⬛ **Blackout** — pantalla negra completa; el contador sigue corriendo por debajo.
 - 🌙 **Tema oscuro / claro** y selector de idioma **ES / EN**.
 - 🔗 **Control por URL** para integración con QLab u otras herramientas de show control.
+- 📴 **Funciona offline e instalable como app (PWA)** — service worker propio, sin depender de la caché del navegador.
+- 🔆 **Pantalla siempre encendida** durante el show (Wake Lock) — no se apaga ni activa el salvapantallas mientras el timer está en pantalla.
 
 ---
 
@@ -49,11 +51,11 @@ Abre [javitatay.github.io/Tatimer](https://javitatay.github.io/Tatimer/) en Safa
 
 ### Local (offline)
 
-1. Descarga `index.html`.
+1. Descarga todo el repositorio (`index.html`, `manifest.json`, `icon.svg`, `sw.js`).
 2. Ábrelo en Safari o Chrome.
 3. Arrastra la ventana al monitor del ponente.
 
-Las fuentes de Google Fonts quedan en caché tras la primera carga. Para uso completamente offline desde el primer momento, se cargan las fuentes del sistema como alternativa.
+Un service worker propio (`sw.js`) cachea la aplicación en la primera carga, así que funciona completamente offline desde la segunda vez que se abre, tanto en local como servida. También se puede instalar como aplicación (PWA) desde el navegador para tenerla como icono independiente. Las fuentes de Google Fonts se cargan con fuentes del sistema como alternativa si no hay conexión.
 
 ---
 
@@ -172,6 +174,7 @@ También se acepta un array plano de ponentes sin envoltura de sesión.
 | `B` | Blackout |
 | `C` | Modo limpio / vista completa |
 | `P` | Abrir / cerrar panel de sesiones |
+| `Esc` | Cerrar panel de sesiones (si está abierto) |
 | `E` | Abrir / enfocar vista Escenario |
 | `A` | Abrir / enfocar vista Audience |
 
@@ -251,13 +254,20 @@ https://javitatay.github.io/Tatimer/?view=audience
 
 ## 🛠️ Para desarrolladores
 
-Tatimer es una aplicación web autocontenida en un único archivo `index.html`, sin dependencias externas ni framework. La persistencia y la comunicación entre ventanas se hacen con `localStorage`, por lo que funciona igual servido (GitHub Pages) o en local (`file://`).
+Tatimer es una aplicación web autocontenida en `index.html`, sin dependencias externas ni framework. La persistencia y la comunicación entre ventanas se hacen con `localStorage`, por lo que funciona igual servido (GitHub Pages) o en local (`file://`).
+
+Incluye un service worker (`sw.js`, estrategia stale-while-revalidate) y un `manifest.json` para funcionamiento offline real e instalación como PWA. Ambos son opcionales: si el navegador no los soporta o el archivo se abre desde un contexto no seguro (`file://`, `content://`), la aplicación funciona igual, simplemente sin esa capa de caché adicional.
+
+Cuida accesibilidad de teclado (`:focus-visible`, `aria-pressed`/`aria-expanded` en los toggles, focus trap en el panel de sesiones) y contraste WCAG AA en ambos temas.
 
 ```
 Tatimer/
 │
 ├── README.md
 ├── LICENSE
+├── manifest.json
+├── icon.svg
+├── sw.js
 └── index.html
 ```
 

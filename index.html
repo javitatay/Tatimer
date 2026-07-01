@@ -913,7 +913,24 @@
   #session-actions {
     display: flex;
     gap: 0.4rem;
+    flex-wrap: wrap;
   }
+
+  #session-switcher {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  #session-switcher:focus-visible { border-color: var(--raycast-blue); }
+  body.light #session-switcher { background: #f2f2f0; border-color: var(--border); }
 
   .sess-btn {
     font-size: 0.55rem;
@@ -1325,10 +1342,12 @@
   <div id="sessions-header">
     <div id="sessions-title" data-i18n-sess="panel-title">SESIONES</div>
     <div id="session-name-row">
+      <select id="session-switcher" onchange="switchSession(this.value)" style="display:none"></select>
       <input type="text" id="input-session-name" data-i18n-sess-ph="session-placeholder" placeholder="Nombre de la sesión…" maxlength="60">
     </div>
     <div id="session-actions">
       <button class="sess-btn" onclick="saveSession()" data-i18n-sess="btn-save">Guardar</button>
+      <button class="sess-btn" onclick="duplicateCurrentSession()" data-i18n-sess="btn-duplicate">Duplicar</button>
       <button class="sess-btn" onclick="newSession()" data-i18n-sess="btn-new">Nueva</button>
       <button class="sess-btn" id="btn-delete-session" onclick="deleteCurrentSession()" data-i18n-sess="btn-delete-sess">Eliminar sesión</button>
     </div>
@@ -1357,10 +1376,11 @@
 
   <div id="sessions-footer">
     <div id="sessions-total"><span data-i18n-sess="total-label">Total:</span> <span id="total-time-display">00:00</span></div>
-    <div style="display:flex;gap:0.4rem;align-items:center;">
+    <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">
       <button class="sess-btn" id="btn-publicar" onclick="publishToAudience()" data-i18n-sess="btn-publicar" title="Enviar ponente activo a vista Audience">⬆ Publicar</button>
-      <button class="sess-btn" onclick="exportSession()" data-i18n-sess="btn-export" title="Exportar JSON">↓ JSON</button>
-      <button class="sess-btn" onclick="triggerImport()" data-i18n-sess="btn-import" title="Importar JSON">↑ JSON</button>
+      <button class="sess-btn" onclick="exportSession()" data-i18n-sess="btn-export" title="Exportar JSON (esta sesión)">↓ JSON</button>
+      <button class="sess-btn" onclick="triggerImport()" data-i18n-sess="btn-import" title="Importar JSON (una o varias sesiones)">↑ JSON</button>
+      <button class="sess-btn" onclick="exportAllSessions()" data-i18n-sess="btn-export-all" title="Backup: exporta todas las sesiones">⬇ Backup</button>
     </div>
   </div>
   <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="importSession(event)">
@@ -1683,6 +1703,7 @@
       'sess-panel-title':     'SESIONES',
       'sess-session-placeholder': 'Nombre de la sesión…',
       'sess-btn-save':        'Guardar',
+      'sess-btn-duplicate':   'Duplicar',
       'sess-btn-new':         'Nueva',
       'sess-btn-delete-sess': 'Eliminar sesión',
       'sess-form-title':      'AÑADIR PONENTE',
@@ -1693,6 +1714,8 @@
       'sess-total-label':     'Total:',
       'sess-btn-export':      '↓ JSON',
       'sess-btn-import':      '↑ JSON',
+      'sess-btn-export-all':  '⬇ Backup',
+      'sess-switcher-label':  'Cambiar de sesión',
       'sess-no-speakers':     'Sin ponentes. Añade el primero.',
       'sess-load-tip':        'Click para cargar tiempo',
       'sess-btn-publicar':    '⬆ Publicar',
@@ -1745,6 +1768,7 @@
       'sess-panel-title':     'SESSIONS',
       'sess-session-placeholder': 'Session name…',
       'sess-btn-save':        'Save',
+      'sess-btn-duplicate':   'Duplicate',
       'sess-btn-new':         'New',
       'sess-btn-delete-sess': 'Delete session',
       'sess-form-title':      'ADD SPEAKER',
@@ -1755,6 +1779,8 @@
       'sess-total-label':     'Total:',
       'sess-btn-export':      '↓ JSON',
       'sess-btn-import':      '↑ JSON',
+      'sess-btn-export-all':  '⬇ Backup',
+      'sess-switcher-label':  'Switch session',
       'sess-no-speakers':     'No speakers yet. Add the first one.',
       'sess-load-tip':        'Click to load time',
       'sess-btn-publicar':    '⬆ Publish',
@@ -2265,8 +2291,34 @@
   }, true);
 
   // ── Render ─────────────────────────────────────────────
+  // ── Selector de sesiones ───────────────────────────────
+  function renderSessionSwitcher() {
+    const sel = document.getElementById('session-switcher');
+    sel.setAttribute('aria-label', t('sess-switcher-label'));
+    sel.innerHTML = '';
+    if (sessionsData.length < 2) { sel.style.display = 'none'; return; }
+    sessionsData.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.id;
+      opt.textContent = s.name || (lang === 'es' ? 'Sin nombre' : 'Untitled');
+      if (s.id === activeSessionId) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.style.display = '';
+  }
+
+  function switchSession(id) {
+    if (!id || id === activeSessionId) return;
+    activeSessionId = id;
+    activeSpeakerIdx = null;
+    saveSessions();
+    renderSessionsPanel();
+  }
+
   function renderSessionsPanel() {
     const sess = getActiveSession();
+
+    renderSessionSwitcher();
 
     // Session name input
     const nameInput = document.getElementById('input-session-name');
@@ -2396,6 +2448,26 @@
     renderSessionsPanel();
   }
 
+  function duplicateCurrentSession() {
+    const sess = getActiveSession();
+    if (!sess) return;
+    const copy = {
+      id: uid(),
+      name: (sess.name || (lang === 'es' ? 'Sesión' : 'Session')) + (lang === 'es' ? ' (copia)' : ' (copy)'),
+      speakers: (sess.speakers || []).map(sp => ({ ...sp, id: uid() })),
+    };
+    const idx = sessionsData.findIndex(s => s.id === activeSessionId);
+    sessionsData.splice(idx + 1, 0, copy);
+    activeSessionId = copy.id;
+    activeSpeakerIdx = null;
+    saveSessions();
+    renderSessionsPanel();
+    setTimeout(() => {
+      const ni = document.getElementById('input-session-name');
+      ni.focus(); ni.select();
+    }, 50);
+  }
+
   function deleteCurrentSession() {
     const sess = getActiveSession();
     if (!sess) return;
@@ -2516,6 +2588,24 @@
     URL.revokeObjectURL(url);
   }
 
+  function exportAllSessions() {
+    if (!sessionsData.length) return;
+    const backup = {
+      type: 'tatimer_backup',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      sessions: sessionsData,
+    };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const stamp = new Date().toISOString().slice(0, 10);
+    a.download = `tatimer_backup_${stamp}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   function triggerImport() {
     document.getElementById('import-file-input').click();
   }
@@ -2527,15 +2617,33 @@
     reader.onload = ev => {
       try {
         const data = JSON.parse(ev.target.result);
-        // Accept either a full session object or just an array of speakers
-        let sess;
-        if (Array.isArray(data)) {
-          sess = { id: uid(), name: file.name.replace('.json',''), speakers: data };
+
+        // Detecta el formato: backup completo, array de sesiones "a pelo",
+        // array plano de ponentes (legacy), o una sola sesión.
+        let importedSessions;
+        if (data && data.type === 'tatimer_backup' && Array.isArray(data.sessions)) {
+          importedSessions = data.sessions;
+        } else if (Array.isArray(data) && data.length && data[0] && Array.isArray(data[0].speakers)) {
+          importedSessions = data;
+        } else if (Array.isArray(data)) {
+          importedSessions = [{ name: file.name.replace('.json', ''), speakers: data }];
         } else {
-          sess = { ...data, id: uid() };
+          importedSessions = [data];
         }
-        sessionsData.push(sess);
-        activeSessionId = sess.id;
+        if (!importedSessions.length) throw new Error('empty');
+
+        const newIds = [];
+        importedSessions.forEach(s => {
+          const newId = uid();
+          sessionsData.push({
+            id: newId,
+            name: s.name || (lang === 'es' ? 'Sesión importada' : 'Imported session'),
+            speakers: Array.isArray(s.speakers) ? s.speakers.map(sp => ({ ...sp, id: uid() })) : [],
+          });
+          newIds.push(newId);
+        });
+
+        activeSessionId = newIds[0];
         activeSpeakerIdx = null;
         saveSessions();
         renderSessionsPanel();
@@ -2555,6 +2663,7 @@
     document.getElementById('sessions-title').textContent = i18n[l]['sess-panel-title'];
     document.getElementById('input-session-name').placeholder = i18n[l]['sess-session-placeholder'];
     document.querySelector('[data-i18n-sess="btn-save"]').textContent    = i18n[l]['sess-btn-save'];
+    document.querySelector('[data-i18n-sess="btn-duplicate"]').textContent = i18n[l]['sess-btn-duplicate'];
     document.querySelector('[data-i18n-sess="btn-new"]').textContent     = i18n[l]['sess-btn-new'];
     document.querySelector('[data-i18n-sess="btn-delete-sess"]').textContent = i18n[l]['sess-btn-delete-sess'];
     document.getElementById('add-speaker-form-title').textContent        = i18n[l]['sess-form-title'];
@@ -2565,7 +2674,9 @@
     document.querySelector('[data-i18n-sess="total-label"]').textContent = i18n[l]['sess-total-label'];
     document.querySelector('[data-i18n-sess="btn-export"]').textContent  = i18n[l]['sess-btn-export'];
     document.querySelector('[data-i18n-sess="btn-import"]').textContent  = i18n[l]['sess-btn-import'];
+    document.querySelector('[data-i18n-sess="btn-export-all"]').textContent = i18n[l]['sess-btn-export-all'];
     document.getElementById('btn-publicar').textContent = i18n[l]['sess-btn-publicar'];
+    renderSessionSwitcher();
     if (sessionsPanelOpen) renderSessionsPanel();
   }
 

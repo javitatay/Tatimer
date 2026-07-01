@@ -1,0 +1,20 @@
+{
+  "name": "Tatimer — Temporizador para shows en vivo",
+  "short_name": "Tatimer",
+  "description": "Temporizador para el monitor del ponente en eventos, conferencias y shows en vivo.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07080a",
+  "theme_color": "#07080a",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -190,24 +190,30 @@
   #progress-overlay {
     position: absolute;
     top: 0; right: 0; bottom: 0;
+    width: 100%;
     background: var(--progress-overlay);
     border-radius: 0 4px 4px 0;
-    transition: width 1s linear;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 1s linear;
   }
 
   /* Relleno activo brillante (izquierda, encima del fondo) */
   #progress-fill {
     position: absolute;
     top: 0; left: 0; bottom: 0;
+    width: 100%;
     border-radius: 4px 0 0 4px;
-    transition: width 1s linear, background 0.3s ease;
+    transform: scaleX(1);
+    transform-origin: left;
+    transition: transform 1s linear, background 0.3s ease;
     background: #22a83c;
     box-shadow: rgba(255,255,255,0.05) 0px 1px 0px 0px inset;
   }
 
   #progress-fill.warning { background: #e8a000; border-radius: 0; }
   #progress-fill.danger  { background: #FF6363; border-radius: 0; }
-  #progress-fill.overtime { width: 0% !important; }
+  #progress-fill.overtime { transform: scaleX(0) !important; }
 
   /* Marcador triangular que viaja sobre la barra */
   #progress-marker {
@@ -315,7 +321,6 @@
                 rgba(0,0,0,0.2) 0px -1px 0px 0px inset;
   }
 
-  button:hover { opacity: 0.6; color: var(--fg); border-color: rgba(255,255,255,0.2); }
   button:focus-visible {
     outline: 2px solid hsl(202,100%,67%);
     outline-offset: 2px;
@@ -329,7 +334,6 @@
                 rgba(255,255,255,0.25) 0px 0px 0px 1px;
     border-radius: 86px;
   }
-  button.primary:hover { opacity: 0.7; background: rgba(255,255,255,0.06); }
 
   /* ── CONFIG ─────────────────────────────────────────── */
   #config {
@@ -475,7 +479,6 @@
     border-color: rgba(255,255,255,0.06);
     opacity: 0.6;
   }
-  #btn-alerts-toggle:hover { opacity: 1; }
   body.light #btn-alerts-toggle { border-color: var(--btn-border); }
   body.light #btn-alerts-toggle.off { color: var(--btn-color); }
 
@@ -528,8 +531,6 @@
     opacity: 0.45;
     transition: opacity 0.2s ease;
   }
-
-  #shortcuts:hover { opacity: 0.8; }
 
   .shortcut {
     display: flex;
@@ -616,8 +617,6 @@
     position: relative;
   }
 
-  .btn-view:hover { opacity: 1; color: #f9f9f9; border-color: rgba(255,255,255,0.15); }
-
   .btn-view.live {
     opacity: 1;
     color: #22c55e;
@@ -674,7 +673,6 @@
   }
 
   #btn-clean svg { width: 1rem; height: 1rem; fill: currentColor; }
-  #btn-clean:hover { opacity: 1; color: #f9f9f9; border-color: rgba(255,255,255,0.15); }
   #btn-clean.active { opacity: 1; border-color: rgba(255,99,99,0.4); color: #FF6363;
     box-shadow: rgba(255,99,99,0.15) 0px 0px 0px 3px; }
 
@@ -698,8 +696,6 @@
     font-weight: 300;
     transition: color 0.3s ease;
   }
-
-  #blackout:hover #blackout-hint { color: #444; }
 
   /* ── MODO RELOJ ─────────────────────────────────────── */
   #display.clock-mode {
@@ -778,11 +774,6 @@
     text-decoration: none;
   }
 
-  #credit:hover,
-  #credit:hover a {
-    color: var(--mid);
-  }
-
   body.clean #credit { display: none; }
 
   /* ── LIGHT MODE OVERRIDES (no tocar tokens del tema claro) ── */
@@ -796,16 +787,6 @@
     color: var(--accent);
     border-radius: 4px;
     box-shadow: none;
-  }
-  body.light button.primary:hover {
-    background: var(--accent);
-    color: var(--bg);
-    opacity: 1;
-  }
-  body.light button:hover {
-    border-color: var(--fg);
-    color: var(--fg);
-    opacity: 1;
   }
   body.light #config input,
   body.light #alerts input,
@@ -848,7 +829,7 @@
     position: fixed;
     top: 50%;
     left: var(--safe-l);
-    transform: translateY(-50%);
+    transform: translate(0, -50%);
     z-index: 300;
     background: var(--surface);
     border: 1px solid var(--border);
@@ -867,16 +848,15 @@
     padding: 0;
     text-transform: none;
     box-shadow: 2px 0 8px rgba(0,0,0,0.3);
-    transition: color 0.15s, background 0.15s, left 0.35s cubic-bezier(0.4,0,0.2,1);
+    transition: color 0.15s, background 0.15s, transform 0.35s cubic-bezier(0.4,0,0.2,1);
   }
-  #btn-sessions:hover { color: var(--fg); background: var(--card-surface); opacity: 1; }
-  #btn-sessions.open  { left: calc(360px + var(--safe-l)); }
+  #btn-sessions.open  { transform: translate(360px, -50%); }
 
   /* ── SESIONES — PANEL ───────────────────────────────── */
   #sessions-panel {
     position: fixed;
     top: 0;
-    left: calc(-360px - var(--safe-l));
+    left: 0;
     bottom: 0;
     width: 360px;
     padding-left: var(--safe-l);
@@ -885,10 +865,11 @@
     z-index: 290;
     display: flex;
     flex-direction: column;
-    transition: left 0.35s cubic-bezier(0.4,0,0.2,1);
+    transform: translateX(calc(-360px - var(--safe-l)));
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
     box-shadow: 4px 0 24px rgba(0,0,0,0.4);
   }
-  #sessions-panel.open { left: 0; }
+  #sessions-panel.open { transform: translateX(0); }
 
   #sessions-header {
     padding: 1.2rem 1.2rem 0.8rem;
@@ -971,7 +952,6 @@
     transition: background 0.12s, border-color 0.12s;
     position: relative;
   }
-  .speaker-card:hover { background: var(--card-surface); border-color: var(--border-subtle); }
   .speaker-card.active {
     background: var(--card-surface);
     border-color: var(--raycast-blue);
@@ -1041,8 +1021,6 @@
     text-transform: none;
     font-weight: 400;
   }
-  .speaker-card:hover .speaker-del { opacity: 0.6; }
-  .speaker-del:hover { opacity: 1 !important; color: var(--danger) !important; background: rgba(255,99,99,0.08) !important; }
 
   /* ── ADD SPEAKER FORM ───────────────────────────────── */
   #add-speaker-form {
@@ -1098,7 +1076,6 @@
     border-color: rgba(255,255,255,0.12);
     color: var(--fg);
   }
-  #btn-add-speaker:hover { background: rgba(255,255,255,0.05); opacity: 1; }
 
   /* ── SESSIONS FOOTER ────────────────────────────────── */
   #sessions-footer {
@@ -1136,7 +1113,6 @@
     box-shadow: none;
     border-radius: 4px;
   }
-  body.light .speaker-card:hover,
   body.light .speaker-card.active { background: #f2f2f0; }
   body.light .speaker-card.active { border-color: var(--accent); box-shadow: none; }
   body.light .speaker-duration { color: var(--accent); }
@@ -1157,9 +1133,38 @@
     padding: 0 0.1rem;
     user-select: none;
   }
-  .speaker-card:hover .drag-handle { opacity: 0.5; }
   .speaker-card.dragging { opacity: 0.4; background: var(--card-surface); }
   .speaker-card.drag-over { border-color: var(--raycast-blue) !important; background: hsla(202,100%,67%,0.05) !important; }
+
+  /* ── HOVER — solo dispositivos con puntero fino (ratón/trackpad) ──
+     Consolida todos los :hover del documento; en touch no se dispara
+     y evita que un estado hover quede "pegado" tras un tap. ──────── */
+  @media (hover: hover) and (pointer: fine) {
+    button:hover { opacity: 0.6; color: var(--fg); border-color: rgba(255,255,255,0.2); }
+    button.primary:hover { opacity: 0.7; background: rgba(255,255,255,0.06); }
+    #btn-alerts-toggle:hover { opacity: 1; }
+    #shortcuts:hover { opacity: 0.8; }
+    .btn-view:hover { opacity: 1; color: #f9f9f9; border-color: rgba(255,255,255,0.15); }
+    #btn-clean:hover { opacity: 1; color: #f9f9f9; border-color: rgba(255,255,255,0.15); }
+    #blackout:hover #blackout-hint { color: #444; }
+    #credit:hover, #credit:hover a { color: var(--mid); }
+    body.light button.primary:hover { background: var(--accent); color: var(--bg); opacity: 1; }
+    body.light button:hover { border-color: var(--fg); color: var(--fg); opacity: 1; }
+    #btn-sessions:hover { color: var(--fg); background: var(--card-surface); opacity: 1; }
+    .speaker-card:hover { background: var(--card-surface); border-color: var(--border-subtle); }
+    .speaker-card:hover .speaker-del { opacity: 0.6; }
+    .speaker-del:hover { opacity: 1 !important; color: var(--danger) !important; background: rgba(255,99,99,0.08) !important; }
+    #btn-add-speaker:hover { background: rgba(255,255,255,0.05); opacity: 1; }
+    body.light .speaker-card:hover { background: #f2f2f0; }
+    .speaker-card:hover .drag-handle { opacity: 0.5; }
+  }
+
+  /* Fallback táctil: sin hover no hay forma de "revelar" estos controles,
+     así que quedan visibles de forma permanente en touch/coarse pointer. */
+  @media (hover: none), (pointer: coarse) {
+    .speaker-del { opacity: 0.5; }
+    .drag-handle { opacity: 0.4; }
+  }
 </style>
 </head>
 <body>
@@ -1362,11 +1367,11 @@
           #esc-bar-green{background:#1a3d20;flex:1}
           #esc-bar-yellow{background:#4a3500}
           #esc-bar-red{background:#4a1010}
-          #esc-bar-overlay{position:absolute;top:0;right:0;bottom:0;background:rgba(0,0,0,0.78);border-radius:0 4px 4px 0;transition:width 1s linear}
-          #esc-bar-fill{position:absolute;top:0;left:0;bottom:0;border-radius:4px 0 0 4px;background:#22a83c;transition:width 1s linear,background 0.3s}
+          #esc-bar-overlay{position:absolute;top:0;right:0;bottom:0;width:100%;background:rgba(0,0,0,0.78);border-radius:0 4px 4px 0;transform:scaleX(0);transform-origin:right;transition:transform 1s linear}
+          #esc-bar-fill{position:absolute;top:0;left:0;bottom:0;width:100%;border-radius:4px 0 0 4px;background:#22a83c;transform:scaleX(1);transform-origin:left;transition:transform 1s linear,background 0.3s}
           #esc-bar-fill.warning{background:#e8a000;border-radius:0}
           #esc-bar-fill.danger{background:#FF6363;border-radius:0}
-          #esc-bar-fill.overtime{width:0%!important}
+          #esc-bar-fill.overtime{transform:scaleX(0)!important}
           #esc-overtime{display:none;position:fixed;top:0;left:0;right:0;background:#FF6363;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:clamp(1.5rem,4vw,4rem);letter-spacing:0.1em;text-align:center;padding:0.3rem;z-index:10}
           #esc-overtime.show{display:block}
           #esc-message{display:none;position:fixed;bottom:clamp(2rem,8vh,6rem);left:0;right:0;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,6vw,7rem);color:#e8ff00;letter-spacing:0.05em;line-height:1.1;padding:0 5vw;text-shadow:0 2px 20px rgba(0,0,0,0.8);z-index:20}
@@ -1438,8 +1443,8 @@
                           : d.state === 'overtime' ? 'overtime'
                           : d.state === 'danger'   ? 'danger'
                           : d.state === 'warning'  ? 'warning' : '';
-        barFill.style.width    = d.pct + '%';
-        barOverlay.style.width = (100 - d.pct) + '%';
+        barFill.style.transform    = `scaleX(${d.pct / 100})`;
+        barOverlay.style.transform = `scaleX(${(100 - d.pct) / 100})`;
         overtime.className   = d.state === 'overtime' ? 'show' : '';
         overtime.textContent = d.state === 'overtime' ? '⚠ TIEMPO CONSUMIDO' : '';
         if (d.totalSeconds > 0) {
@@ -1874,8 +1879,8 @@
     display.className = 'clock-mode';
     display.textContent = fmtClock();
     statusEl.textContent = '';
-    progressFill.style.width = '100%';
-    progressOverlay.style.width = '0%';
+    progressFill.style.transform = 'scaleX(1)';
+    progressOverlay.style.transform = 'scaleX(0)';
     progressMarker.style.left = '100%';
     overtimeBanner.classList.remove('show');
     clockInterval = setInterval(() => {
@@ -1895,8 +1900,8 @@
       const pct = Math.max(0, (remaining / totalSeconds) * 100);
 
       // Fill (parte iluminada) y overlay (parte oscura)
-      progressFill.style.width    = pct + '%';
-      progressOverlay.style.width = (100 - pct) + '%';
+      progressFill.style.transform    = `scaleX(${pct / 100})`;
+      progressOverlay.style.transform = `scaleX(${(100 - pct) / 100})`;
       progressMarker.style.left   = pct + '%';
 
       const { warningSeconds, dangerSeconds } = getAlertSeconds();
@@ -1922,8 +1927,8 @@
       }
     } else {
       display.textContent = fmt(elapsed);
-      progressFill.style.width    = '100%';
-      progressOverlay.style.width = '0%';
+      progressFill.style.transform    = 'scaleX(1)';
+      progressOverlay.style.transform = 'scaleX(0)';
       progressMarker.style.left   = '100%';
       display.className = '';
       overtimeBanner.classList.remove('show');
@@ -1994,13 +1999,13 @@
       const s = parseInt(inputSec.value) || 0;
       totalSeconds = m * 60 + s || 300;
       display.textContent = fmt(totalSeconds);
-      progressFill.style.width    = '100%';
-      progressOverlay.style.width = '0%';
+      progressFill.style.transform    = 'scaleX(1)';
+      progressOverlay.style.transform = 'scaleX(0)';
       progressMarker.style.left   = '100%';
     } else {
       display.textContent = '00:00';
-      progressFill.style.width    = '100%';
-      progressOverlay.style.width = '0%';
+      progressFill.style.transform    = 'scaleX(1)';
+      progressOverlay.style.transform = 'scaleX(0)';
       progressMarker.style.left   = '100%';
     }
     updateSegments();

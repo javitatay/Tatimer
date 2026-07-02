@@ -1220,6 +1220,120 @@
     #undo-toast-btn:hover { background: hsla(202,100%,67%,0.1); opacity: 1; }
   }
   body.clean #undo-toast { display: none; }
+  body.clean #help-overlay { display: none; }
+
+  /* ── AYUDA — OVERLAY + MODAL ─────────────────────────── */
+  #help-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5vh 1.5rem;
+    background: rgba(0,0,0,0.6);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  #help-overlay.show { opacity: 1; pointer-events: auto; }
+
+  #help-panel {
+    width: min(640px, 100%);
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    transform: scale(0.97) translateY(6px);
+    transition: transform 0.2s ease;
+  }
+  #help-overlay.show #help-panel { transform: scale(1) translateY(0); }
+
+  #help-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 1.4rem;
+    border-bottom: 1px solid var(--border-subtle);
+    flex-shrink: 0;
+  }
+  #help-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+  }
+  #btn-help-close {
+    background: none;
+    border: 1px solid var(--btn-border);
+    color: var(--mid);
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 6px;
+    padding: 0;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #help-body {
+    overflow-y: auto;
+    padding: 1.2rem 1.4rem 1.6rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .help-section { margin-bottom: 1.5rem; }
+  .help-section:last-child { margin-bottom: 0; }
+  .help-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--raycast-blue);
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+  }
+  .help-section p {
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: var(--fg);
+    opacity: 0.85;
+    margin-bottom: 0.4rem;
+  }
+  .help-section p:last-child { margin-bottom: 0; }
+  .help-section strong { color: var(--fg); opacity: 1; font-weight: 600; }
+  .help-section a { color: var(--raycast-blue); text-decoration: none; }
+
+  .help-shortcuts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem 1.2rem;
+  }
+  .help-shortcut {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--fg);
+    opacity: 0.85;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    #btn-help-close:hover { color: var(--fg); border-color: rgba(255,255,255,0.2); opacity: 1; }
+  }
+
+  @media (max-width: 600px) {
+    .help-shortcuts-grid { grid-template-columns: 1fr; }
+  }
+
+  body.light #help-panel { background: #fff; }
+  body.light .help-section p { opacity: 0.75; }
 </style>
 </head>
 <body>
@@ -1253,6 +1367,7 @@
     <div class="shortcut"><span class="key">P</span> <span data-i18n="sc-sessions">sesiones</span></div>
     <div class="shortcut"><span class="key">E</span> <span data-i18n="sc-escenario">vista escenario</span></div>
     <div class="shortcut"><span class="key">A</span> <span data-i18n="sc-audience">vista audience</span></div>
+    <div class="shortcut"><span class="key">H</span> <span data-i18n="sc-help">ayuda</span></div>
   </div>
 </div>
 
@@ -1300,6 +1415,7 @@
         <button class="lang-btn" onclick="setLang('en')" id="btn-lang-en" aria-pressed="false">EN</button>
       </div>
       <button class="lang-btn" id="btn-theme" onclick="toggleTheme()" title="Cambiar tema" aria-label="Cambiar tema" aria-pressed="false">◐</button>
+      <button class="lang-btn" id="btn-help" onclick="toggleHelp()" title="Ayuda (H)" aria-label="Ayuda" aria-pressed="false">?</button>
     </div>
   </div>
   <div id="alerts">
@@ -1327,6 +1443,16 @@
 <div id="undo-toast" role="status" aria-live="polite">
   <span id="undo-toast-msg"></span>
   <button id="undo-toast-btn" onclick="performUndo()"></button>
+</div>
+
+<div id="help-overlay" onclick="if(event.target===this) toggleHelp()">
+  <div id="help-panel" role="dialog" aria-modal="true" aria-labelledby="help-title">
+    <div id="help-header">
+      <h2 id="help-title">Ayuda</h2>
+      <button id="btn-help-close" onclick="toggleHelp()" aria-label="Cerrar ayuda">✕</button>
+    </div>
+    <div id="help-body"></div>
+  </div>
 </div>
 
 <!-- ── SESSIONS PANEL ──────────────────────────────────── -->
@@ -1721,6 +1847,7 @@
       'sess-btn-publicar':    '⬆ Publicar',
       'sc-escenario':         'vista escenario',
       'sc-audience':          'vista audience',
+      'sc-help':               'ayuda',
       'undo':                 'Deshacer',
     },
     en: {
@@ -1786,6 +1913,7 @@
       'sess-btn-publicar':    '⬆ Publish',
       'sc-escenario':         'stage view',
       'sc-audience':          'audience view',
+      'sc-help':               'help',
       'undo':                 'Undo',
     }
   };
@@ -1830,6 +1958,8 @@
       : i18n[l]['btn-resume'];
 
     document.getElementById('btn-pause').textContent = i18n[l]['btn-pause'];
+
+    if (typeof helpOpen !== 'undefined' && helpOpen) renderHelpContent();
   }
 
   // ── ESTADO ────────────────────────────────────────────
@@ -2198,6 +2328,7 @@
     if (e.code === 'KeyP')  toggleSessionsPanel();
     if (e.code === 'KeyE')  openView('escenario');
     if (e.code === 'KeyA')  openView('audience');
+    if (e.code === 'KeyH')  toggleHelp();
   });
 
   // ── SESSIONS ──────────────────────────────────────────
@@ -2282,6 +2413,136 @@
     if (e.code === 'Tab') {
       const panel = document.getElementById('sessions-panel');
       const focusables = Array.from(panel.querySelectorAll('button, input, [tabindex]:not([tabindex="-1"])'))
+        .filter(el => !el.disabled && el.offsetParent !== null);
+      if (!focusables.length) return;
+      const first = focusables[0], last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  }, true);
+
+  // ── AYUDA ──────────────────────────────────────────────
+  const helpContent = {
+    es: `
+      <div class="help-section">
+        <div class="help-eyebrow">⏱️ Modos</div>
+        <p><strong>Cuenta atrás</strong> — fija minutos y segundos. Al llegar a cero sigue contando en negativo, sin interrumpir, con aviso de tiempo consumido.</p>
+        <p><strong>Hasta hora</strong> — fija una hora (HH:MM) y cuenta atrás hasta llegar a ella. Si ya pasó hoy, salta a mañana.</p>
+        <p><strong>Cuenta adelante</strong> — cuenta desde cero el tiempo transcurrido.</p>
+        <p><strong>Reloj</strong> — muestra la hora actual, sin iniciar ni pausar.</p>
+      </div>
+      <div class="help-section">
+        <div class="help-eyebrow">👥 Sesiones</div>
+        <p>Cada sesión agrupa una lista de ponentes con su tiempo. El selector aparece en cuanto hay dos o más sesiones creadas.</p>
+        <p><strong>Duplicar</strong> copia la sesión activa como plantilla (útil para el día 2 de un congreso). <strong>↓ JSON</strong> exporta solo la sesión activa; <strong>⬇ Backup</strong> exporta todas de golpe. <strong>↑ JSON</strong> detecta automáticamente si el archivo es una sesión, varias, o un backup completo.</p>
+        <p>Eliminar un ponente o una sesión ofrece <strong>deshacer</strong> durante 5 segundos.</p>
+      </div>
+      <div class="help-section">
+        <div class="help-eyebrow">🖥️ Vistas</div>
+        <p><strong>Escenario</strong> y <strong>Audience</strong> se abren en ventanas independientes — arrástralas a otra pantalla y pon pantalla completa. El punto junto a cada botón indica si están conectadas y recibiendo datos.</p>
+        <p><strong>Blackout</strong> apaga la pantalla del operador sin detener el timer. <strong>Modo limpio</strong> oculta toda la interfaz salvo el display.</p>
+      </div>
+      <div class="help-section">
+        <div class="help-eyebrow">⌨️ Atajos de teclado</div>
+        <div class="help-shortcuts-grid">
+          <div class="help-shortcut"><span class="key">Space</span> Iniciar / pausar</div>
+          <div class="help-shortcut"><span class="key">R</span> Reset</div>
+          <div class="help-shortcut"><span class="key">M</span> +1 min</div>
+          <div class="help-shortcut"><span class="key">S</span> −30 seg</div>
+          <div class="help-shortcut"><span class="key">B</span> Blackout</div>
+          <div class="help-shortcut"><span class="key">C</span> Modo limpio</div>
+          <div class="help-shortcut"><span class="key">P</span> Sesiones</div>
+          <div class="help-shortcut"><span class="key">E</span> Vista Escenario</div>
+          <div class="help-shortcut"><span class="key">A</span> Vista Audience</div>
+          <div class="help-shortcut"><span class="key">H</span> Esta ayuda</div>
+        </div>
+        <p style="margin-top:0.6rem;">Los atajos no se disparan mientras escribes en un campo de texto.</p>
+      </div>
+      <div class="help-section">
+        <div class="help-eyebrow">🔗 Control remoto</div>
+        <p>Tatimer se puede controlar por parámetros en la URL, útil para QLab u otro software de show control. Detalles completos en el <a href="https://github.com/javitatay/Tatimer" target="_blank" rel="noopener">README del repositorio</a>.</p>
+      </div>
+      <div class="help-section">
+        <div class="help-eyebrow">📴 Offline</div>
+        <p>Funciona sin conexión y se puede instalar como app. No requiere servidor ni cuenta.</p>
+      </div>
+    `,
+    en: `
+      <div class="help-section">
+        <div class="help-eyebrow">⏱️ Modes</div>
+        <p><strong>Countdown</strong> — set minutes and seconds. When it hits zero it keeps counting into negative time without interrupting, with an overtime warning.</p>
+        <p><strong>Until time</strong> — set a fixed time (HH:MM) and count down to it. If that time already passed today, it jumps to tomorrow.</p>
+        <p><strong>Count up</strong> — counts elapsed time from zero.</p>
+        <p><strong>Clock</strong> — shows the current time, no start or pause needed.</p>
+      </div>
+      <div class="help-section">
+        <div class="help-eyebrow">👥 Sessions</div>
+        <p>Each session groups a list of speakers with their time. The switcher appears once you have two or more sessions.</p>
+        <p><strong>Duplicate</strong> copies the active session as a template (handy for day 2 of a conference). <strong>↓ JSON</strong> exports only the active session; <strong>⬇ Backup</strong> exports all of them at once. <strong>↑ JSON</strong> auto-detects whether the file is one session, several, or a full backup.</p>
+        <p>Deleting a speaker or a session offers <strong>undo</strong> for 5 seconds.</p>
+      </div>
+      <div class="help-section">
+        <div class="help-eyebrow">🖥️ Views</div>
+        <p><strong>Stage</strong> and <strong>Audience</strong> open in independent windows — drag them to another screen and go fullscreen. The dot next to each button shows whether it's connected and receiving data.</p>
+        <p><strong>Blackout</strong> turns off the operator's screen without stopping the timer. <strong>Clean mode</strong> hides the whole interface except the display.</p>
+      </div>
+      <div class="help-section">
+        <div class="help-eyebrow">⌨️ Keyboard shortcuts</div>
+        <div class="help-shortcuts-grid">
+          <div class="help-shortcut"><span class="key">Space</span> Start / pause</div>
+          <div class="help-shortcut"><span class="key">R</span> Reset</div>
+          <div class="help-shortcut"><span class="key">M</span> +1 min</div>
+          <div class="help-shortcut"><span class="key">S</span> −30 sec</div>
+          <div class="help-shortcut"><span class="key">B</span> Blackout</div>
+          <div class="help-shortcut"><span class="key">C</span> Clean mode</div>
+          <div class="help-shortcut"><span class="key">P</span> Sessions</div>
+          <div class="help-shortcut"><span class="key">E</span> Stage view</div>
+          <div class="help-shortcut"><span class="key">A</span> Audience view</div>
+          <div class="help-shortcut"><span class="key">H</span> This help</div>
+        </div>
+        <p style="margin-top:0.6rem;">Shortcuts don't fire while you're typing in a text field.</p>
+      </div>
+      <div class="help-section">
+        <div class="help-eyebrow">🔗 Remote control</div>
+        <p>Tatimer can be controlled via URL parameters, useful for QLab or other show-control software. Full details in the <a href="https://github.com/javitatay/Tatimer" target="_blank" rel="noopener">repository README</a>.</p>
+      </div>
+      <div class="help-section">
+        <div class="help-eyebrow">📴 Offline</div>
+        <p>Works without a connection and can be installed as an app. No server or account required.</p>
+      </div>
+    `,
+  };
+
+  let helpOpen = false;
+  let lastFocusBeforeHelp = null;
+
+  function renderHelpContent() {
+    document.getElementById('help-body').innerHTML = helpContent[lang] || helpContent.es;
+    document.getElementById('help-title').textContent = lang === 'es' ? 'Ayuda' : 'Help';
+    document.getElementById('btn-help-close').setAttribute('aria-label', lang === 'es' ? 'Cerrar ayuda' : 'Close help');
+  }
+
+  function toggleHelp() {
+    helpOpen = !helpOpen;
+    const overlay = document.getElementById('help-overlay');
+    document.getElementById('btn-help').setAttribute('aria-pressed', String(helpOpen));
+    if (helpOpen) {
+      renderHelpContent();
+      overlay.classList.add('show');
+      lastFocusBeforeHelp = document.activeElement;
+      setTimeout(() => document.getElementById('btn-help-close').focus(), 50);
+    } else {
+      overlay.classList.remove('show');
+      if (lastFocusBeforeHelp) { lastFocusBeforeHelp.focus(); lastFocusBeforeHelp = null; }
+    }
+  }
+
+  document.getElementById('help-panel').addEventListener('keydown', e => {
+    if (!helpOpen) return;
+    if (e.code === 'Escape') { e.preventDefault(); toggleHelp(); return; }
+    if (e.code === 'Tab') {
+      const panel = document.getElementById('help-panel');
+      const focusables = Array.from(panel.querySelectorAll('button, a, [tabindex]:not([tabindex="-1"])'))
         .filter(el => !el.disabled && el.offsetParent !== null);
       if (!focusables.length) return;
       const first = focusables[0], last = focusables[focusables.length - 1];

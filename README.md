@@ -42,6 +42,7 @@ Está disponible online sin instalación y también funciona descargando `index.
 - 🔆 **Pantalla siempre encendida** durante el show (Wake Lock) — no se apaga ni activa el salvapantallas mientras el timer está en pantalla.
 - ↩️ **Deshacer** al eliminar un ponente o una sesión — 5 segundos para recuperarlo antes de que se pierda.
 - 🟢 **Indicador de ventanas conectadas** — el operador ve de un vistazo si las vistas Escenario y Audience siguen abiertas y recibiendo datos.
+- ❓ **Panel de ayuda in-app** — referencia rápida de modos, sesiones y atajos, sin salir de la app (tecla `H`).
 
 ---
 
@@ -58,6 +59,12 @@ Abre [javitatay.github.io/Tatimer](https://javitatay.github.io/Tatimer/) en Safa
 3. Arrastra la ventana al monitor del ponente.
 
 Un service worker propio (`sw.js`) cachea la aplicación en la primera carga, así que funciona completamente offline desde la segunda vez que se abre, tanto en local como servida. También se puede instalar como aplicación (PWA) desde el navegador para tenerla como icono independiente. Las fuentes de Google Fonts se cargan con fuentes del sistema como alternativa si no hay conexión.
+
+---
+
+## ❓ Ayuda
+
+Pulsa `H` o el botón `?` de la esquina superior derecha para abrir un panel de ayuda dentro de la propia app: repasa modos, sesiones, vistas, atajos de teclado y control remoto sin salir de Tatimer ni depender de tener este README a mano en mitad de un show. Se cierra con `Esc`, con el botón `✕`, o haciendo clic fuera del panel, y sigue el idioma (ES/EN) y el tema activos.
 
 ---
 
@@ -98,7 +105,7 @@ El panel lateral de sesiones permite organizar un congreso o evento con varias p
 
 Cada **sesión** agrupa una lista de **ponentes**, cada uno con nombre del ponente, título de la ponencia y duración asignada (minutos : segundos).
 
-Se pueden crear y gestionar múltiples sesiones — una por bloque del evento, por ejemplo. Las sesiones se guardan automáticamente en el navegador (`localStorage`) y persisten entre recargas.
+Se pueden crear y gestionar múltiples sesiones — una por bloque del evento, por ejemplo. Las sesiones se guardan automáticamente en el navegador (`localStorage`) y persisten entre recargas. En cuanto hay dos o más, aparece un selector desplegable sobre el nombre para saltar entre ellas.
 
 ### Flujo de trabajo habitual
 
@@ -114,7 +121,9 @@ Se pueden crear y gestionar múltiples sesiones — una por bloque del evento, p
 
 | Elemento | Función |
 |---|---|
+| Selector de sesión | Cambia entre sesiones ya creadas (visible con 2 o más) |
 | Campo de nombre | Nombre de la sesión activa. `Enter` o *Guardar* para confirmar |
+| *Duplicar* | Copia la sesión activa entera (ponentes incluidos) como plantilla, p. ej. para el día 2 de un congreso |
 | *Nueva* | Crea una sesión vacía |
 | *Eliminar sesión* | Borra la sesión activa con confirmación (deshacer disponible 5 seg) |
 | Tarjeta de ponente | Click para cargar su tiempo en el timer |
@@ -122,12 +131,15 @@ Se pueden crear y gestionar múltiples sesiones — una por bloque del evento, p
 | `✕` | Elimina el ponente de la lista (deshacer disponible 5 seg) |
 | Total | Duración acumulada de todos los ponentes de la sesión |
 | **Publicar** | Envía el ponente actualmente cargado a la vista Audience |
-| `↓ JSON` | Exporta la sesión activa como archivo `.json` |
-| `↑ JSON` | Importa una sesión desde un archivo `.json` |
+| `↓ JSON` | Exporta solo la sesión activa como archivo `.json` |
+| `↑ JSON` | Importa uno o varios archivos — detecta automáticamente el formato (ver abajo) |
+| `⬇ Backup` | Exporta **todas** las sesiones de golpe, con fecha en el nombre del archivo |
 
 > Solo se puede deshacer la última eliminación: si borras dos elementos seguidos, la posibilidad de recuperar el primero desaparece.
 
 ### Formato de exportación / importación
+
+Sesión individual (lo que genera `↓ JSON`):
 
 ```json
 {
@@ -140,7 +152,18 @@ Se pueden crear y gestionar múltiples sesiones — una por bloque del evento, p
 }
 ```
 
-También se acepta un array plano de ponentes sin envoltura de sesión.
+Backup completo (lo que genera `⬇ Backup`), con varias sesiones dentro:
+
+```json
+{
+  "type": "tatimer_backup",
+  "version": 1,
+  "exportedAt": "2026-07-02T10:00:00.000Z",
+  "sessions": [ { "name": "Bloque A", "speakers": [...] }, { "name": "Bloque B", "speakers": [...] } ]
+}
+```
+
+`↑ JSON` acepta cualquiera de los dos formatos anteriores, un array de sesiones sin envoltura de backup, o un array plano de ponentes sin envoltura de sesión (formato heredado). La importación siempre **añade** sesiones nuevas — nunca sobrescribe lo que ya tienes.
 
 ---
 
@@ -184,6 +207,7 @@ También se acepta un array plano de ponentes sin envoltura de sesión.
 | `Esc` | Cerrar panel de sesiones (si está abierto) |
 | `E` | Abrir / enfocar vista Escenario |
 | `A` | Abrir / enfocar vista Audience |
+| `H` | Abrir / cerrar el panel de ayuda |
 
 ---
 

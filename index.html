@@ -2557,7 +2557,7 @@
     const sel = document.getElementById('session-switcher');
     sel.setAttribute('aria-label', t('sess-switcher-label'));
     sel.innerHTML = '';
-    if (sessionsData.length < 2) { sel.style.display = 'none'; return; }
+    if (sessionsData.length < 1) { sel.style.display = 'none'; return; }
     sessionsData.forEach(s => {
       const opt = document.createElement('option');
       opt.value = s.id;

@@ -19,25 +19,24 @@ Timer standalone con gestión de sesiones (ponentes, tiempos y títulos de ponen
 
 ## 📑 Índice
 
-- [📑 Índice](#-índice)
 - [¿Qué es Tatimer?](#qué-es-tatimer)
 - [🌐 Uso](#-uso)
 - [❓ Ayuda](#-ayuda)
-- [🖥️ Vistas adicionales](#-vistas-adicionales)
+- [🖥️ Vistas adicionales](#️-vistas-adicionales)
 - [📋 Panel de sesiones](#-panel-de-sesiones)
-- [🎛️ Controles en pantalla](#-controles-en-pantalla)
-- [⌨️ Atajos de teclado](#-atajos-de-teclado)
-- [⏲️ Modos](#-modos)
+- [🎛️ Controles en pantalla](#️-controles-en-pantalla)
+- [⌨️ Atajos de teclado](#️-atajos-de-teclado)
+- [⏲️ Modos](#️-modos)
 - [📊 Barra de progreso](#-barra-de-progreso)
 - [🚦 Alertas de tiempo](#-alertas-de-tiempo)
 - [💬 Mensajes al ponente](#-mensajes-al-ponente)
 - [⬛ Blackout](#-blackout)
 - [🧹 Modo limpio](#-modo-limpio)
 - [🔗 Control por URL](#-control-por-url)
-- [🛠️ Para desarrolladores](#-para-desarrolladores)
+- [🛠️ Para desarrolladores](#️-para-desarrolladores)
 - [🔗 Más herramientas](#-más-herramientas)
 - [📄 Licencia](#-licencia)
-- [✉️ Contacto](#-contacto)
+- [✉️ Contacto](#️-contacto)
 
 ---
 

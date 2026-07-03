@@ -17,6 +17,29 @@ Timer standalone con gestión de sesiones (ponentes, tiempos y títulos de ponen
 
 ---
 
+## 📑 Índice
+
+- [¿Qué es Tatimer?](#qué-es-tatimer)
+- [🌐 Uso](#uso)
+- [❓ Ayuda](#ayuda)
+- [🖥️ Vistas adicionales](#vistas-adicionales)
+- [📋 Panel de sesiones](#panel-de-sesiones)
+- [🎛️ Controles en pantalla](#controles-en-pantalla)
+- [⌨️ Atajos de teclado](#atajos-de-teclado)
+- [⏲️ Modos](#modos)
+- [📊 Barra de progreso](#barra-de-progreso)
+- [🚦 Alertas de tiempo](#alertas-de-tiempo)
+- [💬 Mensajes al ponente](#mensajes-al-ponente)
+- [⬛ Blackout](#blackout)
+- [🧹 Modo limpio](#modo-limpio)
+- [🔗 Control por URL](#control-por-url)
+- [🛠️ Para desarrolladores](#para-desarrolladores)
+- [🔗 Más herramientas](#más-herramientas)
+- [📄 Licencia](#licencia)
+- [✉️ Contacto](#contacto)
+
+---
+
 ## ¿Qué es Tatimer?
 
 Tatimer es un temporizador pensado para el monitor del ponente en eventos, conferencias y shows en vivo. Permite organizar un congreso entero con sus ponentes y tiempos, mostrar una cuenta atrás a pantalla completa en el escenario y proyectar en la sala quién interviene a continuación, todo controlado por un operador desde una única interfaz.
@@ -306,6 +329,18 @@ Tatimer/
 
 ---
 
+## 🔗 Más herramientas
+
+Otras herramientas para producción de eventos en directo:
+
+- 🎪 **Tarimeo** — Diseña y organiza la distribución de tarimas y escenarios. [Ver proyecto](https://github.com/javitatay/Tarimeo) · [Demo](https://javitatay.github.io/Tarimeo/)
+- 📡 **RFTDT** — Consulta de frecuencias TDT libres para microfonía inalámbrica. [Ver proyecto](https://github.com/javitatay/RFTDT) · [Demo](https://javitatay.github.io/RFTDT/)
+- 🔷 **VectorSlice** — Convierte vectores de Illustrator en Slices de Resolume Arena. [Ver proyecto](https://github.com/javitatay/VectorSlice) · [Demo](https://javitatay.github.io/VectorSlice/)
+- 🎬 **QLab Live Scripts** — Controla PowerPoint, Chrome, Zoom, PDF y Spotify desde QLab 5. [Ver proyecto](https://github.com/javitatay/QLab-Scripts-Live-Events) · [Demo](https://javitatay.github.io/QLab-Scripts-Live-Events/)
+- 🎓 **AVV Lab** — Plataforma educativa interactiva de Animación Visual en Vivo. [Ver proyecto](https://github.com/javitatay/AVV) · [Demo](https://javitatay.github.io/AVV/)
+
+---
+
 ## 📄 Licencia
 
 Tatimer se distribuye bajo la licencia **[GNU General Public License v3.0](LICENSE)**.
@@ -319,7 +354,7 @@ Eres libre de usar, estudiar, modificar y compartir este software. La única con
 ## ✉️ Contacto
 
 **Javier Tatay Rubio**
-📧 j.tatayrubio@edu.gva.es
+📧 j.tatayrubio@edu.gva.es · javitatay@gmail.com
 
 ---
 

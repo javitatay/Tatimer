@@ -224,12 +224,13 @@
   #progress-marker {
     position: absolute;
     top: 50%;
+    left: 0;
     transform: translate(-50%, -50%);
     width: 0; height: 0;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
     border-top: 8px solid var(--marker-color);
-    transition: left 1s linear;
+    transition: transform 1s linear;
     filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4));
     pointer-events: none;
     z-index: 10;
@@ -509,7 +510,6 @@
 
   /* ── BANNER TIEMPO CONSUMIDO ────────────────────────── */
   #overtime-banner {
-    display: none;
     position: fixed;
     top: 0; left: 0; right: 0;
     background: #FF6363;
@@ -523,9 +523,13 @@
     padding: clamp(0.4rem, 1vh, 0.8rem);
     z-index: 100;
     box-shadow: rgba(255,99,99,0.3) 0px 4px 20px;
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none;
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
   }
 
-  #overtime-banner.show { display: block; }
+  #overtime-banner.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
   /* ── LEYENDA ATAJOS ─────────────────────────────────── */
   #shortcuts {
@@ -1986,6 +1990,13 @@
   const progressFill   = document.getElementById('progress-fill');
   const progressOverlay = document.getElementById('progress-overlay');
   const progressMarker = document.getElementById('progress-marker');
+  const progressTrack  = document.getElementById('progress-track');
+  let markerTrackWidth = progressTrack.clientWidth;
+  new ResizeObserver(() => { markerTrackWidth = progressTrack.clientWidth; }).observe(progressTrack);
+  function setMarkerPct(pct) {
+    const px = (markerTrackWidth * pct) / 100;
+    progressMarker.style.transform = `translate(-50%, -50%) translateX(${px}px)`;
+  }
   const progressSegY   = document.getElementById('progress-seg-yellow');
   const progressSegR   = document.getElementById('progress-seg-red');
   const btnStart       = document.getElementById('btn-startstop');
@@ -2141,7 +2152,7 @@
     statusEl.textContent = '';
     progressFill.style.transform = 'scaleX(1)';
     progressOverlay.style.transform = 'scaleX(0)';
-    progressMarker.style.left = '100%';
+    setMarkerPct(100);
     overtimeBanner.classList.remove('show');
     clockInterval = setInterval(() => {
       display.textContent = fmtClock();
@@ -2162,14 +2173,14 @@
       // Fill (parte iluminada) y overlay (parte oscura)
       progressFill.style.transform    = `scaleX(${pct / 100})`;
       progressOverlay.style.transform = `scaleX(${(100 - pct) / 100})`;
-      progressMarker.style.left   = pct + '%';
+      setMarkerPct(pct);
 
       const { warningSeconds, dangerSeconds } = getAlertSeconds();
 
       if (remaining < 0) {
         display.className = 'overtime';
         progressFill.className = 'overtime';
-        progressMarker.style.left = '0%';
+        setMarkerPct(0);
         overtimeBanner.classList.add('show');
         statusEl.textContent = t('status-overtime');
       } else if (remaining <= dangerSeconds) {
@@ -2189,7 +2200,7 @@
       display.textContent = fmt(elapsed);
       progressFill.style.transform    = 'scaleX(1)';
       progressOverlay.style.transform = 'scaleX(0)';
-      progressMarker.style.left   = '100%';
+      setMarkerPct(100);
       display.className = '';
       overtimeBanner.classList.remove('show');
     }
@@ -2263,19 +2274,19 @@
       display.textContent = fmt(totalSeconds);
       progressFill.style.transform    = 'scaleX(1)';
       progressOverlay.style.transform = 'scaleX(0)';
-      progressMarker.style.left   = '100%';
+      setMarkerPct(100);
     } else if (mode === 'untiltime') {
       totalSeconds = computeUntilTimeSeconds();
       display.textContent = fmt(totalSeconds);
       progressFill.style.transform    = 'scaleX(1)';
       progressOverlay.style.transform = 'scaleX(0)';
-      progressMarker.style.left   = '100%';
+      setMarkerPct(100);
       updateModeLabel();
     } else {
       display.textContent = '00:00';
       progressFill.style.transform    = 'scaleX(1)';
       progressOverlay.style.transform = 'scaleX(0)';
-      progressMarker.style.left   = '100%';
+      setMarkerPct(100);
     }
     updateSegments();
   }

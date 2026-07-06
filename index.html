@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Temporizador · Timer</title>
 <meta name="description" content="Tatimer — temporizador para el monitor del ponente en eventos, conferencias y shows en vivo. Gestión de sesiones (ponentes, tiempos, títulos) y vistas independientes para escenario y sala. Sin dependencias, sin servidor.">
 <meta property="og:type" content="website">
@@ -73,7 +73,7 @@
      del navegador del usuario al usar % en vez de un valor fijo en px. */
   html { font-size: 118.75%; }
 
-  html, body { width: 100%; height: 100%; }
+  html, body { width: 100%; height: 100%; overflow-x: hidden; }
 
   body {
     background: var(--bg);
@@ -1349,6 +1349,34 @@
 
   body.light #help-panel { background: #fff; }
   body.light .help-section p { opacity: 0.75; }
+
+  /* ── Touch targets WCAG 2.5.5: mínimo 44×44px en dispositivos de toque ── */
+  @media (pointer: coarse) {
+    .lang-btn,
+    .sess-btn,
+    .mode-btn {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .speaker-del {
+      min-width: 44px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-view {
+      min-height: 44px;
+    }
+    /* iOS hace zoom automático al enfocar un input con font-size < 16px */
+    #config input,
+    #message-input,
+    .sess-input {
+      font-size: 16px !important;
+    }
+  }
 </style>
 </head>
 <body>

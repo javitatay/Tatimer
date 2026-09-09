@@ -2260,6 +2260,7 @@
       btnStart.textContent = t('btn-resume');
       btnStart.classList.add('primary');
       statusEl.textContent = t('status-paused');
+      broadcastTimerState(); // deja LS_TIMER al día (running:false) para restore tras reload
     }
   }
 
@@ -2317,6 +2318,7 @@
       setMarkerPct(100);
     }
     updateSegments();
+    broadcastTimerState(); // deja LS_TIMER al día (elapsed:0) para restore tras reload
   }
 
   function sendMessage() {
@@ -3134,6 +3136,41 @@
     clearInterval(window._clockBroadcast);
   };
 
+  // ── RESTAURAR ESTADO TRAS RECARGA/CRASH ─────────────────
+  // Captura el último estado emitido ANTES de que resetTimer()/setMode()
+  // de este mismo INIT lo pisen con el estado por defecto.
+  const _savedTimerState = (() => {
+    try {
+      const raw = localStorage.getItem(LS_TIMER);
+      return raw ? JSON.parse(raw) : null;
+    } catch (_) { return null; }
+  })();
+
+  function restoreTimerState(s) {
+    if (running) return; // ya hay estado explícito (p.ej. venido de la URL) -> no pisarlo
+    if (!s || s.mode === 'clock') return;
+    if (!s.running && (!s.elapsed || s.elapsed <= 0)) return; // nada que restaurar
+    mode = s.mode;
+    totalSeconds = s.totalSeconds;
+    document.getElementById('btn-countdown').classList.toggle('active', mode === 'countdown');
+    document.getElementById('btn-untiltime').classList.toggle('active', mode === 'untiltime');
+    document.getElementById('btn-countup').classList.toggle('active', mode === 'countup');
+    document.getElementById('config-row-minsec').style.display = mode === 'countdown' ? '' : 'none';
+    document.getElementById('config-row-target').style.display = mode === 'untiltime' ? '' : 'none';
+    updateModeLabel();
+    const drift = s.running ? Math.round((Date.now() - s.ts) / 1000) : 0;
+    elapsed = Math.max(0, s.elapsed + drift);
+    updateDisplay();
+    if (s.running) {
+      toggleTimer(); // retoma running=true + interval, arrastrando el elapsed ya corregido
+    } else {
+      btnStart.textContent = t('btn-resume');
+      btnStart.classList.add('primary');
+      statusEl.textContent = t('status-paused');
+      document.getElementById('btn-pause').style.display = 'none';
+    }
+  }
+
   // ── INIT sessions ──────────────────────────────────────
   loadSessions();
 
@@ -3142,6 +3179,7 @@
   updateSessionsI18n('es');
   resetTimer();
   handleURLParams();
+  restoreTimerState(_savedTimerState);
 
   inputMin.addEventListener('input', () => { if (!running) resetTimer(); });
   inputSec.addEventListener('input', () => { if (!running) resetTimer(); });

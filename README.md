@@ -64,6 +64,7 @@ Está disponible online sin instalación y también funciona descargando `index.
 - 📴 **Funciona offline e instalable como app (PWA)** — service worker propio, sin depender de la caché del navegador.
 - 🔆 **Pantalla siempre encendida** durante el show (Wake Lock) — no se apaga ni activa el salvapantallas mientras el timer está en pantalla.
 - ↩️ **Deshacer** al eliminar un ponente o una sesión — 5 segundos para recuperarlo antes de que se pierda.
+- 🔄 **Recuperación de estado tras recarga o cierre accidental** — si el operador recarga la pestaña o el navegador se cierra a media cuenta, el timer retoma corrigiendo el tiempo transcurrido durante el corte (running o en pausa), sin perder el conteo.
 - 🟢 **Indicador de ventanas conectadas** — el operador ve de un vistazo si las vistas Escenario y Audience siguen abiertas y recibiendo datos.
 - ❓ **Panel de ayuda in-app** — referencia rápida de modos, sesiones y atajos, sin salir de la app (tecla `H`).
 
@@ -315,6 +316,8 @@ Tatimer es una aplicación web autocontenida en `index.html`, sin dependencias e
 Incluye un service worker (`sw.js`, estrategia stale-while-revalidate) y un `manifest.json` para funcionamiento offline real e instalación como PWA. Ambos son opcionales: si el navegador no los soporta o el archivo se abre desde un contexto no seguro (`file://`, `content://`), la aplicación funciona igual, simplemente sin esa capa de caché adicional.
 
 Cuida accesibilidad de teclado (`:focus-visible`, `aria-pressed`/`aria-expanded` en los toggles, focus trap en el panel de sesiones) y contraste WCAG AA en ambos temas.
+
+El estado del timer (`mode`, `elapsed`, `totalSeconds`, `running`, `ts`) se emite cada tick a `localStorage` (`tatimer_bc_timer`), el mismo canal que sincroniza las vistas Escenario/Audience. Al cargar la página, `restoreTimerState()` lee ese último estado y corrige `elapsed` con el drift real (`Date.now() - ts`) antes de retomar — así una recarga o un crash del operador a media cuenta no pierde el tiempo transcurrido. Cede siempre ante un estado explícito ya en marcha (p. ej. `?action=start` por URL).
 
 ```
 Tatimer/

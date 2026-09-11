@@ -317,7 +317,7 @@ Incluye un service worker (`sw.js`, estrategia stale-while-revalidate) y un `man
 
 Cuida accesibilidad de teclado (`:focus-visible`, `aria-pressed`/`aria-expanded` en los toggles, focus trap en el panel de sesiones) y contraste WCAG AA en ambos temas.
 
-El estado del timer (`mode`, `elapsed`, `totalSeconds`, `running`, `ts`) se emite cada tick a `localStorage` (`tatimer_bc_timer`), el mismo canal que sincroniza las vistas Escenario/Audience. Al cargar la página, `restoreTimerState()` lee ese último estado y corrige `elapsed` con el drift real (`Date.now() - ts`) antes de retomar — así una recarga o un crash del operador a media cuenta no pierde el tiempo transcurrido. Cede siempre ante un estado explícito ya en marcha (p. ej. `?action=start` por URL).
+El estado del timer (`mode`, `elapsed`, `totalSeconds`, `running`, `ts`) se emite cada tick a `localStorage` (`tatimer_bc_timer`), el mismo canal que sincroniza las vistas Escenario/Audience. Al cargar la página, `restoreTimerState()` lee ese último estado y corrige `elapsed` con el drift real (`Date.now() - ts`) antes de retomar — así una recarga o un crash del operador a media cuenta no pierde el tiempo transcurrido. Cede siempre ante un estado explícito ya en marcha (p. ej. `?action=start` por URL). Valida los campos numéricos antes de usarlos (un `LS_TIMER` de una versión anterior sin `ts`, o corrupto, se ignora en vez de propagar `NaN` al display) y descarta estados de más de 2h de antigüedad, tratándolos como sesión anterior olvidada en vez de crash reciente.
 
 ```
 Tatimer/

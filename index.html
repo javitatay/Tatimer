@@ -3051,6 +3051,7 @@
       alertsEnabled,
       warningPct: alertsEnabled && totalSeconds > 0 ? Math.min(100, ((parseInt(document.getElementById('input-warning').value)||3)*60 / totalSeconds)*100) : 0,
       dangerPct:  alertsEnabled && totalSeconds > 0 ? Math.min(100, ((parseInt(document.getElementById('input-danger').value)||1)*60  / totalSeconds)*100) : 0,
+      targetTimeValue: document.getElementById('input-target-time').value,
       ts: Date.now(),
     }));
   }
@@ -3149,17 +3150,35 @@
   function restoreTimerState(s) {
     if (running) return; // ya hay estado explícito (p.ej. venido de la URL) -> no pisarlo
     if (!s || s.mode === 'clock') return;
-    if (!s.running && (!s.elapsed || s.elapsed <= 0)) return; // nada que restaurar
+
+    // Valida y castea explícitamente: un LS_TIMER de una versión anterior sin
+    // 'ts', o un valor corrupto/tipo incorrecto, no debe colar un NaN al display.
+    const ts     = Number(s.ts);
+    const sElap  = Number(s.elapsed);
+    const sTotal = Number(s.totalSeconds);
+    if (!Number.isFinite(ts) || !Number.isFinite(sElap) || !Number.isFinite(sTotal)) return;
+
+    // Un estado guardado hace horas no es un crash reciente, es una sesión
+    // anterior olvidada -> mejor no resucitarlo con un overtime gigante.
+    const MAX_RESTORE_AGE_S = 2 * 3600; // 2h
+    const ageS = (Date.now() - ts) / 1000;
+    if (ageS > MAX_RESTORE_AGE_S) return;
+
+    if (!s.running && sElap <= 0) return; // nada que restaurar
+
     mode = s.mode;
-    totalSeconds = s.totalSeconds;
+    totalSeconds = sTotal;
     document.getElementById('btn-countdown').classList.toggle('active', mode === 'countdown');
     document.getElementById('btn-untiltime').classList.toggle('active', mode === 'untiltime');
     document.getElementById('btn-countup').classList.toggle('active', mode === 'countup');
     document.getElementById('config-row-minsec').style.display = mode === 'countdown' ? '' : 'none';
     document.getElementById('config-row-target').style.display = mode === 'untiltime' ? '' : 'none';
+    if (mode === 'untiltime' && s.targetTimeValue) {
+      document.getElementById('input-target-time').value = s.targetTimeValue;
+    }
     updateModeLabel();
-    const drift = s.running ? Math.round((Date.now() - s.ts) / 1000) : 0;
-    elapsed = Math.max(0, s.elapsed + drift);
+    const drift = s.running ? Math.max(0, Math.round(ageS)) : 0;
+    elapsed = Math.max(0, sElap + drift);
     updateDisplay();
     if (s.running) {
       toggleTimer(); // retoma running=true + interval, arrastrando el elapsed ya corregido

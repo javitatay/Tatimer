@@ -319,6 +319,14 @@ Cuida accesibilidad de teclado (`:focus-visible`, `aria-pressed`/`aria-expanded`
 
 El estado del timer (`mode`, `elapsed`, `totalSeconds`, `running`, `ts`) se emite cada tick a `localStorage` (`tatimer_bc_timer`), el mismo canal que sincroniza las vistas Escenario/Audience. Al cargar la página, `restoreTimerState()` lee ese último estado y corrige `elapsed` con el drift real (`Date.now() - ts`) antes de retomar — así una recarga o un crash del operador a media cuenta no pierde el tiempo transcurrido. Cede siempre ante un estado explícito ya en marcha (p. ej. `?action=start` por URL). Valida los campos numéricos antes de usarlos (un `LS_TIMER` de una versión anterior sin `ts`, o corrupto, se ignora en vez de propagar `NaN` al display) y descarta estados de más de 2h de antigüedad, tratándolos como sesión anterior olvidada en vez de crash reciente.
 
+El conteo en marcha (`toggleTimer()`) no incrementa `elapsed` a ciegas en cada disparo del `setInterval` — lo recalcula siempre desde un ancla de reloj real (`tickAnchorWallClock`/`tickAnchorElapsed` + `Date.now()`). Esto importa para directos largos: un tab en segundo plano, una pestaña que el navegador throttlea, o simplemente una GC pause pueden hacer que el `setInterval` de 1000ms no se dispare puntualmente durante minutos — con un contador ciego el timer se queda retrasado sin avisar; con el ancla, en cuanto el tick vuelve a disparar se autocorrige al tiempo real. Verificado con `@sinonjs/fake-timers` simulando una pestaña en background varios minutos.
+
+`restoreTimerState()` y `handleURLParams()` se ejecutan envueltos en `try/catch` en el arranque: si cualquiera de las dos falla (por ejemplo, un id de elemento que cambia en un futuro retoque de maquetado), el error se registra en consola pero el resto del arranque — listeners de los inputs, Wake Lock, etc. — se completa igual. Antes, una excepción ahí habría cortado el resto del `<script>` sin avisar.
+
+`broadcastTimerState()` ya no depende solo de los ticks del timer corriendo: hay un `setInterval(broadcastTimerState, 2000)` incondicional en el arranque, así que la vista Escenario recibe estado fresco cada 2s pase lo que pase (parado, pausado, corriendo). Antes, en pausa o antes de arrancar la cuenta, no salía ningún broadcast y a los 4s Escenario se caía a "esperando señal" aunque todo funcionara bien; su margen de espera (`connTimeout`) subió de 4s a 6s para dar más colchón sobre el heartbeat de 2s.
+
+Las clases `.warning`/`.danger` del número grande (operador y Escenario) ya solo cambian de color — se quitó la animación de parpadeo (`pulse-warning`/`pulse-danger`, `pw`/`pd`) a petición expresa: el cambio de color es suficiente aviso, sin distraer en pantalla.
+
 ```
 Tatimer/
 │

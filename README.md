@@ -327,6 +327,8 @@ El conteo en marcha (`toggleTimer()`) no incrementa `elapsed` a ciegas en cada d
 
 Las clases `.warning`/`.danger` del número grande (operador y Escenario) ya solo cambian de color — se quitó la animación de parpadeo (`pulse-warning`/`pulse-danger`, `pw`/`pd`) a petición expresa: el cambio de color es suficiente aviso, sin distraer en pantalla.
 
+**Tipografía autohospedada, sin `fonts.googleapis.com`.** La página del operador declaraba `font-family: 'Bebas Neue'` en `#display` y `.mode-label` pero nunca la importaba (solo importaba `Inter`) — el número grande caía siempre a la tipografía por defecto del sistema, con o sin internet, en local o en `https`. Ahora las tres vistas (operador, Escenario, Audience) llevan `Inter` y `Bebas Neue` embebidas como `@font-face` en base64 dentro del propio HTML (subset `latin`, cubre español/catalán: `á é í ó ú ñ ü ç ¿ ¡`). Cero peticiones de red para tipografías, en ninguna vista, nunca — coherente con que Tatimer sea "sin dependencias, sin servidor". Esto añade ~180KB al archivo (fuentes en base64 pesan ~33% más que el binario original), asumible para un archivo local. Verificado que las reglas `@font-face` se parsean sin errores y que los datos en base64 decodifican exactamente al tamaño original de cada fuente (sin truncar).
+
 ```
 Tatimer/
 │

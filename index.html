@@ -161,7 +161,7 @@
   }
 
   /* ── DISPLAY PRINCIPAL ──────────────────────────────── */
-  #display {
+  #display, #display-edit {
     font-family: 'Bebas Neue', 'Inter', sans-serif;
     font-size: clamp(5rem, 22vw, 32rem);
     line-height: 0.9;
@@ -175,6 +175,21 @@
   #display.warning { color: var(--accent); }
   #display.danger  { color: var(--danger); }
   #display.overtime { color: var(--danger); }
+
+  #display.editable { cursor: pointer; }
+  #display.editable:hover { opacity: 0.85; }
+
+  #display-edit {
+    display: none;
+    background: transparent;
+    border: none;
+    border-bottom: 0.05em dashed var(--mid);
+    outline: none;
+    padding: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    caret-color: var(--fg);
+  }
 
 
   @media (prefers-reduced-motion: reduce) {
@@ -741,7 +756,7 @@
   }
 
   body.clean #center { width: 100%; }
-  body.clean #display { font-size: clamp(8rem, 35vw, 48rem); }
+  body.clean #display, body.clean #display-edit { font-size: clamp(8rem, 35vw, 48rem); }
   body.clean #progress-track { width: 90%; }
 
   /* ── RESPONSIVE <500px ──────────────────────────────── */
@@ -769,12 +784,12 @@
     #mode-toggle { flex-direction: row; }
     #lang-theme-group { flex-direction: row; gap: 0.6rem; }
     #lang-toggle { margin-top: 0; padding-top: 0; }
-    #display { font-size: clamp(5rem, 28vw, 14rem); }
+    #display, #display-edit { font-size: clamp(5rem, 28vw, 14rem); }
   }
 
   /* ── RESPONSIVE 500–900px ───────────────────────────── */
   @media (min-width: 501px) and (max-width: 900px) {
-    #display { font-size: clamp(5rem, 20vw, 20rem); }
+    #display, #display-edit { font-size: clamp(5rem, 20vw, 20rem); }
     #panel-left, #panel-right { padding: clamp(0.8rem, 1.5vw, 1.5rem); }
     #shortcuts { display: none; }
   }
@@ -1420,6 +1435,7 @@
     <div class="shortcut"><span class="key">R</span> <span data-i18n="sc-reset">reset</span></div>
     <div class="shortcut"><span class="key">M</span> <span data-i18n="sc-addmin">+1 min</span></div>
     <div class="shortcut"><span class="key">S</span> <span data-i18n="sc-sub30">−30 seg</span></div>
+    <div class="shortcut"><span class="key">T</span> <span data-i18n="sc-edittime">editar tiempo</span></div>
     <div class="shortcut"><span class="key">B</span> <span data-i18n="sc-blackout">blackout</span></div>
     <div class="shortcut"><span class="key">C</span> <span data-i18n="sc-clean">modo limpio</span></div>
     <div class="shortcut"><span class="key">P</span> <span data-i18n="sc-sessions">sesiones</span></div>
@@ -1432,6 +1448,7 @@
 <div id="center">
   <div id="mode-label">CUENTA ATRÁS</div>
   <div id="display">05:00</div>
+  <input id="display-edit" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" aria-label="Editar tiempo">
   <div id="progress-track">
     <div id="progress-bg">
       <div id="progress-seg-green"></div>
@@ -1858,7 +1875,7 @@
       'sc-reset':      'reset',
       'sc-addmin':     '+1 min',
       'sc-sub30':      '−30 seg',
-      'sc-blackout':   'blackout',
+      'sc-edittime':   'editar tiempo',
       'sc-clean':      'modo limpio',
       'sc-sessions':   'sesiones',
       'label-countdown':'CUENTA ATRÁS',
@@ -1925,7 +1942,7 @@
       'sc-reset':      'reset',
       'sc-addmin':     '+1 min',
       'sc-sub30':      '−30 sec',
-      'sc-blackout':   'blackout',
+      'sc-edittime':   'edit time',
       'sc-clean':      'clean mode',
       'sc-sessions':   'sessions',
       'label-countdown':'COUNTDOWN',
@@ -2029,6 +2046,7 @@
   let clockInterval = null;
 
   const display        = document.getElementById('display');
+  const displayEdit    = document.getElementById('display-edit');
   const statusEl       = document.getElementById('status');
   const progressFill   = document.getElementById('progress-fill');
   const progressOverlay = document.getElementById('progress-overlay');
@@ -2139,7 +2157,7 @@
     document.getElementById('btn-countup').setAttribute('aria-pressed', String(m === 'countup'));
     document.getElementById('btn-clock').setAttribute('aria-pressed', String(m === 'clock'));
     updateModeLabel();
-    // Campos de configuración: minutos/segundos en countdown, hora objetivo en untiltime
+    display.classList.toggle('editable', m !== 'clock');
     document.getElementById('config-row-minsec').style.display = m === 'countdown' ? '' : 'none';
     document.getElementById('config-row-target').style.display = m === 'untiltime' ? '' : 'none';
     document.getElementById('config').style.opacity = (m === 'countdown' || m === 'untiltime') ? '1' : '0.3';
@@ -2211,7 +2229,7 @@
     if (mode === 'countdown' || mode === 'untiltime') {
       const remaining = totalSeconds - elapsed;
       display.textContent = remaining < 0 ? '−' + fmt(Math.abs(remaining)) : fmt(remaining);
-      const pct = Math.max(0, (remaining / totalSeconds) * 100);
+      const pct = totalSeconds > 0 ? Math.max(0, (remaining / totalSeconds) * 100) : 0;
 
       // Fill (parte iluminada) y overlay (parte oscura)
       progressFill.style.transform    = `scaleX(${pct / 100})`;
@@ -2312,6 +2330,61 @@
     }
   }
 
+  // ── EDICIÓN EN VIVO DEL TIEMPO ──────────────────────────
+  // Click en el número grande (o tecla T) para escribir directamente el
+  // tiempo restante (countdown/hasta hora) o transcurrido (cuenta arriba),
+  // corriendo o no. Se aplica al instante y se retransmite a
+  // Escenario/Audience sin esperar al siguiente tick/heartbeat.
+  function parseTimeEdit(str) {
+    str = (str || '').trim().replace(',', ':').replace('−', '-');
+    if (!str) return null;
+    let neg = false;
+    if (str[0] === '-') { neg = true; str = str.slice(1); }
+    let totalSecs;
+    if (str.includes(':')) {
+      const [mmStr, ssStr] = str.split(':');
+      const mm = parseInt(mmStr, 10);
+      const ss = parseInt(ssStr, 10);
+      if (!Number.isFinite(mm) && !Number.isFinite(ss)) return null;
+      totalSecs = (Number.isFinite(mm) ? mm : 0) * 60 + (Number.isFinite(ss) ? ss : 0);
+    } else {
+      const n = parseInt(str, 10);
+      if (!Number.isFinite(n)) return null;
+      totalSecs = n; // sin ":" -> segundos totales
+    }
+    return neg ? -totalSecs : totalSecs;
+  }
+
+  function startEditTime() {
+    if (mode === 'clock') return; // el reloj de pared no es editable
+    displayEdit.value = display.textContent.replace('−', '-');
+    display.style.display = 'none';
+    displayEdit.style.display = 'block';
+    displayEdit.focus();
+    displayEdit.select();
+  }
+
+  function cancelEditTime() {
+    displayEdit.style.display = 'none';
+    display.style.display = '';
+  }
+
+  function commitEditTime() {
+    const parsed = parseTimeEdit(displayEdit.value);
+    if (parsed === null) { cancelEditTime(); return; }
+    if (mode === 'countdown' || mode === 'untiltime') {
+      // El operador fija el tiempo restante real -> ajusta totalSeconds
+      // manteniendo elapsed (el ancla de reloj real de la cuenta) intacto.
+      totalSeconds = elapsed + parsed;
+    } else if (mode === 'countup') {
+      elapsed = Math.max(0, parsed);
+      if (running) { tickAnchorWallClock = Date.now(); tickAnchorElapsed = elapsed; }
+    }
+    cancelEditTime();
+    updateDisplay();
+    broadcastTimerState();
+  }
+
   function resetTimer() {
     clearInterval(interval);
     running = false;
@@ -2407,7 +2480,15 @@
     if (e.code === 'KeyE')  openView('escenario');
     if (e.code === 'KeyA')  openView('audience');
     if (e.code === 'KeyH')  toggleHelp();
+    if (e.code === 'KeyT')  startEditTime();
   });
+
+  display.addEventListener('click', startEditTime);
+  displayEdit.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter')  { e.preventDefault(); commitEditTime(); }
+    if (e.key === 'Escape') { e.preventDefault(); cancelEditTime(); }
+  });
+  displayEdit.addEventListener('blur', cancelEditTime);
 
   // ── SESSIONS ──────────────────────────────────────────
 
@@ -2523,6 +2604,7 @@
           <div class="help-shortcut"><span class="key">R</span> Reset</div>
           <div class="help-shortcut"><span class="key">M</span> +1 min</div>
           <div class="help-shortcut"><span class="key">S</span> −30 seg</div>
+          <div class="help-shortcut"><span class="key">T</span> Editar tiempo</div>
           <div class="help-shortcut"><span class="key">B</span> Blackout</div>
           <div class="help-shortcut"><span class="key">C</span> Modo limpio</div>
           <div class="help-shortcut"><span class="key">P</span> Sesiones</div>
@@ -2567,6 +2649,7 @@
           <div class="help-shortcut"><span class="key">R</span> Reset</div>
           <div class="help-shortcut"><span class="key">M</span> +1 min</div>
           <div class="help-shortcut"><span class="key">S</span> −30 sec</div>
+          <div class="help-shortcut"><span class="key">T</span> Edit time</div>
           <div class="help-shortcut"><span class="key">B</span> Blackout</div>
           <div class="help-shortcut"><span class="key">C</span> Clean mode</div>
           <div class="help-shortcut"><span class="key">P</span> Sessions</div>
@@ -3205,6 +3288,7 @@
 
     mode = s.mode;
     totalSeconds = sTotal;
+    display.classList.add('editable'); // restoreTimerState nunca restaura mode 'clock' (guard arriba)
     document.getElementById('btn-countdown').classList.toggle('active', mode === 'countdown');
     document.getElementById('btn-untiltime').classList.toggle('active', mode === 'untiltime');
     document.getElementById('btn-countup').classList.toggle('active', mode === 'countup');
@@ -3234,6 +3318,7 @@
   setLang('es');
   updateSessionsI18n('es');
   resetTimer();
+  display.classList.toggle('editable', mode !== 'clock');
   try { handleURLParams(); } catch (err) { console.error('Tatimer: handleURLParams falló, se ignora y sigue con el resto del arranque', err); }
   try { restoreTimerState(_savedTimerState); } catch (err) { console.error('Tatimer: restoreTimerState falló, se ignora y sigue con el resto del arranque', err); }
 

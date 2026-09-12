@@ -65,6 +65,7 @@ Está disponible online sin instalación y también funciona descargando `index.
 - 🔆 **Pantalla siempre encendida** durante el show (Wake Lock) — no se apaga ni activa el salvapantallas mientras el timer está en pantalla.
 - ↩️ **Deshacer** al eliminar un ponente o una sesión — 5 segundos para recuperarlo antes de que se pierda.
 - 🔄 **Recuperación de estado tras recarga o cierre accidental** — si el operador recarga la pestaña o el navegador se cierra a media cuenta, el timer retoma corrigiendo el tiempo transcurrido durante el corte (running o en pausa), sin perder el conteo.
+- ✏️ **Edición en vivo del tiempo** — clic sobre el número grande (o tecla `T`) para escribir directamente el tiempo restante (countdown/hasta hora) o transcurrido (cuenta arriba), corriendo o en pausa. Enter aplica al instante y se retransmite a Escenario/Audience sin esperar al siguiente tick; Escape o clic fuera cancela sin tocar nada.
 - 🟢 **Indicador de ventanas conectadas** — el operador ve de un vistazo si las vistas Escenario y Audience siguen abiertas y recibiendo datos.
 - ❓ **Panel de ayuda in-app** — referencia rápida de modos, sesiones y atajos, sin salir de la app (tecla `H`).
 
@@ -225,6 +226,7 @@ Backup completo (lo que genera `⬇ Backup`), con varias sesiones dentro:
 | `R` | Reset |
 | `M` | +1 minuto |
 | `S` | −30 segundos |
+| `T` | Editar tiempo directamente (también con clic en el número) |
 | `B` | Blackout |
 | `C` | Modo limpio / vista completa |
 | `P` | Abrir / cerrar panel de sesiones |
@@ -328,6 +330,8 @@ El conteo en marcha (`toggleTimer()`) no incrementa `elapsed` a ciegas en cada d
 Las clases `.warning`/`.danger` del número grande (operador y Escenario) ya solo cambian de color — se quitó la animación de parpadeo (`pulse-warning`/`pulse-danger`, `pw`/`pd`) a petición expresa: el cambio de color es suficiente aviso, sin distraer en pantalla.
 
 **Tipografía autohospedada, sin `fonts.googleapis.com`.** La página del operador declaraba `font-family: 'Bebas Neue'` en `#display` y `.mode-label` pero nunca la importaba (solo importaba `Inter`) — el número grande caía siempre a la tipografía por defecto del sistema, con o sin internet, en local o en `https`. Ahora las tres vistas (operador, Escenario, Audience) llevan `Inter` y `Bebas Neue` embebidas como `@font-face` en base64 dentro del propio HTML (subset `latin`, cubre español/catalán: `á é í ó ú ñ ü ç ¿ ¡`). Cero peticiones de red para tipografías, en ninguna vista, nunca — coherente con que Tatimer sea "sin dependencias, sin servidor". Esto añade ~180KB al archivo (fuentes en base64 pesan ~33% más que el binario original), asumible para un archivo local. Verificado que las reglas `@font-face` se parsean sin errores y que los datos en base64 decodifican exactamente al tamaño original de cada fuente (sin truncar).
+
+**Edición en vivo del tiempo (`startEditTime()`/`commitEditTime()`).** El `#display` se vuelve un `<input>` al hacer clic (o pulsar `T`); `parseTimeEdit()` acepta `MM:SS`, segundos sueltos sin `:`, y un signo `-`/`−` inicial para fijar overtime directamente. Al confirmar con Enter: en countdown/hasta-hora ajusta `totalSeconds = elapsed + valorEscrito` — deja `elapsed` intacto a propósito, porque es el ancla de reloj real de la cuenta (ver más abajo), así una edición en pleno directo no descuadra el tick; en cuenta-arriba ajusta `elapsed` directamente y resincroniza el ancla si está corriendo, igual que hacen `addMinute()`/`subtractThirty()`. Llama a `broadcastTimerState()` justo después de aplicar, así Escenario/Audience reflejan el cambio al instante en vez de esperar al heartbeat de 2s. Escape o perder el foco cancela sin aplicar nada. Verificado con pruebas para countdown corriendo, pausado, cuenta-arriba corriendo (confirmando que sigue contando bien tras la edición), entrada de overtime directa, cancelación, y entradas inválidas.
 
 ```
 Tatimer/

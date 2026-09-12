@@ -34,6 +34,7 @@ Timer standalone con gestión de sesiones (ponentes, tiempos y títulos de ponen
 - [🧹 Modo limpio](#-modo-limpio)
 - [🔗 Control por URL](#-control-por-url)
 - [🛠️ Para desarrolladores](#️-para-desarrolladores)
+- [🧭 Arquitectura y mejoras estructurales a valorar](#-arquitectura-y-mejoras-estructurales-a-valorar)
 - [🔗 Más herramientas](#-más-herramientas)
 - [📄 Licencia](#-licencia)
 - [✉️ Contacto](#️-contacto)
@@ -333,6 +334,8 @@ Las clases `.warning`/`.danger` del número grande (operador y Escenario) ya sol
 
 **Edición en vivo del tiempo (`startEditTime()`/`commitEditTime()`).** El `#display` se vuelve un `<input>` al hacer clic (o pulsar `T`); `parseTimeEdit()` acepta `MM:SS`, segundos sueltos sin `:`, y un signo `-`/`−` inicial para fijar overtime directamente. Al confirmar con Enter: en countdown/hasta-hora ajusta `totalSeconds = elapsed + valorEscrito` — deja `elapsed` intacto a propósito, porque es el ancla de reloj real de la cuenta (ver más abajo), así una edición en pleno directo no descuadra el tick; en cuenta-arriba ajusta `elapsed` directamente y resincroniza el ancla si está corriendo, igual que hacen `addMinute()`/`subtractThirty()`. Llama a `broadcastTimerState()` justo después de aplicar, así Escenario/Audience reflejan el cambio al instante en vez de esperar al heartbeat de 2s. Escape o perder el foco cancela sin aplicar nada. Verificado con pruebas para countdown corriendo, pausado, cuenta-arriba corriendo (confirmando que sigue contando bien tras la edición), entrada de overtime directa, cancelación, y entradas inválidas.
 
+`escHtml()` (usado al renderizar nombre/título de cada ponente en el panel de sesiones) ahora castea con `String(str ?? '')` antes de escapar. Antes, un valor no-string en `speaker.name`/`speaker.title` — por ejemplo tras importar un JSON con un campo numérico en vez de texto — hacía `renderSessionsPanel()` sin capturar la excepción en toda regla, dejando el panel de sesiones a medio pintar (sin las tarjetas de ponentes) para el resto del directo, sin ningún aviso visible. Verificado forzando ese caso: antes rompía, ahora renderiza con normalidad.
+
 ```
 Tatimer/
 │
@@ -343,6 +346,19 @@ Tatimer/
 ├── sw.js
 └── index.html
 ```
+
+⚠️ **Si solo distribuyes/descargas `index.html` suelto** (como al bajarlo directo del repo o de un enlace, sin el resto de archivos), el `<link rel="manifest">` y `navigator.serviceWorker.register('sw.js')` fallan en silencio (van con `.catch(()=>{})`, no rompen nada) — pero pierdes la instalación como PWA y el caché real de service worker. Para uso local vía `file://` esto no importa (la app funciona igual, ya es autocontenida en JS/CSS/fuentes), pero conviene saber que esas dos capas de robustez extra solo están activas si `sw.js`/`manifest.json` viajan junto al `index.html`, o si se sirve desde el repo (GitHub Pages).
+
+---
+
+## 🧭 Arquitectura y mejoras estructurales a valorar
+
+Notas de una auditoría completa del archivo (3.360 líneas, ~310KB con fuentes embebidas). Nada de esto es urgente para el próximo directo — son mejoras de mantenibilidad a medio plazo, no bugs activos:
+
+- **Triplicación entre las 3 vistas.** Operador, Escenario y Audience son documentos independientes (Escenario/Audience se generan como HTML+CSS+JS embebidos en *strings* dentro de un IIFE, inyectados en una ventana nueva). Esto significa que CSS compartida (fuentes, colores de alerta, etc.) vive copiada 2-3 veces. Ya nos ha mordido dos veces en esta sesión: el fix de las fuentes y el de quitar el flash de alertas hubo que aplicarlos por triplicado. A medio plazo, un pequeño script de build (sin necesidad de webpack/bundlers — un `node build.js` con plantillas y `fs.readFileSync` bastaría) que genere el `index.html` final a partir de piezas compartidas (una hoja de fuentes, un bloque de estilos de alerta) eliminaría esta clase de bug por diseño, manteniendo igualmente un único archivo final para distribuir.
+- **Sin suite de tests persistida.** Todo lo verificado hoy (drift de reloj, recuperación tras crash, heartbeat de Escenario, edición en vivo, escapado de HTML) vive en scripts sueltos de una sesión de trabajo, no en el repo. Merece la pena guardar una carpeta `tests/` con Node + `jsdom` (dependencias de desarrollo, no afectan al `index.html` final) y un `npm test` que cargue la página y verifique estos escenarios — así una futura modificación no reintroduce silenciosamente alguno de estos bugs ya cazados.
+- **Sin número de versión ni changelog en el propio archivo.** Con la cantidad de parches de esta sesión, sería fácil dentro de unos meses no saber qué build exacta se está usando en un venue. Un comentario simple al principio del `<script>` (`// Tatimer build: 2026-09-12`) o un `CHANGELOG.md` en el repo ayudaría a rastrearlo.
+- **Tamaño del archivo.** ~310KB es perfectamente manejable para una herramienta local de un solo operador — no es una web pública con presupuesto de carga. Si en el futuro crece mucho más (más idiomas, más vistas), sí empezaría a tener sentido separar en módulos con el build mencionado arriba.
 
 ---
 

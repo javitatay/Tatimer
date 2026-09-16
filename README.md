@@ -106,7 +106,9 @@ Pensada para el **monitor del ponente** en el escenario. Muestra únicamente el 
 
 El operador puede activar un **reloj de hora actual** que aparece en la esquina inferior derecha de la vista Escenario, en gris muy tenue para no distraer al ponente. Se activa y desactiva desde el botón con icono de reloj situado junto al botón Escenario en la interfaz del operador.
 
-Si la ventana pierde la señal más de 4 segundos, muestra un indicador de conexión perdida.
+Si la ventana pierde la señal más de 6 segundos, muestra un indicador de conexión perdida (el operador emite un heartbeat cada 2s incluso parado o en pausa, así que esto solo salta si la ventana realmente se queda sin datos).
+
+Para integrarla como ventana superpuesta en un solo monitor (arrastrada y redimensionada a mano sobre tu vista de moderador, sin mesa de mezclas), ver los parámetros `display=numbers`/`display=bar`/`display=both`, `size` y `opacity` en [Control por URL](#-control-por-url).
 
 ### Vista Audience (`A`)
 
@@ -201,19 +203,20 @@ Backup completo (lo que genera `⬇ Backup`), con varias sesiones dentro:
 | Minutos / Segundos | Panel izquierdo | Configura el tiempo inicial (modo cuenta atrás). Se actualiza en tiempo real al editar. |
 | Hora objetivo | Panel izquierdo | Configura la hora de llegada (modo Hasta hora). Se actualiza en tiempo real al editar. |
 | Cuenta atrás / Hasta hora / Cuenta adelante / Reloj | Panel derecho | Cambia el modo del temporizador |
-| Alerta amarilla (min) | Panel derecho | Minutos restantes para activar el aviso amarillo |
-| Alerta roja (min) | Panel derecho | Minutos restantes para activar el aviso rojo |
+| Preaviso (min) | Panel derecho | Minutos restantes para activar el primer aviso. El círculo de color junto a la etiqueta personaliza el tono. |
+| Alerta final (min) | Panel derecho | Minutos restantes para activar el segundo aviso, más cerca del final. El círculo de color junto a la etiqueta personaliza el tono. |
 | Alertas ON / OFF | Panel derecho | Activa o desactiva todas las alertas globalmente |
 | ES / EN | Panel derecho | Cambia el idioma de la interfaz |
 | ◐ | Panel derecho | Alterna entre tema oscuro y tema claro |
-| Iniciar / Reanudar | Centro inferior | Arranca o reanuda el contador |
-| Pausar | Centro inferior | Pausa sin perder el tiempo |
+| Iniciar / Reanudar | Centro inferior | Arranca o reanuda el contador. Verde mientras no ha arrancado nunca (Iniciar); verde azulado/teal, un tono distinto, en cuanto hay algo que reanudar (Reanudar) — así se distinguen de un vistazo aunque ocupen el mismo botón. |
+| Reset | Centro inferior | Vuelve al estado inicial. En rojo. |
+| Pausar | Centro inferior | Pausa sin perder el tiempo. Solo visible mientras corre, en ámbar. |
 | −30 seg | Centro inferior | Resta 30 segundos al tiempo |
 | +1 min | Centro inferior | Añade 1 minuto al tiempo |
-| Reset | Centro inferior | Vuelve al estado inicial |
 | Blackout | Centro inferior | Cubre la pantalla con negro. El contador sigue corriendo. |
 | 🕐 | Esquina inferior derecha | Activa / desactiva el reloj de hora en la vista Escenario |
 | Escenario | Esquina inferior derecha | Abre / enfoca la vista Escenario |
+| ⚙ | Esquina inferior derecha | Opciones de la vista Escenario — overlay/picture-in-picture (ver [Vistas adicionales](#️-vistas-adicionales)) |
 | Audience | Esquina inferior derecha | Abre / enfoca la vista Audience |
 | ⊞ | Esquina inferior derecha | Activa / desactiva el modo limpio |
 
@@ -262,16 +265,18 @@ Los umbrales se pueden ajustar en directo durante el show sin reiniciar el conta
 
 Dos umbrales independientes configurables en el panel derecho:
 
-- **Alerta amarilla** — minutos restantes para que el display y el marcador cambien a amarillo.
-- **Alerta roja** — minutos restantes para que el display y el marcador cambien a rojo.
+- **Preaviso** — minutos restantes para activar el primer cambio de color.
+- **Alerta final** — minutos restantes para activar el segundo cambio de color, más cerca del final.
 
-El toggle **Alertas ON / OFF** debajo de la alerta roja desactiva ambas alertas globalmente. Con alertas OFF el timer permanece en blanco independientemente del tiempo restante, la barra de progreso no muestra segmentos de color, y la vista Escenario no cambia de color. Útil para ponentes que prefieren no ver ningún aviso visual.
+Junto a cada etiqueta hay un pequeño círculo de color (`<input type="color">`, sin el cuadrado nativo del navegador) para personalizar el tono de cada alerta a gusto del operador — el nombre de cada una ya no va ligado a ningún color por defecto. Un solo color por alerta, igual en ambos temas una vez elegido — mientras no se toque, cada tema sigue usando su propio valor por defecto de siempre. Se aplica al momento a: el dígito del cronómetro, la barra de progreso y el banner de "tiempo consumido" (overtime) — tanto en la ventana principal como en la vista Escenario, incluida si ya está abierta (se actualiza en vivo, sin recargarla). Se guarda en `localStorage` y se recuerda entre sesiones.
+
+El toggle **Alertas ON / OFF** debajo de la alerta final desactiva ambas alertas globalmente. Con alertas OFF el timer permanece en blanco independientemente del tiempo restante, la barra de progreso no muestra segmentos de color, y la vista Escenario no cambia de color. Útil para ponentes que prefieren no ver ningún aviso visual.
 
 ---
 
 ## 💬 Mensajes al ponente
 
-El operador escribe en la caja de texto inferior y pulsa `Enter`. El texto aparece en pantalla grande en amarillo tanto en la ventana principal como en la vista Escenario, visible desde el escenario. `Esc` o el botón *Borrar* lo eliminan en ambas pantallas simultáneamente.
+El operador escribe en la caja de texto inferior y pulsa `Enter`. El texto aparece en pantalla grande en amarillo tanto en la ventana principal como en la vista Escenario, visible desde el escenario. `Esc` o el botón *Borrar* (en azul, igual que *Enviar*) lo eliminan en ambas pantallas simultáneamente.
 
 ---
 
@@ -310,6 +315,22 @@ https://javitatay.github.io/Tatimer/?view=escenario
 https://javitatay.github.io/Tatimer/?view=audience
 ```
 
+La vista Escenario admite además opciones de visualización, pensadas para usarla como ventana superpuesta sobre tu vista de moderador (Keynote, PowerPoint, Slides) cuando solo hay un monitor de referencia — sin depender de una mesa de mezclas de vídeo: se arrastra y redimensiona como cualquier ventana, con opacidad de fondo ajustable y un borde sutil para distinguirla. Se activan con el botón de engranaje junto a **Escenario** en la esquina inferior derecha (se quedan recordadas para la próxima vez), o directamente por URL:
+
+```
+https://javitatay.github.io/Tatimer/?view=escenario&display=numbers
+https://javitatay.github.io/Tatimer/?view=escenario&display=bar
+https://javitatay.github.io/Tatimer/?view=escenario&display=both
+https://javitatay.github.io/Tatimer/?view=escenario&display=numbers&size=150&opacity=40
+```
+
+- `display=numbers` — solo el número, sin barra de progreso ni reloj ni banner de tiempo consumido (el número sigue cambiando de color en warning/danger/overtime).
+- `display=bar` — lo mismo pero solo con la barra de progreso, sin el número.
+- `display=both` — número y barra juntos, sin reloj ni banner de overtime.
+- `size=<50-400>` — escala el número y la barra (por defecto 100%). Hasta 400% para que el número solo pueda llenar toda la vista en modo "solo números". Útil también para ajustar el tamaño al espacio libre en la vista de moderador antes de redimensionar la ventana en sí.
+- `opacity=<0-100>` — opacidad del fondo (por defecto 100%, sólido). Solo tiene efecto junto con `display=numbers`, `display=bar` o `display=both` — en la vista completa (sin `display`) el fondo siempre es sólido. En una ventana normal sin compositor (OBS/vMix), una opacidad baja se ve rellena por lo que el propio navegador pinte detrás, no por lo que haya en la aplicación de abajo.
+- Combinables entre sí y con el resto de parámetros de esta sección.
+
 ---
 
 ## 🛠️ Para desarrolladores
@@ -319,6 +340,10 @@ Tatimer es una aplicación web autocontenida en `index.html`, sin dependencias e
 Incluye un service worker (`sw.js`, estrategia stale-while-revalidate) y un `manifest.json` para funcionamiento offline real e instalación como PWA. Ambos son opcionales: si el navegador no los soporta o el archivo se abre desde un contexto no seguro (`file://`, `content://`), la aplicación funciona igual, simplemente sin esa capa de caché adicional.
 
 Cuida accesibilidad de teclado (`:focus-visible`, `aria-pressed`/`aria-expanded` en los toggles, focus trap en el panel de sesiones) y contraste WCAG AA en ambos temas.
+
+**Colores de estado de los botones de control (`state-start`/`state-resume`/`state-yellow`/`state-red`/`state-blue`).** Fondo muy tenue (8-12% de alfa) + borde y texto en color sobre la base de botón de siempre — nada de bloques sólidos, para no romper el tono discreto del resto de la interfaz. Reutilizan la misma paleta semántica que ya usa el cronómetro (verde = en marcha, ámbar = aviso, rojo = peligro) en vez de inventar colores nuevos. Iniciar y Reanudar comparten el mismo botón (`#btn-startstop`) y por tanto la misma forma de "pill" (`.primary`, solo mientras no está corriendo) pero llevan colores distintos — verde para Iniciar, verde azulado/teal para Reanudar — centralizados en `setStartButtonLabel(isResume)`, una función a la que llaman `toggleTimer()`, `pauseTimer()`, `resetTimer()`, `restoreTimerState()` y `setLang()` en vez de tocar `textContent`/`classList` cada una por su cuenta, para que el texto y el color siempre cambien juntos sin depender de acordarse de actualizar los dos en cada sitio.
+
+**Colores de alerta personalizables (`--alert-warning`/`--alert-danger`, `color-warning`/`color-danger`).** Dos custom properties CSS que sustituyen a los hex sueltos (`#e8a000`, `#FF6363`, `#c8a800`, `#d42b00`...) que antes estaban repartidos por `#display.warning/.danger`, `#progress-fill.warning/.danger`, `#overtime-banner` y sus equivalentes en la vista Escenario — de paso corrigen una inconsistencia real que ya existía: en tema oscuro, el aviso amarillo del dígito del operador usaba `var(--accent)`, que en dark theme vale literalmente lo mismo que `var(--danger)` (`#FF6363`), así que salía en rojo en vez de en ámbar. `applyAlertColors(colors)` fija (o quita, si no hay personalización) `--alert-warning`/`--alert-danger` como inline style en `<html>` — un solo sitio que cascada a todos los selectores de golpe. Sin personalizar, cada tema sigue usando su propio valor por defecto (definido en `:root`/`body.light`, como siempre); en cuanto se elige un color desde el `<input type="color">`, ese inline style gana la cascada y aplica igual en ambos temas hasta que se personalice de nuevo. Persistido en `localStorage` (`tatimer_alert_colors`) y propagado a la vista Escenario — que es un documento aparte (`window.open`), sin el `<html>` del operador — con el mismo patrón de lectura-al-abrir + listener de `storage` para actualización en vivo que ya usan las opciones de la propia vista Escenario; el listener parsea `e.newValue` directamente (no relee `localStorage`), igual que el resto de listeners de esa misma función, en vez de depender de un side-channel adicional.
 
 El estado del timer (`mode`, `elapsed`, `totalSeconds`, `running`, `ts`) se emite cada tick a `localStorage` (`tatimer_bc_timer`), el mismo canal que sincroniza las vistas Escenario/Audience. Al cargar la página, `restoreTimerState()` lee ese último estado y corrige `elapsed` con el drift real (`Date.now() - ts`) antes de retomar — así una recarga o un crash del operador a media cuenta no pierde el tiempo transcurrido. Cede siempre ante un estado explícito ya en marcha (p. ej. `?action=start` por URL). Valida los campos numéricos antes de usarlos (un `LS_TIMER` de una versión anterior sin `ts`, o corrupto, se ignora en vez de propagar `NaN` al display) y descarta estados de más de 2h de antigüedad, tratándolos como sesión anterior olvidada en vez de crash reciente.
 
@@ -335,6 +360,20 @@ Las clases `.warning`/`.danger` del número grande (operador y Escenario) ya sol
 **Edición en vivo del tiempo (`startEditTime()`/`commitEditTime()`).** El `#display` se vuelve un `<input>` al hacer clic (o pulsar `T`); `parseTimeEdit()` acepta `MM:SS`, segundos sueltos sin `:`, y un signo `-`/`−` inicial para fijar overtime directamente. Al confirmar con Enter: en countdown/hasta-hora ajusta `totalSeconds = elapsed + valorEscrito` — deja `elapsed` intacto a propósito, porque es el ancla de reloj real de la cuenta (ver más abajo), así una edición en pleno directo no descuadra el tick; en cuenta-arriba ajusta `elapsed` directamente y resincroniza el ancla si está corriendo, igual que hacen `addMinute()`/`subtractThirty()`. Llama a `broadcastTimerState()` justo después de aplicar, así Escenario/Audience reflejan el cambio al instante en vez de esperar al heartbeat de 2s. Escape o perder el foco cancela sin aplicar nada. Verificado con pruebas para countdown corriendo, pausado, cuenta-arriba corriendo (confirmando que sigue contando bien tras la edición), entrada de overtime directa, cancelación, y entradas inválidas.
 
 `escHtml()` (usado al renderizar nombre/título de cada ponente en el panel de sesiones) ahora castea con `String(str ?? '')` antes de escapar. Antes, un valor no-string en `speaker.name`/`speaker.title` — por ejemplo tras importar un JSON con un campo numérico en vez de texto — hacía `renderSessionsPanel()` sin capturar la excepción en toda regla, dejando el panel de sesiones a medio pintar (sin las tarjetas de ponentes) para el resto del directo, sin ningún aviso visible. Verificado forzando ese caso: antes rompía, ahora renderiza con normalidad.
+
+**Opciones de visualización de Escenario (`overlayNumbersOnly`/`overlayBarOnly`/`overlayBothOnly`/`escScalePct`/`escOpacityPct`, `applyEscOverlayVisuals()`).** Leídas de `?display=numbers`, `?display=bar`, `?display=both`, `?size=<50-400>` y `?opacity=<0-100>` al arrancar la vista — pero son `let`, no `const`: se recalculan en vivo si el popover del operador cambia mientras esta ventana sigue abierta (mismo origen), vía un listener de `storage` sobre la key `tatimer_esc_options` que también usa el popover para persistir su estado. La URL solo manda en el arranque, o de forma permanente cuando no hay un operador en el mismo origen escribiendo esa key (p.ej. la URL pegada directamente como fuente en OBS, en su propio Chromium embebido y aislado — ahí no llega ningún evento `storage` y el comportamiento es el de siempre, fijo por URL).
+
+`display=numbers` añade la clase `overlay-mode` (oculta barra/reloj/banner de overtime); `display=bar` añade `overlay-bar-mode` (al revés, oculta el número); `display=both` añade `overlay-both-mode` (muestra número y barra juntos, oculta solo reloj/banner de overtime). Las tres ocultan con `!important` porque esos elementos también los toca `applyTimer()` vía `style.display` inline — una regla `!important` en la hoja de estilos sí gana a un inline style normal, así que no hace falta tocar esa lógica.
+
+Fondo y borde con opacidad ajustable (100% por defecto = sólido), ambos aplicados como inline style dentro de `applyEscOverlayVisuals()` — una función aparte que tanto `applyTimer()` (en cada tick, con el tema en directo del operador) como el listener de opciones en vivo (con el último tema conocido, guardado en `currentTheme`) pueden llamar sin duplicar la lógica. `document.body.style.backgroundColor` en vez de CSS porque el color base (negro u claro) depende de `d.theme`, que solo se conoce al recibir cada tick de estado; se probó primero con una variable CSS (`background:rgba(0,0,0,var(--x))`) pero el motor de CSS usado en las pruebas automatizadas (jsdom) no resuelve `var()` anidado dentro de `rgba()` — un estándar bien soportado en navegadores reales, pero para poder verificarlo con las pruebas del proyecto se cambió al cálculo directo en JS.
+
+El borde se desvanece a la vez que el fondo (`0.15 * opacity`), a propósito, para servir los dos usos reales sin que se estorben: a opacidad alta (ventana de navegador normal arrastrada a mano sobre la vista de moderador, sin mesa de mezclas — el caso original de esta función) ayuda a ver el borde de la ventana; a opacidad 0 (incrustada con canal alfa real vía OBS/vMix Browser Source, NDI con alfa, etc.) desaparece del todo para no dejar un marco visible sobre la señal compuesta. El número y la barra llevan además una sombra fija — `text-shadow` en el número, `box-shadow` en la barra — que NO depende de la opacidad, porque con canal alfa real el fondo puede llegar a ser transparente de verdad y la sombra es lo único que mantiene el número legible sobre cualquier imagen de fondo, sea cual sea.
+
+**Bug real de transparencia, ya corregido: el fondo iba solo en `body`, pero `<html>` seguía con `background:#000` fijo en su propia regla CSS (`html,body{...background:#000...}`).** Como `<html>` se pinta detrás de `<body>`, aunque `applyEscOverlayVisuals()` pusiera el `rgba()` correcto en `body`, `<html>` seguía aportando un negro sólido debajo — con lo que ningún valor del tirador de opacidad, ni siquiera 0%, llegaba a dar transparencia real para un compositor con canal alfa (seguía viéndose opaco de todas formas). Arreglado separando la regla: `html,body{...}` ya no lleva `background`, y `body{background:#000}` va aparte, solo en `body`. `<html>` se queda sin fondo propio (transparente por defecto) en los tres temas/estados, así que ahora si el tirador está a 0% el resultado final es transparente de verdad en toda la pila, no solo en apariencia.
+
+`size` se traduce a la variable CSS `--esc-scale` (clamp 50-400, por defecto 100) aplicada como `transform: scale()` a `#esc-timer` y `#esc-bar-wrap` — vale tanto en overlay como en la vista completa; a partir de ~250-300% en modo "solo números", el número desborda el viewport original (el `body` mantiene `overflow:hidden`) y queda recortado limpiamente en los bordes, que es justo el efecto buscado para llenar toda la pantalla solo con dígitos. `opacity` solo tiene efecto con `display=numbers`, `display=bar` o `display=both` activos — la vista completa (sin `display`) se queda deliberadamente fuera de este tratamiento, para no sorprender a quien la use como monitor de escenario dedicado de toda la vida. Sin estos parámetros el comportamiento no cambia — verificado explícitamente con un caso de regresión.
+
+Estas opciones también se pueden activar desde un botón de engranaje (`#btn-escenario-options`) junto al botón **Escenario**: un popover con cuatro radios (vista completa / solo números / solo barra / número + barra), un slider de tamaño y un slider de opacidad de fondo (este último solo con efecto fuera de "vista completa"), sin tener que escribir la URL a mano. `openView('escenario')` traduce la selección a los parámetros correspondientes al abrir la ventana. El estado se guarda en `localStorage` (`tatimer_esc_options`) y se restaura al recargar. Si la ventana Escenario ya está abierta, los cambios en el popover se aplican ahí en vivo, sin cerrarla ni recargarla — no hace falta reabrirla para ver el efecto. Solo afecta a `openView('escenario')` — `openView('audience')` nunca lleva estos parámetros.
 
 ```
 Tatimer/

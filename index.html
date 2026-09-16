@@ -42,6 +42,8 @@
     --fg: #f9f9f9;
     --accent: #FF6363;
     --danger: #FF6363;
+    --alert-warning: #e8a000;
+    --alert-danger: #FF6363;
     --mid: #9c9c9d;
     --border: hsl(195,5%,15%);
     --border-subtle: rgba(255,255,255,0.06);
@@ -71,6 +73,8 @@
     --fg: #111111;
     --accent: #7a5f00;
     --danger: #d42b00;
+    --alert-warning: #c8a800;
+    --alert-danger: #d42b00;
     --mid: #666;
     --border: #ccc;
     --progress-overlay: rgba(242,242,240,0.78);
@@ -172,9 +176,9 @@
     width: 100%;
   }
 
-  #display.warning { color: var(--accent); }
-  #display.danger  { color: var(--danger); }
-  #display.overtime { color: var(--danger); }
+  #display.warning { color: var(--alert-warning); }
+  #display.danger  { color: var(--alert-danger); }
+  #display.overtime { color: var(--alert-danger); }
 
   #display.editable { cursor: pointer; }
   #display.editable:hover { opacity: 0.85; }
@@ -246,8 +250,8 @@
     box-shadow: rgba(255,255,255,0.05) 0px 1px 0px 0px inset;
   }
 
-  #progress-fill.warning { background: #e8a000; border-radius: 0; }
-  #progress-fill.danger  { background: #FF6363; border-radius: 0; }
+  #progress-fill.warning { background: var(--alert-warning); border-radius: 0; }
+  #progress-fill.danger  { background: var(--alert-danger); border-radius: 0; }
   #progress-fill.overtime { transform: scaleX(0) !important; }
 
   /* Marcador triangular que viaja sobre la barra */
@@ -371,6 +375,82 @@
     border-radius: 86px;
   }
 
+  /* ── BOTONES DE ESTADO (Iniciar/Reanudar/Reset/Pausar/mensajes) ──
+     Fondo muy tenue + borde y texto en color, sobre la misma base de
+     botón de siempre — nada de bloques sólidos, para no romper el
+     tono discreto del resto de la interfaz. Los tonos reutilizan la
+     misma paleta semántica que ya usa el cronómetro (verde = en marcha,
+     ámbar = aviso, rojo = peligro) para que se lean como una extensión
+     natural de esos mismos colores, no como algo nuevo y aparte. */
+  #controls button.state-start,
+  #controls button.state-resume,
+  #controls button.state-yellow,
+  #controls button.state-red,
+  #message-area button.state-blue {
+    transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  }
+  #controls button.state-start {
+    color: #22a83c;
+    background: rgba(34,168,60,0.09);
+    border-color: rgba(34,168,60,0.4);
+  }
+  #controls button.state-resume {
+    color: #14b8a6;
+    background: rgba(20,184,166,0.09);
+    border-color: rgba(20,184,166,0.4);
+  }
+  #controls button.state-yellow {
+    color: #e8a000;
+    background: rgba(232,160,0,0.09);
+    border-color: rgba(232,160,0,0.4);
+  }
+  #controls button.state-red {
+    color: #FF6363;
+    background: rgba(255,99,99,0.09);
+    border-color: rgba(255,99,99,0.4);
+  }
+  #message-area button.state-blue {
+    color: var(--raycast-blue);
+    background: hsla(202,100%,67%,0.09);
+    border-color: hsla(202,100%,67%,0.4);
+  }
+  #controls button.state-start:hover   { opacity: 0.8; background: rgba(34,168,60,0.16); border-color: rgba(34,168,60,0.55); color: #22a83c; }
+  #controls button.state-resume:hover  { opacity: 0.8; background: rgba(20,184,166,0.16); border-color: rgba(20,184,166,0.55); color: #14b8a6; }
+  #controls button.state-yellow:hover  { opacity: 0.8; background: rgba(232,160,0,0.16); border-color: rgba(232,160,0,0.55); color: #e8a000; }
+  #controls button.state-red:hover     { opacity: 0.8; background: rgba(255,99,99,0.16); border-color: rgba(255,99,99,0.55); color: #FF6363; }
+  #message-area button.state-blue:hover { opacity: 0.8; background: hsla(202,100%,67%,0.16); border-color: hsla(202,100%,67%,0.55); color: var(--raycast-blue); }
+
+  body.light #controls button.state-start {
+    color: #237a37;
+    background: rgba(58,170,80,0.12);
+    border-color: rgba(58,170,80,0.45);
+  }
+  body.light #controls button.state-resume {
+    color: #0f766e;
+    background: rgba(15,118,110,0.10);
+    border-color: rgba(15,118,110,0.4);
+  }
+  body.light #controls button.state-yellow {
+    color: #9c7a00;
+    background: rgba(200,168,0,0.12);
+    border-color: rgba(200,168,0,0.45);
+  }
+  body.light #controls button.state-red {
+    color: #d42b00;
+    background: rgba(212,43,0,0.10);
+    border-color: rgba(212,43,0,0.4);
+  }
+  body.light #message-area button.state-blue {
+    color: #0a6dbf;
+    background: hsla(202,100%,40%,0.10);
+    border-color: hsla(202,100%,40%,0.4);
+  }
+  body.light #controls button.state-start:hover   { opacity: 0.85; background: rgba(58,170,80,0.2); border-color: rgba(58,170,80,0.6); color: #237a37; }
+  body.light #controls button.state-resume:hover  { opacity: 0.85; background: rgba(15,118,110,0.18); border-color: rgba(15,118,110,0.55); color: #0f766e; }
+  body.light #controls button.state-yellow:hover  { opacity: 0.85; background: rgba(200,168,0,0.2); border-color: rgba(200,168,0,0.6); color: #9c7a00; }
+  body.light #controls button.state-red:hover     { opacity: 0.85; background: rgba(212,43,0,0.18); border-color: rgba(212,43,0,0.55); color: #d42b00; }
+  body.light #message-area button.state-blue:hover { opacity: 0.85; background: hsla(202,100%,40%,0.18); border-color: hsla(202,100%,40%,0.55); color: #0a6dbf; }
+
   /* ── CONFIG ─────────────────────────────────────────── */
   #config {
     display: flex;
@@ -481,9 +561,30 @@
     white-space: nowrap;
   }
 
-  #alerts label.lbl-warning { color: hsl(43,100%,60%); opacity: 0.9; }
-  #alerts label.lbl-danger  { color: var(--danger);  opacity: 0.8; }
-  body.light #alerts label.lbl-warning { color: var(--accent); opacity: 0.8; }
+  #alerts label.lbl-warning { color: var(--alert-warning); opacity: 0.9; }
+  #alerts label.lbl-danger  { color: var(--alert-danger);  opacity: 0.8; }
+  body.light #alerts label.lbl-warning { color: var(--alert-warning); opacity: 0.8; }
+
+  #alerts input.alert-color-dot {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 0.8rem;
+    height: 0.8rem;
+    min-width: 0.8rem;
+    padding: 0;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 50%;
+    cursor: pointer;
+    background: none;
+    box-shadow: none;
+    flex-shrink: 0;
+  }
+  #alerts input.alert-color-dot::-webkit-color-swatch-wrapper { padding: 0; border-radius: 50%; }
+  #alerts input.alert-color-dot::-webkit-color-swatch { border: none; border-radius: 50%; }
+  #alerts input.alert-color-dot::-moz-color-swatch { border: none; border-radius: 50%; }
+  #alerts input.alert-color-dot:hover { transform: scale(1.15); }
+  #alerts input.alert-color-dot:focus-visible { outline: 2px solid hsl(202,100%,67%); outline-offset: 2px; }
+  body.light #alerts input.alert-color-dot { border-color: rgba(0,0,0,0.25); }
 
   #alerts-toggle-row { margin-top: 0.2rem; border-top: 1px solid var(--border-subtle); padding-top: 0.5rem; }
 
@@ -542,7 +643,7 @@
   #overtime-banner {
     position: fixed;
     top: 0; left: 0; right: 0;
-    background: #FF6363;
+    background: var(--alert-danger);
     color: #fff;
     font-family: 'Inter', system-ui, sans-serif;
     font-size: clamp(1rem, 3vw, 3rem);
@@ -552,7 +653,7 @@
     text-align: center;
     padding: clamp(0.4rem, 1vh, 0.8rem);
     z-index: 100;
-    box-shadow: rgba(255,99,99,0.3) 0px 4px 20px;
+    box-shadow: rgba(0,0,0,0.3) 0px 4px 20px;
     opacity: 0;
     transform: translateY(-100%);
     pointer-events: none;
@@ -711,6 +812,81 @@
     box-shadow: none;
   }
 
+  /* ── OPCIONES DE VISUALIZACIÓN DE ESCENARIO (overlay/PiP) ── */
+  #btn-escenario-options {
+    width: 2.2rem;
+    padding: 0;
+    justify-content: center;
+  }
+  .esc-options-wrap { position: relative; display: inline-flex; }
+  #btn-escenario-options.active {
+    opacity: 1;
+    color: var(--raycast-blue);
+    border-color: hsla(202,100%,67%,0.35);
+    box-shadow: 0 0 0 3px hsla(202,100%,67%,0.1);
+  }
+  body.light #btn-escenario-options.active {
+    color: #0284c7;
+    border-color: rgba(2,132,199,0.35);
+    box-shadow: none;
+  }
+  #esc-options-popover {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 0.5rem);
+    right: 0;
+    background: rgba(16,17,17,0.96);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+    width: 13rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    z-index: 210;
+  }
+  #esc-options-popover.show { display: block; }
+  #esc-options-popover label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.7rem;
+    color: var(--fg);
+    padding: 0.35rem 0;
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+  #esc-options-popover input[type="checkbox"],
+  #esc-options-popover input[type="radio"] { accent-color: var(--raycast-blue); cursor: pointer; }
+  .esc-opt-size-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.7rem;
+    color: var(--fg);
+    padding: 0.5rem 0 0.2rem;
+    margin-top: 0.2rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .esc-opt-size-row input[type="range"] { flex: 1; accent-color: var(--raycast-blue); cursor: pointer; }
+  #esc-opt-scale-label { font-variant-numeric: tabular-nums; color: var(--mid); min-width: 2.6rem; text-align: right; }
+  body.light .esc-opt-size-row { border-top-color: var(--btn-border); }
+  #esc-options-popover p {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.6rem;
+    color: var(--mid);
+    line-height: 1.4;
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  body.light #esc-options-popover {
+    background: #fff;
+    border-color: var(--btn-border);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+
   #btn-clean svg { width: 1rem; height: 1rem; fill: currentColor; }
   #btn-clean.active { opacity: 1; border-color: rgba(255,99,99,0.4); color: #FF6363;
     box-shadow: rgba(255,99,99,0.15) 0px 0px 0px 3px; }
@@ -859,7 +1035,7 @@
     box-shadow: none;
   }
   body.light #overtime-banner {
-    background: var(--danger);
+    background: var(--alert-danger);
     box-shadow: none;
   }
 
@@ -1462,17 +1638,17 @@
   <div id="status" aria-live="polite"></div>
   <div id="message-display" aria-live="polite"></div>
   <div id="controls">
-    <button onclick="resetTimer()" data-i18n="btn-reset">Reset</button>
-    <button class="primary" id="btn-startstop" onclick="toggleTimer()"></button>
-    <button id="btn-pause" onclick="pauseTimer()" style="display:none" data-i18n="btn-pause"></button>
+    <button class="primary state-start" id="btn-startstop" onclick="toggleTimer()"></button>
+    <button class="state-red" onclick="resetTimer()" data-i18n="btn-reset">Reset</button>
+    <button id="btn-pause" class="state-yellow" onclick="pauseTimer()" style="display:none" data-i18n="btn-pause"></button>
     <button onclick="subtractThirty()" data-i18n="btn-sub30">−30 seg</button>
     <button onclick="addMinute()" data-i18n="btn-addmin">+1 min</button>
     <button id="btn-blackout" onclick="toggleBlackout()" data-i18n="btn-blackout" aria-pressed="false">Blackout</button>
   </div>
   <div id="message-area">
     <input type="text" id="message-input">
-    <button onclick="sendMessage()" data-i18n="btn-send"></button>
-    <button onclick="clearMessage()" data-i18n="btn-clear"></button>
+    <button class="state-blue" onclick="sendMessage()" data-i18n="btn-send"></button>
+    <button class="state-blue" onclick="clearMessage()" data-i18n="btn-clear"></button>
   </div>
 </div>
 
@@ -1495,11 +1671,13 @@
   </div>
   <div id="alerts">
     <div class="alert-row">
-      <label class="lbl-warning" data-i18n="alert-warning">Alerta amarilla (min)</label>
+      <label class="lbl-warning" data-i18n="alert-warning">Preaviso (min)</label>
+      <input type="color" id="color-warning" class="alert-color-dot" value="#e8a000" title="Color del preaviso" aria-label="Color del preaviso">
       <input type="number" id="input-warning" value="3" min="0" max="99">
     </div>
     <div class="alert-row">
-      <label class="lbl-danger" data-i18n="alert-danger">Alerta roja (min)</label>
+      <label class="lbl-danger" data-i18n="alert-danger">Alerta final (min)</label>
+      <input type="color" id="color-danger" class="alert-color-dot" value="#FF6363" title="Color de la alerta final" aria-label="Color de la alerta final">
       <input type="number" id="input-danger" value="1" min="0" max="99">
     </div>
     <div class="alert-row" id="alerts-toggle-row">
@@ -1596,6 +1774,28 @@
   <button class="btn-view" id="btn-view-escenario" onclick="openView('escenario')" title="Vista Escenario (E)">
     <span class="live-dot"></span>Escenario
   </button>
+  <div class="esc-options-wrap">
+    <button class="btn-view" id="btn-escenario-options" onclick="toggleEscOptionsPopover(event)" title="Opciones de la vista Escenario (ventana superpuesta)" aria-label="Opciones de la vista Escenario" aria-expanded="false">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+    <div id="esc-options-popover" role="menu" aria-label="Opciones de la vista Escenario">
+      <label><input type="radio" name="esc-display-mode" id="esc-opt-full" value="" onchange="updateEscOptions()"> <span data-i18n="esc-opt-full">Vista completa</span></label>
+      <label><input type="radio" name="esc-display-mode" id="esc-opt-numbers" value="numbers" onchange="updateEscOptions()"> <span data-i18n="esc-opt-numbers">Solo números</span></label>
+      <label><input type="radio" name="esc-display-mode" id="esc-opt-bar" value="bar" onchange="updateEscOptions()"> <span data-i18n="esc-opt-bar">Solo barra</span></label>
+      <label><input type="radio" name="esc-display-mode" id="esc-opt-both" value="both" onchange="updateEscOptions()"> <span data-i18n="esc-opt-both">Número + barra</span></label>
+      <div class="esc-opt-size-row">
+        <span data-i18n="esc-opt-size">Tamaño</span>
+        <input type="range" id="esc-opt-scale" min="50" max="400" step="10" value="100" onchange="updateEscOptions()" oninput="updateEscScaleLabel()">
+        <span id="esc-opt-scale-label">100%</span>
+      </div>
+      <div class="esc-opt-size-row">
+        <span data-i18n="esc-opt-opacity">Opacidad fondo</span>
+        <input type="range" id="esc-opt-opacity" min="0" max="100" step="10" value="100" onchange="updateEscOptions()" oninput="updateEscOpacityLabel()">
+        <span id="esc-opt-opacity-label">100%</span>
+      </div>
+      <p data-i18n="esc-opt-hint">Para picture-in-picture o como fuente en OBS/vMix, encima de otra señal en un solo monitor.</p>
+    </div>
+  </div>
   <button class="btn-view" id="btn-view-audience" onclick="openView('audience')" title="Vista Audience (A)">
     <span class="live-dot"></span>Audience
   </button>
@@ -1607,12 +1807,58 @@
     const viewParam = new URLSearchParams(window.location.search).get('view');
     if (!viewParam) return;
 
+    // ── Opciones de visualización para ventana superpuesta (solo Escenario) ──
+    // Pensadas para incrustar sobre otra señal con canal alfa (OBS/vMix Browser
+    // Source, NDI con alfa, etc.) o para arrastrar/redimensionar la ventana a
+    // mano sobre la vista de moderador en un solo monitor, sin mesa de mezclas.
+    // ?view=escenario&display=numbers -> solo el número, sin barra/reloj/overtime.
+    // ?view=escenario&display=bar     -> solo la barra de progreso, sin el número.
+    // ?view=escenario&display=both    -> número + barra juntos, sin reloj/overtime.
+    // ?view=escenario&size=150   -> escala número y barra al 150% (50-400, 100 por defecto;
+    //   hasta 400% para que el número solo pueda llenar toda la vista en modo "numbers").
+    // ?view=escenario&opacity=40 -> opacidad del fondo al 40% (0-100, 100 por defecto,
+    //   solo con efecto junto a numbers/bar/both; con canal alfa real, 0 = totalmente
+    //   transparente de verdad, no solo una caja negra atenuada).
+    // Estos tres se recalculan al vuelo si el popover del operador cambia mientras
+    // esta ventana sigue abierta (ver el listener de 'storage' más abajo) — el valor
+    // de la URL solo manda en el arranque o cuando no hay operador en el mismo origen
+    // (p.ej. pegada directamente como fuente en OBS).
+    const escDisplayParam    = new URLSearchParams(window.location.search).get('display');
+    let overlayNumbersOnly   = escDisplayParam === 'numbers';
+    let overlayBarOnly       = escDisplayParam === 'bar';
+    let overlayBothOnly      = escDisplayParam === 'both';
+    const escSizeParam       = parseInt(new URLSearchParams(window.location.search).get('size'), 10);
+    let escScalePct          = Number.isFinite(escSizeParam) ? Math.min(400, Math.max(50, escSizeParam)) : 100;
+    const escOpacityParam    = parseInt(new URLSearchParams(window.location.search).get('opacity'), 10);
+    let escOpacityPct        = Number.isFinite(escOpacityParam) ? Math.min(100, Math.max(0, escOpacityParam)) : 100;
+
     // Ocultar todo el DOM del operador inmediatamente
     document.documentElement.style.visibility = 'hidden';
 
     const LS_TIMER    = 'tatimer_bc_timer';
     const LS_AUDIENCE = 'tatimer_bc_audience';
     const LS_MESSAGE  = 'tatimer_bc_message';
+    const LS_ALERT_COLORS = 'tatimer_alert_colors';
+
+    // Colores de alerta personalizados por el operador (mismo localStorage
+    // que la ventana principal, ver LS_ALERT_COLORS ahí) — una sola custom
+    // property en <html> de ESTA ventana, ya que Escenario es un documento
+    // aparte (window.open) y no comparte el <html> del operador.
+    function applyAlertColors(colors) {
+      if (colors.warning) document.documentElement.style.setProperty('--alert-warning', colors.warning);
+      else document.documentElement.style.removeProperty('--alert-warning');
+      if (colors.danger) document.documentElement.style.setProperty('--alert-danger', colors.danger);
+      else document.documentElement.style.removeProperty('--alert-danger');
+    }
+    function loadAlertColorsFromStorage() {
+      let colors = {};
+      try {
+        const raw = localStorage.getItem(LS_ALERT_COLORS);
+        if (raw) colors = JSON.parse(raw) || {};
+      } catch (_) { colors = {}; }
+      applyAlertColors(colors);
+    }
+    loadAlertColorsFromStorage();
 
     if (viewParam === 'escenario') {
       document.title = 'Escenario · Tatimer';
@@ -1621,12 +1867,20 @@
       document.body.innerHTML = `
         <style>
           *{margin:0;padding:0;box-sizing:border-box}
-          html,body{width:100%;height:100%;background:#000;color:#f9f9f9;overflow:hidden;user-select:none}
+          html,body{width:100%;height:100%;color:#f9f9f9;overflow:hidden;user-select:none}
+          :root{--alert-warning:#e8a000;--alert-danger:#FF6363}
+          /* El fondo va SOLO en <body>, nunca en <html>: si html tuviera un
+             fondo opaco propio, quedaría pintado detrás de body y ningún
+             valor de opacidad en applyEscOverlayVisuals() podría dejar la
+             página realmente transparente para un compositor con canal alfa
+             (OBS/vMix Browser Source, NDI...) — se vería siempre sólido
+             pasara lo que pasara con el tirador de opacidad. */
+          body{background:#000}
           body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif}
           #esc-timer{font-size:clamp(8rem,28vw,38rem);line-height:0.9;letter-spacing:-0.01em;text-align:center;transition:color 0.3s}
-          #esc-timer.warning{color:#e8a000}
-          #esc-timer.danger {color:#FF6363}
-          #esc-timer.overtime{color:#FF6363}
+          #esc-timer.warning{color:var(--alert-warning)}
+          #esc-timer.danger {color:var(--alert-danger)}
+          #esc-timer.overtime{color:var(--alert-danger)}
           #esc-bar-wrap{width:min(88%,900px);height:clamp(10px,1.8vh,18px);margin-top:2rem;border-radius:4px;position:relative;overflow:hidden}
           #esc-bar-bg{position:absolute;inset:0;display:flex}
           #esc-bar-green{background:#1a3d20;flex:1}
@@ -1634,10 +1888,10 @@
           #esc-bar-red{background:#4a1010}
           #esc-bar-overlay{position:absolute;top:0;right:0;bottom:0;width:100%;background:rgba(0,0,0,0.78);border-radius:0 4px 4px 0;transform:scaleX(0);transform-origin:right;transition:transform 1s linear}
           #esc-bar-fill{position:absolute;top:0;left:0;bottom:0;width:100%;border-radius:4px 0 0 4px;background:#22a83c;transform:scaleX(1);transform-origin:left;transition:transform 1s linear,background 0.3s}
-          #esc-bar-fill.warning{background:#e8a000;border-radius:0}
-          #esc-bar-fill.danger{background:#FF6363;border-radius:0}
+          #esc-bar-fill.warning{background:var(--alert-warning);border-radius:0}
+          #esc-bar-fill.danger{background:var(--alert-danger);border-radius:0}
           #esc-bar-fill.overtime{transform:scaleX(0)!important}
-          #esc-overtime{display:none;position:fixed;top:0;left:0;right:0;background:#FF6363;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:clamp(1.5rem,4vw,4rem);letter-spacing:0.1em;text-align:center;padding:0.3rem;z-index:10}
+          #esc-overtime{display:none;position:fixed;top:0;left:0;right:0;background:var(--alert-danger);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:clamp(1.5rem,4vw,4rem);letter-spacing:0.1em;text-align:center;padding:0.3rem;z-index:10}
           #esc-overtime.show{display:block}
           #esc-message{display:none;position:fixed;bottom:clamp(2rem,8vh,6rem);left:0;right:0;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,6vw,7rem);color:#e8ff00;letter-spacing:0.05em;line-height:1.1;padding:0 5vw;text-shadow:0 2px 20px rgba(0,0,0,0.8);z-index:20}
           #esc-message.visible{display:block}
@@ -1646,14 +1900,46 @@
           body.light #esc-clock{color:rgba(17,17,17,0.2)}
           #esc-nosignal{display:flex;flex-direction:column;align-items:center;gap:1rem;opacity:0.25}
           #esc-nosignal p{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.2em}
-          body.light{background:#f2f2f0;color:#111}
+          #esc-timer{transform:scale(var(--esc-scale,1))}
+          #esc-bar-wrap{transform:scale(var(--esc-scale,1))}
+          /* Overlay/canal alfa: pensado para incrustarse con transparencia real
+             (OBS/vMix Browser Source, NDI con alfa...) o como ventana normal
+             arrastrada a mano sobre la vista de moderador, sin mesa de mezclas.
+             Fondo y borde con opacidad ajustable por JS (applyEscOverlayVisuals,
+             inline style, pisa estas reglas): a opacidad 0 el borde desaparece
+             del todo para no dejar marco sobre la señal compuesta; a opacidad
+             alta ayuda a ver los bordes de una ventana arrastrada a pelo.
+             Sombra fija (no depende de la opacidad) en el número y la barra
+             para que se sigan leyendo bien sobre cualquier fondo una vez
+             compuestos con canal alfa. */
+          body.overlay-mode,
+          body.overlay-bar-mode,
+          body.overlay-both-mode{border:1px solid transparent;box-sizing:border-box}
+          body.overlay-mode #esc-timer,
+          body.overlay-both-mode #esc-timer{text-shadow:0 2px 14px rgba(0,0,0,0.85),0 0 6px rgba(0,0,0,0.7)}
+          body.light.overlay-mode #esc-timer,
+          body.light.overlay-both-mode #esc-timer{text-shadow:0 2px 14px rgba(255,255,255,0.85),0 0 6px rgba(255,255,255,0.7)}
+          body.overlay-bar-mode #esc-bar-wrap,
+          body.overlay-both-mode #esc-bar-wrap{box-shadow:0 2px 10px rgba(0,0,0,0.55)}
+          body.light.overlay-bar-mode #esc-bar-wrap,
+          body.light.overlay-both-mode #esc-bar-wrap{box-shadow:0 2px 10px rgba(255,255,255,0.55)}
+          body.overlay-mode #esc-bar-wrap,
+          body.overlay-mode #esc-clock,
+          body.overlay-mode #esc-overtime{display:none!important}
+          body.overlay-mode #esc-timer{font-size:clamp(3rem,16vw,14rem)}
+          body.overlay-bar-mode #esc-timer,
+          body.overlay-bar-mode #esc-clock,
+          body.overlay-bar-mode #esc-overtime{display:none!important}
+          body.overlay-bar-mode #esc-bar-wrap{margin-top:0}
+          body.overlay-both-mode #esc-clock,
+          body.overlay-both-mode #esc-overtime{display:none!important}
+          body.overlay-both-mode #esc-timer{font-size:clamp(3rem,16vw,14rem)}
+          body.light{background:#f2f2f0;color:#111;--alert-warning:#c8a800;--alert-danger:#d42b00}
           body.light #esc-bar-green{background:#3aaa50}
           body.light #esc-bar-yellow{background:#d49000}
           body.light #esc-bar-red{background:#d42b00}
           body.light #esc-bar-overlay{background:rgba(242,242,240,0.78)}
-          body.light #esc-timer.warning{color:#c8a800}
-          body.light #esc-timer.danger{color:#d42b00}
-          body.light #esc-overtime{background:#d42b00}
+          body.light #esc-overtime{background:var(--alert-danger)}
           body.light #esc-message{color:#c8a800}
         </style>
         <div id="esc-nosignal">
@@ -1682,6 +1968,37 @@
       const overtime  = document.getElementById('esc-overtime');
       const messageEl = document.getElementById('esc-message');
       const clockEl   = document.getElementById('esc-clock');
+      let currentTheme = 'dark';
+      // Aplica clases de tema/overlay, fondo (con alfa) y borde (con alfa,
+      // se desvanece a la vez que el fondo) según el estado actual de
+      // overlayNumbersOnly/overlayBarOnly/overlayBothOnly/escScalePct/escOpacityPct.
+      // Se llama en cada tick del cronómetro Y cuando cambian las opciones en
+      // vivo desde el popover del operador (ver el listener de 'storage'),
+      // para que los tiradores se reflejen sin tener que cerrar/reabrir esta ventana.
+      function applyEscOverlayVisuals() {
+        document.body.className = [
+          currentTheme === 'light' ? 'light' : '',
+          overlayNumbersOnly ? 'overlay-mode' : '',
+          overlayBarOnly     ? 'overlay-bar-mode' : '',
+          overlayBothOnly    ? 'overlay-both-mode' : ''
+        ].filter(Boolean).join(' ');
+        const overlayActive = overlayNumbersOnly || overlayBarOnly || overlayBothOnly;
+        if (overlayActive) {
+          const alpha = escOpacityPct / 100;
+          const bgRgb     = currentTheme === 'light' ? '242,242,240' : '0,0,0';
+          const borderRgb = currentTheme === 'light' ? '0,0,0' : '255,255,255';
+          document.body.style.backgroundColor = 'rgba(' + bgRgb + ',' + alpha + ')';
+          // El borde se desvanece con la opacidad: a fondo sólido ayuda a ver los
+          // bordes de la ventana; a opacidad 0 (canal alfa real) desaparece del
+          // todo para no dejar un marco visible sobre la señal compuesta.
+          document.body.style.borderColor = 'rgba(' + borderRgb + ',' + (0.15 * alpha) + ')';
+        } else {
+          document.body.style.backgroundColor = '';
+          document.body.style.borderColor = '';
+        }
+        document.documentElement.style.setProperty('--esc-scale', escScalePct / 100);
+      }
+      applyEscOverlayVisuals();
       let connected = false, connTimeout, clockInterval;
 
       // Heartbeat de presencia: el operador lo usa para saber si esta
@@ -1706,7 +2023,8 @@
           timerEl.style.display = 'none';
           barWrap.style.display = 'none';
         }, 6000);
-        document.body.className = d.theme === 'light' ? 'light' : '';
+        currentTheme = d.theme === 'light' ? 'light' : 'dark';
+        applyEscOverlayVisuals();
         timerEl.textContent = d.display;
         timerEl.className = (!d.alertsEnabled) ? ''
                           : d.state === 'overtime' ? 'overtime'
@@ -1754,6 +2072,18 @@
       window.addEventListener('storage', e => {
         if (e.key === LS_TIMER && e.newValue)   { try { applyTimer(JSON.parse(e.newValue));   } catch(_){} }
         if (e.key === LS_MESSAGE && e.newValue) { try { applyMessage(JSON.parse(e.newValue)); } catch(_){} }
+        if (e.key === LS_ALERT_COLORS) { try { applyAlertColors(e.newValue ? JSON.parse(e.newValue) : {}); } catch (_) {} }
+        if (e.key === 'tatimer_esc_options') {
+          try {
+            const opts = e.newValue ? JSON.parse(e.newValue) : {};
+            overlayNumbersOnly = opts.mode === 'numbers';
+            overlayBarOnly     = opts.mode === 'bar';
+            overlayBothOnly    = opts.mode === 'both';
+            escScalePct   = Number.isFinite(opts.scale)   ? Math.min(400, Math.max(50, opts.scale))   : 100;
+            escOpacityPct = Number.isFinite(opts.opacity) ? Math.min(100, Math.max(0, opts.opacity)) : 100;
+            applyEscOverlayVisuals();
+          } catch (_) {}
+        }
       });
 
       // Poll inicial para recoger el último estado conocido
@@ -1860,8 +2190,8 @@
       'mode-untiltime':'Hasta hora',
       'mode-countup':  'Cuenta adelante',
       'target-time':   'Hora objetivo',
-      'alert-warning': 'Alerta amarilla (min)',
-      'alert-danger':  'Alerta roja (min)',
+      'alert-warning': 'Preaviso (min)',
+      'alert-danger':  'Alerta final (min)',
       'alert-toggle':  'Alertas',
       'alert-on':      'ON',
       'alert-off':     'OFF',
@@ -1876,6 +2206,13 @@
       'sc-addmin':     '+1 min',
       'sc-sub30':      '−30 seg',
       'sc-edittime':   'editar tiempo',
+      'esc-opt-full':    'Vista completa',
+      'esc-opt-numbers': 'Solo números',
+      'esc-opt-bar':     'Solo barra',
+      'esc-opt-both':    'Número + barra',
+      'esc-opt-size':    'Tamaño',
+      'esc-opt-opacity': 'Opacidad fondo',
+      'esc-opt-hint':    'Ventana que puedes arrastrar y redimensionar sobre tu vista de moderador — sin mesa de mezclas. La opacidad de fondo solo afecta a "solo números"/"solo barra".',
       'sc-clean':      'modo limpio',
       'sc-sessions':   'sesiones',
       'label-countdown':'CUENTA ATRÁS',
@@ -1927,8 +2264,8 @@
       'mode-untiltime':'Until time',
       'mode-countup':  'Count up',
       'target-time':   'Target time',
-      'alert-warning': 'Yellow alert (min)',
-      'alert-danger':  'Red alert (min)',
+      'alert-warning': 'Early alert (min)',
+      'alert-danger':  'Final alert (min)',
       'alert-toggle':  'Alerts',
       'alert-on':      'ON',
       'alert-off':     'OFF',
@@ -1943,6 +2280,13 @@
       'sc-addmin':     '+1 min',
       'sc-sub30':      '−30 sec',
       'sc-edittime':   'edit time',
+      'esc-opt-full':    'Full view',
+      'esc-opt-numbers': 'Numbers only',
+      'esc-opt-bar':     'Bar only',
+      'esc-opt-both':    'Numbers + bar',
+      'esc-opt-size':    'Size',
+      'esc-opt-opacity': 'Background opacity',
+      'esc-opt-hint':    'A window you can drag and resize over your presenter view — no mixing board needed. Background opacity only affects "numbers only"/"bar only".',
       'sc-clean':      'clean mode',
       'sc-sessions':   'sessions',
       'label-countdown':'COUNTDOWN',
@@ -2024,9 +2368,7 @@
     }
 
     // Botón start/resume
-    btnStart.textContent = elapsed === 0 || !running
-      ? (elapsed === 0 ? i18n[l]['btn-start'] : i18n[l]['btn-resume'])
-      : i18n[l]['btn-resume'];
+    setStartButtonLabel(elapsed !== 0);
 
     document.getElementById('btn-pause').textContent = i18n[l]['btn-pause'];
 
@@ -2061,6 +2403,14 @@
   const progressSegY   = document.getElementById('progress-seg-yellow');
   const progressSegR   = document.getElementById('progress-seg-red');
   const btnStart       = document.getElementById('btn-startstop');
+  // Centraliza el texto Y el color del botón Iniciar/Reanudar en un único
+  // sitio, para que los dos siempre cambien juntos sin importar desde qué
+  // función se llame (toggleTimer, pauseTimer, resetTimer, restoreTimerState...).
+  function setStartButtonLabel(isResume) {
+    btnStart.textContent = isResume ? t('btn-resume') : t('btn-start');
+    btnStart.classList.toggle('state-resume', isResume);
+    btnStart.classList.toggle('state-start', !isResume);
+  }
   const modeLabel      = document.getElementById('mode-label');
   const overtimeBanner = document.getElementById('overtime-banner');
   const messageDisplay = document.getElementById('message-display');
@@ -2143,6 +2493,48 @@
     btn.title = currentTheme === 'dark' ? 'Tema claro' : 'Tema oscuro';
     btn.classList.add('active');
     btn.setAttribute('aria-pressed', String(currentTheme === 'light'));
+    syncAlertColorPickers(savedAlertColors);
+  }
+
+  // ── COLOR DE LAS ALERTAS (preaviso/alerta final), a gusto del operador ──
+  // Un solo color por alerta, igual en ambos temas una vez personalizado
+  // (si no se ha tocado nunca, se sigue usando el valor por defecto de
+  // cada tema, vía --alert-warning/--alert-danger definidas en :root y
+  // body.light). Se aplica con una custom property en <html> en vez de
+  // tocar clases sueltas, porque así una sola línea llega a la vez al
+  // dígito del operador, a la barra de progreso, al banner de overtime
+  // y — vía el mismo localStorage, ver LS_ALERT_COLORS más abajo — a la
+  // vista Escenario en su propia ventana/documento.
+  const LS_ALERT_COLORS = 'tatimer_alert_colors';
+  let savedAlertColors = {};
+
+  function applyAlertColors(colors) {
+    if (colors.warning) document.documentElement.style.setProperty('--alert-warning', colors.warning);
+    else document.documentElement.style.removeProperty('--alert-warning');
+    if (colors.danger) document.documentElement.style.setProperty('--alert-danger', colors.danger);
+    else document.documentElement.style.removeProperty('--alert-danger');
+  }
+
+  function syncAlertColorPickers(colors) {
+    document.getElementById('color-warning').value = colors.warning || (currentTheme === 'light' ? '#c8a800' : '#e8a000');
+    document.getElementById('color-danger').value  = colors.danger  || (currentTheme === 'light' ? '#d42b00' : '#FF6363');
+  }
+
+  function loadAlertColors() {
+    let colors = {};
+    try {
+      const raw = localStorage.getItem(LS_ALERT_COLORS);
+      if (raw) colors = JSON.parse(raw) || {};
+    } catch (_) { colors = {}; }
+    applyAlertColors(colors);
+    syncAlertColorPickers(colors);
+    return colors;
+  }
+
+  function saveAlertColor(key, value) {
+    savedAlertColors = { ...savedAlertColors, [key]: value };
+    try { localStorage.setItem(LS_ALERT_COLORS, JSON.stringify(savedAlertColors)); } catch (_) {}
+    applyAlertColors(savedAlertColors);
   }
 
   function setMode(m) {
@@ -2277,7 +2669,7 @@
         totalSeconds = computeUntilTimeSeconds();
       }
       running = true;
-      btnStart.textContent = t('btn-resume');
+      setStartButtonLabel(true);
       btnStart.classList.remove('primary');
       document.getElementById('btn-pause').style.display = 'inline-block';
       statusEl.textContent = t('status-running');
@@ -2301,7 +2693,7 @@
       running = false;
       clearInterval(interval);
       document.getElementById('btn-pause').style.display = 'none';
-      btnStart.textContent = t('btn-resume');
+      setStartButtonLabel(true);
       btnStart.classList.add('primary');
       statusEl.textContent = t('status-paused');
       broadcastTimerState(); // deja LS_TIMER al día (running:false) para restore tras reload
@@ -2390,7 +2782,7 @@
     running = false;
     elapsed = 0;
     overtimeBanner.classList.remove('show');
-    btnStart.textContent = t('btn-start');
+    setStartButtonLabel(false);
     btnStart.classList.add('primary');
     document.getElementById('btn-pause').style.display = 'none';
     statusEl.textContent = t('status-ready');
@@ -3186,9 +3578,78 @@
     setTimeout(() => { btn.style.color = ''; btn.style.borderColor = ''; }, 800);
   }
 
+  // ── OPCIONES DE VISUALIZACIÓN DE ESCENARIO (overlay/PiP) ──
+  let escDisplayMode = ''; // '' | 'numbers' | 'bar' | 'both'
+  let escScale        = 100; // 50-400 %
+  let escOpacity       = 100; // 0-100 %, solo aplica con escDisplayMode activo
+
+  const ESC_MODE_RADIO_ID = { numbers: 'esc-opt-numbers', bar: 'esc-opt-bar', both: 'esc-opt-both' };
+
+  function loadEscOptions() {
+    try {
+      const raw = localStorage.getItem('tatimer_esc_options');
+      const saved = raw ? JSON.parse(raw) : null;
+      escDisplayMode = (saved && ESC_MODE_RADIO_ID[saved.mode]) ? saved.mode : '';
+      escScale = (saved && Number.isFinite(saved.scale)) ? Math.min(400, Math.max(50, saved.scale)) : 100;
+      escOpacity = (saved && Number.isFinite(saved.opacity)) ? Math.min(100, Math.max(0, saved.opacity)) : 100;
+    } catch (_) { escDisplayMode = ''; escScale = 100; escOpacity = 100; }
+    const radio = document.getElementById(ESC_MODE_RADIO_ID[escDisplayMode] || 'esc-opt-full');
+    radio.checked = true;
+    document.getElementById('esc-opt-scale').value = escScale;
+    document.getElementById('esc-opt-opacity').value = escOpacity;
+    updateEscScaleLabel();
+    updateEscOpacityLabel();
+    updateEscOptionsButtonState();
+  }
+
+  function updateEscOptions() {
+    const checked = document.querySelector('input[name="esc-display-mode"]:checked');
+    escDisplayMode = checked ? checked.value : '';
+    escScale = parseInt(document.getElementById('esc-opt-scale').value, 10) || 100;
+    escOpacity = parseInt(document.getElementById('esc-opt-opacity').value, 10);
+    if (!Number.isFinite(escOpacity)) escOpacity = 100;
+    try { localStorage.setItem('tatimer_esc_options', JSON.stringify({ mode: escDisplayMode, scale: escScale, opacity: escOpacity })); } catch (_) {}
+    updateEscScaleLabel();
+    updateEscOpacityLabel();
+    updateEscOptionsButtonState();
+  }
+
+  function updateEscScaleLabel() {
+    document.getElementById('esc-opt-scale-label').textContent = document.getElementById('esc-opt-scale').value + '%';
+  }
+
+  function updateEscOpacityLabel() {
+    document.getElementById('esc-opt-opacity-label').textContent = document.getElementById('esc-opt-opacity').value + '%';
+  }
+
+  function updateEscOptionsButtonState() {
+    document.getElementById('btn-escenario-options').classList.toggle('active', escDisplayMode !== '' || escScale !== 100 || escOpacity !== 100);
+  }
+
+  function toggleEscOptionsPopover(e) {
+    e.stopPropagation();
+    const pop = document.getElementById('esc-options-popover');
+    const willShow = !pop.classList.contains('show');
+    pop.classList.toggle('show', willShow);
+    document.getElementById('btn-escenario-options').setAttribute('aria-expanded', String(willShow));
+  }
+
+  document.addEventListener('click', (e) => {
+    const wrap = document.querySelector('.esc-options-wrap');
+    if (wrap && !wrap.contains(e.target)) {
+      document.getElementById('esc-options-popover').classList.remove('show');
+      document.getElementById('btn-escenario-options').setAttribute('aria-expanded', 'false');
+    }
+  });
+
   // Abre o enfoca una vista usando ?view= en la misma URL
   function openView(type) {
-    const url = window.location.pathname + '?view=' + type;
+    let url = window.location.pathname + '?view=' + type;
+    if (type === 'escenario') {
+      if (escDisplayMode) url += '&display=' + escDisplayMode;
+      if (escScale !== 100) url += '&size=' + escScale;
+      if (escDisplayMode && escOpacity !== 100) url += '&opacity=' + escOpacity;
+    }
 
     if (type === 'escenario') {
       if (escenarioWin && !escenarioWin.closed) { escenarioWin.focus(); return; }
@@ -3304,7 +3765,7 @@
     if (s.running) {
       toggleTimer(); // retoma running=true + interval, arrastrando el elapsed ya corregido
     } else {
-      btnStart.textContent = t('btn-resume');
+      setStartButtonLabel(true);
       btnStart.classList.add('primary');
       statusEl.textContent = t('status-paused');
       document.getElementById('btn-pause').style.display = 'none';
@@ -3319,6 +3780,7 @@
   updateSessionsI18n('es');
   resetTimer();
   display.classList.toggle('editable', mode !== 'clock');
+  loadEscOptions();
   try { handleURLParams(); } catch (err) { console.error('Tatimer: handleURLParams falló, se ignora y sigue con el resto del arranque', err); }
   try { restoreTimerState(_savedTimerState); } catch (err) { console.error('Tatimer: restoreTimerState falló, se ignora y sigue con el resto del arranque', err); }
 
@@ -3328,6 +3790,10 @@
 
   document.getElementById('input-warning').addEventListener('input', () => { updateSegments(); });
   document.getElementById('input-danger').addEventListener('input',  () => { updateSegments(); });
+
+  document.getElementById('color-warning').addEventListener('input', (e) => saveAlertColor('warning', e.target.value));
+  document.getElementById('color-danger').addEventListener('input',  (e) => saveAlertColor('danger',  e.target.value));
+  savedAlertColors = loadAlertColors();
 
   // ── WAKE LOCK ──────────────────────────────────────────
   // Evita que el sistema apague la pantalla o active el salvapantallas

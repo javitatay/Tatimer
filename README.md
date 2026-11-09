@@ -2,18 +2,27 @@
 
 <img src="banner.png" alt="Tatimer" width="100%">
 
-# Tatimer — Temporizador para shows en vivo
+# Tatimer — Temporizador para shows en vivo · Live show timer
 
 **Temporizador para el monitor del ponente en eventos, conferencias y shows en vivo.**
+**Timer for the speaker's monitor at events, conferences and live shows.**
 
-Timer standalone con gestión de sesiones (ponentes, tiempos y títulos de ponencia) y vistas independientes para escenario y sala. Sin dependencias, sin servidor: funciona online o abriendo `index.html` en cualquier navegador.
+**[🇪🇸 Español](#-español)** · **[🇬🇧 English](#-english)**
 
-[![Abrir en el navegador](https://img.shields.io/badge/🌐_Abrir_en_el_navegador-141210?style=for-the-badge)](https://javitatay.github.io/Tatimer/)
-[![Invítame a un café](https://img.shields.io/badge/☕_Invítame_a_un_café-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=000)](https://buymeacoffee.com/javitatay)
+[![Abrir en el navegador · Open in the browser](https://img.shields.io/badge/🌐_Abrir_·_Open-141210?style=for-the-badge)](https://javitatay.github.io/Tatimer/)
+[![Invítame a un café · Buy me a coffee](https://img.shields.io/badge/☕_Invítame_a_un_café_·_Buy_me_a_coffee-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=000)](https://buymeacoffee.com/javitatay)
 
-![plataforma](https://img.shields.io/badge/plataforma-Web%20·%20standalone-c89838?style=flat-square) ![offline](https://img.shields.io/badge/offline-sí%20·%20PWA-green?style=flat-square) ![show%20control](https://img.shields.io/badge/show%20control-URL%20·%20QLab-orange?style=flat-square) [![Licencia: GPL v3](https://img.shields.io/badge/Licencia-GPLv3-c89838?style=flat-square)](LICENSE)
+![plataforma · platform](https://img.shields.io/badge/plataforma_·_platform-Web%20·%20standalone-c89838?style=flat-square) ![offline](https://img.shields.io/badge/offline-sí%20·%20yes%20·%20PWA-green?style=flat-square) ![show%20control](https://img.shields.io/badge/show%20control-URL%20·%20QLab-orange?style=flat-square) [![Licencia · License: GPL v3](https://img.shields.io/badge/Licencia_·_License-GPLv3-c89838?style=flat-square)](LICENSE)
 
 </div>
+
+---
+
+# 🇪🇸 Español
+
+[🇬🇧 Read in English ↓](#-english)
+
+Temporizador standalone con gestión de sesiones (ponentes, tiempos y títulos de ponencia) y vistas independientes para escenario y sala. Sin dependencias, sin servidor: funciona online o abriendo `index.html` en cualquier navegador.
 
 ---
 
@@ -424,6 +433,427 @@ Eres libre de usar, estudiar, modificar y compartir este software. La única con
 ---
 
 ## ✉️ Contacto
+
+**Javier Tatay Rubio**
+📧 j.tatayrubio@edu.gva.es · javitatay@gmail.com
+
+---
+
+# 🇬🇧 English
+
+[🇪🇸 Leer en español ↑](#-español)
+
+Standalone timer with session management (speakers, times and talk titles) and independent views for the stage and the room. No dependencies, no server: it works online or by opening `index.html` in any browser.
+
+---
+
+## 📑 Table of contents
+
+- [What is Tatimer?](#what-is-tatimer)
+- [🌐 Usage](#-usage)
+- [❓ Help](#-help)
+- [🖥️ Additional views](#️-additional-views)
+- [📋 Sessions panel](#-sessions-panel)
+- [🎛️ On-screen controls](#️-on-screen-controls)
+- [⌨️ Keyboard shortcuts](#️-keyboard-shortcuts)
+- [⏲️ Modes](#️-modes)
+- [📊 Progress bar](#-progress-bar)
+- [🚦 Time alerts](#-time-alerts)
+- [💬 Messages to the speaker](#-messages-to-the-speaker)
+- [⬛ Blackout](#-blackout-1)
+- [🧹 Clean mode](#-clean-mode)
+- [🔗 URL control](#-url-control)
+- [🛠️ For developers](#️-for-developers)
+- [🧭 Architecture and structural improvements to consider](#-architecture-and-structural-improvements-to-consider)
+- [🔗 More tools](#-more-tools)
+- [📄 License](#-license)
+- [✉️ Contact](#️-contact)
+
+---
+
+## What is Tatimer?
+
+Tatimer is a timer designed for the speaker's monitor at events, conferences and live shows. It lets you organise an entire conference with its speakers and times, show a full-screen countdown on stage and project who is speaking next in the room, all controlled by one operator from a single interface.
+
+It is available online with no installation, and it also works by downloading `index.html` and opening it locally in any browser: **no dependencies and no server**.
+
+### Main features
+
+- ⏱️ **Four modes** — countdown, countdown to a fixed time, count up and real-time clock.
+- 👥 **Session management** — side panel with speakers, titles and individual times.
+- 🖥️ **Stage view** — synchronised full-screen timer for the speaker's monitor.
+- 📢 **Audience view** — room display with the name and talk title of the active speaker, published manually by the operator.
+- 🟡🔴 **Live-configurable visual alerts** (yellow and red), which can be enabled or disabled globally.
+- 📊 **Segmented progress bar** in three colour zones with a triangular position marker.
+- ⏳ **Keeps counting into negative time** when the time runs out, with an overtime warning.
+- 💬 **Messages to the speaker** shown on screen in real time, also visible in the Stage view.
+- 🕐 **Current-time clock** in the Stage view, switchable from the operator.
+- 🧹 **Clean mode** — only the counter and the progress bar at maximum size.
+- ⬛ **Blackout** — full black screen; the counter keeps running underneath.
+- 🌙 **Dark / light theme** and an **ES / EN** language selector.
+- 🔗 **URL control** for integration with QLab or other show control tools.
+- 📴 **Works offline and installable as an app (PWA)** — own service worker, no reliance on the browser cache.
+- 🔆 **Screen always on** during the show (Wake Lock) — it won't turn off or trigger the screensaver while the timer is on screen.
+- ↩️ **Undo** when deleting a speaker or a session — 5 seconds to recover it before it is lost.
+- 🔄 **State recovery after an accidental reload or close** — if the operator reloads the tab or the browser closes mid-count, the timer resumes, correcting for the time elapsed during the interruption (running or paused), without losing the count.
+- ✏️ **Live time editing** — click the big number (or press `T`) to type the remaining time (countdown / until time) or the elapsed time (count up) directly, whether running or paused. Enter applies it instantly and it is rebroadcast to Stage/Audience without waiting for the next tick; Escape or a click outside cancels without touching anything.
+- 🟢 **Connected-windows indicator** — the operator can see at a glance whether the Stage and Audience views are still open and receiving data.
+- ❓ **In-app help panel** — quick reference for modes, sessions and shortcuts without leaving the app (`H` key).
+
+---
+
+## 🌐 Usage
+
+### Online
+
+Open [javitatay.github.io/Tatimer](https://javitatay.github.io/Tatimer/) in Safari or Chrome and drag the window to the speaker's monitor. No installation or later connection needed.
+
+### Local (offline)
+
+1. Download the whole repository (`index.html`, `manifest.json`, `icon.svg`, `sw.js`).
+2. Open it in Safari or Chrome.
+3. Drag the window to the speaker's monitor.
+
+A dedicated service worker (`sw.js`) caches the application on first load, so it works fully offline from the second time it is opened, both locally and when served. It can also be installed as an application (PWA) from the browser to have it as a standalone icon. Google Fonts are loaded with system fonts as a fallback when there is no connection.
+
+---
+
+## ❓ Help
+
+Press `H` or the `?` button in the top-right corner to open a help panel inside the app itself: it covers modes, sessions, views, keyboard shortcuts and remote control without leaving Tatimer or needing this README at hand in the middle of a show. It closes with `Esc`, with the `✕` button, or by clicking outside the panel, and it follows the active language (ES/EN) and theme.
+
+---
+
+## 🖥️ Additional views
+
+The operator can open two independent views from the buttons in the bottom-right corner or with keyboard shortcuts. Each view opens in a new window that can be dragged to another screen and put in full screen (`F11`). Communication between windows uses `localStorage` and works both locally (`file://`) and published on any server.
+
+The **Stage** and **Audience** buttons in the operator interface carry a status dot: it turns green as soon as the corresponding window is open and receiving data, and goes off again a few seconds after it is closed or loses the connection. It is independent of how the window was opened (button, shortcut or direct URL) and survives reloading the operator page.
+
+### Stage view (`E`)
+
+Designed for the **speaker's monitor** on stage. It shows only the full-screen timer on a black background, the progress bar with the same colour thresholds configured in the operator, the overtime banner once past zero, and the messages the operator sends from the main interface. It updates in real time, tick by tick.
+
+The operator can enable a **current-time clock** that appears in the bottom-right corner of the Stage view, in a very faint grey so as not to distract the speaker. It is switched on and off from the clock-icon button next to the Stage button in the operator interface.
+
+If the window loses the signal for more than 6 seconds, it shows a connection-lost indicator (the operator emits a heartbeat every 2 s even when stopped or paused, so this only appears if the window really stops receiving data).
+
+To use it as an overlay window on a single monitor (dragged and resized by hand over your moderator view, with no mixing board), see the `display=numbers`/`display=bar`/`display=both`, `size` and `opacity` parameters in [URL control](#-url-control).
+
+### Audience view (`A`)
+
+Designed to be projected in the **waiting room or hall** during the changeover between speakers. It shows the speaker's name in large type, the title of their talk, the assigned duration and the session name. The content does not change automatically — the operator chooses the exact moment by pressing the **Publish** button in the sessions panel, which lets you prepare the changeover without the room seeing it too early.
+
+When the window opens, it loads the last published speaker, if any.
+
+### Workflow with views
+
+1. Press `E` — the Stage view opens; drag it to the stage monitor and go full screen.
+2. Press `A` — the Audience view opens; drag it to the room projector and go full screen.
+3. Work from the operator's main window as usual.
+4. When a speaker's turn comes, load them from the sessions panel, press **Publish** so they appear in the room, and start the timer.
+
+---
+
+## 📋 Sessions panel
+
+The side sessions panel lets you organise a conference or event with several talks before the show. It opens from the `☰` button on the left edge or with the `P` key.
+
+### Structure
+
+Each **session** groups a list of **speakers**, each with a speaker name, talk title and assigned duration (minutes : seconds).
+
+You can create and manage multiple sessions — one per block of the event, for example. Sessions are saved automatically in the browser (`localStorage`) and persist across reloads. As soon as there are two or more, a drop-down selector appears above the name to jump between them.
+
+### Usual workflow
+
+1. Open the panel (`P` or the `☰` side button).
+2. Create a new session and give it a name.
+3. Add the speakers with their times from the form at the bottom.
+4. Reorder the cards by dragging if needed.
+5. During the event, click the active speaker's card: the time is loaded into the timer automatically and it resets.
+6. Press **Publish** to send that speaker to the Audience view.
+7. Press `Space` to start.
+
+### Panel options
+
+| Element | Function |
+|---|---|
+| Session selector | Switches between sessions already created (visible with 2 or more) |
+| Name field | Name of the active session. `Enter` or *Save* to confirm |
+| *Duplicate* | Copies the entire active session (speakers included) as a template, e.g. for day 2 of a conference |
+| *New* | Creates an empty session |
+| *Delete session* | Deletes the active session with confirmation (undo available for 5 sec) |
+| Speaker card | Click to load their time into the timer |
+| `⠿` (drag handle) | Reorders speakers by drag & drop |
+| `✕` | Removes the speaker from the list (undo available for 5 sec) |
+| Total | Accumulated duration of all the speakers in the session |
+| **Publish** | Sends the currently loaded speaker to the Audience view |
+| `↓ JSON` | Exports only the active session as a `.json` file |
+| `↑ JSON` | Imports one or several files — automatically detects the format (see below) |
+| `⬇ Backup` | Exports **all** sessions at once, with the date in the file name |
+
+> Only the last deletion can be undone: if you delete two items in a row, the chance to recover the first one disappears.
+
+### Export / import format
+
+Single session (what `↓ JSON` generates):
+
+```json
+{
+  "id": "abc123",
+  "name": "Morning — Block A",
+  "speakers": [
+    { "id": "x1", "name": "Ana García", "title": "Applied artificial intelligence", "min": 20, "sec": 0 },
+    { "id": "x2", "name": "Marc Puig",  "title": "Sound experience design",         "min": 15, "sec": 0 }
+  ]
+}
+```
+
+Full backup (what `⬇ Backup` generates), with several sessions inside:
+
+```json
+{
+  "type": "tatimer_backup",
+  "version": 1,
+  "exportedAt": "2026-07-02T10:00:00.000Z",
+  "sessions": [ { "name": "Block A", "speakers": [...] }, { "name": "Block B", "speakers": [...] } ]
+}
+```
+
+`↑ JSON` accepts either of the two formats above, an array of sessions without the backup wrapper, or a flat array of speakers without the session wrapper (legacy format). Import always **adds** new sessions — it never overwrites what you already have.
+
+---
+
+## 🎛️ On-screen controls
+
+| Element | Location | Function |
+|---|---|---|
+| `☰` / `✕` | Left edge | Opens / closes the sessions panel |
+| Minutes / Seconds | Left panel | Sets the initial time (countdown mode). Updates in real time as you edit. |
+| Target time | Left panel | Sets the arrival time (Until time mode). Updates in real time as you edit. |
+| Countdown / Until time / Count up / Clock | Right panel | Changes the timer mode |
+| Early alert (min) | Right panel | Minutes remaining to trigger the first warning. The coloured circle next to the label customises the hue. |
+| Final alert (min) | Right panel | Minutes remaining to trigger the second warning, closer to the end. The coloured circle next to the label customises the hue. |
+| Alerts ON / OFF | Right panel | Enables or disables all alerts globally |
+| ES / EN | Right panel | Changes the interface language |
+| ◐ | Right panel | Toggles between dark and light theme |
+| Start / Resume | Bottom centre | Starts or resumes the counter. Green while it has never been started (Start); teal, a different shade, as soon as there is something to resume (Resume) — so they can be told apart at a glance even though they share the same button. |
+| Reset | Bottom centre | Returns to the initial state. In red. |
+| Pause | Bottom centre | Pauses without losing time. Only visible while running, in amber. |
+| −30 sec | Bottom centre | Subtracts 30 seconds from the time |
+| +1 min | Bottom centre | Adds 1 minute to the time |
+| Blackout | Bottom centre | Covers the screen with black. The counter keeps running. |
+| 🕐 | Bottom-right corner | Switches the clock on / off in the Stage view |
+| Stage | Bottom-right corner | Opens / focuses the Stage view |
+| ⚙ | Bottom-right corner | Stage view options — overlay/picture-in-picture (see [Additional views](#️-additional-views)) |
+| Audience | Bottom-right corner | Opens / focuses the Audience view |
+| ⊞ | Bottom-right corner | Switches clean mode on / off |
+
+---
+
+## ⌨️ Keyboard shortcuts
+
+| Key | Action |
+|---|---|
+| `Space` | Start / Pause |
+| `R` | Reset |
+| `M` | +1 minute |
+| `S` | −30 seconds |
+| `T` | Edit time directly (also by clicking the number) |
+| `B` | Blackout |
+| `C` | Clean mode / full view |
+| `P` | Open / close sessions panel |
+| `Esc` | Close sessions panel (if open) |
+| `E` | Open / focus Stage view |
+| `A` | Open / focus Audience view |
+| `H` | Open / close the help panel |
+
+---
+
+## ⏲️ Modes
+
+**Countdown** — enter minutes and seconds before starting. On reaching zero the counter keeps going into negative time so as not to interrupt, and an overtime warning appears at the top.
+
+**Until time** — enter a fixed time (HH:MM) and the timer counts down until it is reached. If the given time has already passed today, tomorrow is assumed automatically. Useful for "the show starts at 10:00" or "we're back from the break at 17:30". It shares the rest of its behaviour with countdown: alerts, progress bar, overtime in negative.
+
+**Count up** — starts from zero and counts the elapsed time.
+
+**Clock** — shows the current time in HH:MM:SS format. It doesn't need to be started or paused.
+
+---
+
+## 📊 Progress bar
+
+The bar shows three colour zones — green, yellow and red — whose proportional size is calculated from the configured alert thresholds. A white triangular marker indicates the current position of the time. As the clock advances, the already-consumed zone darkens and the marker travels to the left.
+
+The thresholds can be adjusted live during the show without restarting the counter; the bar is recalculated instantly. If alerts are disabled, the bar is shown entirely in green. The Stage view reflects the same thresholds and colours.
+
+---
+
+## 🚦 Time alerts
+
+Two independent thresholds configurable in the right panel:
+
+- **Early alert** — minutes remaining to trigger the first colour change.
+- **Final alert** — minutes remaining to trigger the second colour change, closer to the end.
+
+Next to each label there is a small coloured circle (`<input type="color">`, without the browser's native square) to customise the hue of each alert to the operator's taste — the name of each one is no longer tied to any default colour. One colour per alert, the same in both themes once chosen — until it is touched, each theme keeps using its own usual default. It is applied instantly to: the timer digit, the progress bar and the "time over" (overtime) banner — both in the main window and in the Stage view, including if it is already open (it updates live, without reloading it). It is saved in `localStorage` and remembered between sessions.
+
+The **Alerts ON / OFF** toggle below the final alert disables both alerts globally. With alerts OFF the timer stays white regardless of the remaining time, the progress bar shows no colour segments, and the Stage view does not change colour. Useful for speakers who prefer not to see any visual warning.
+
+---
+
+## 💬 Messages to the speaker
+
+The operator types in the text box at the bottom and presses `Enter`. The text appears in large yellow type both in the main window and in the Stage view, visible from the stage. `Esc` or the *Clear* button (in blue, like *Send*) removes it from both screens simultaneously.
+
+---
+
+## ⬛ Blackout
+
+The *Blackout* button (or the `B` key) covers the whole screen with black. The counter keeps running underneath. Pressing the button again, the `B` key, or clicking anywhere on the black screen switches blackout off and shows the real elapsed time.
+
+---
+
+## 🧹 Clean mode
+
+The maximise button (bottom-right corner) hides all controls and shows only the counter and the progress bar at maximum size. The sessions panel and the view buttons are also hidden in this mode. Useful when the speaker's monitor is close to the audience. The `C` key does the same.
+
+---
+
+## 🔗 URL control
+
+The timer accepts URL parameters so it can be integrated with show control tools such as QLab:
+
+```
+https://javitatay.github.io/Tatimer/?action=start
+https://javitatay.github.io/Tatimer/?action=pause
+https://javitatay.github.io/Tatimer/?action=reset
+https://javitatay.github.io/Tatimer/?action=addminute
+https://javitatay.github.io/Tatimer/?action=subtractthirty
+https://javitatay.github.io/Tatimer/?action=start&minutes=10&seconds=0
+https://javitatay.github.io/Tatimer/?action=start&mode=countup
+https://javitatay.github.io/Tatimer/?action=start&mode=clock
+https://javitatay.github.io/Tatimer/?lang=en
+```
+
+The views can also be opened directly by URL (the parameter value keeps its Spanish name, `escenario`, which is the Stage view):
+
+```
+https://javitatay.github.io/Tatimer/?view=escenario
+https://javitatay.github.io/Tatimer/?view=audience
+```
+
+The Stage view also supports display options, designed to use it as an overlay window on top of your moderator view (Keynote, PowerPoint, Slides) when there is only one reference monitor — without relying on a video mixing board: it is dragged and resized like any window, with adjustable background opacity and a subtle border to tell it apart. They are enabled with the gear button next to **Stage** in the bottom-right corner (they are remembered for next time), or directly by URL:
+
+```
+https://javitatay.github.io/Tatimer/?view=escenario&display=numbers
+https://javitatay.github.io/Tatimer/?view=escenario&display=bar
+https://javitatay.github.io/Tatimer/?view=escenario&display=both
+https://javitatay.github.io/Tatimer/?view=escenario&display=numbers&size=150&opacity=40
+```
+
+- `display=numbers` — only the number, with no progress bar, clock or overtime banner (the number still changes colour in warning/danger/overtime).
+- `display=bar` — the same but with only the progress bar, without the number.
+- `display=both` — number and bar together, with no clock or overtime banner.
+- `size=<50-400>` — scales the number and the bar (default 100%). Up to 400% so the number alone can fill the whole view in "numbers only" mode. Also useful to fit the size to the free space in the moderator view before resizing the window itself.
+- `opacity=<0-100>` — background opacity (default 100%, solid). It only has an effect together with `display=numbers`, `display=bar` or `display=both` — in the full view (without `display`) the background is always solid. In a normal window with no compositor (OBS/vMix), a low opacity looks filled with whatever the browser itself paints behind it, not with what is in the application underneath.
+- Combinable with each other and with the rest of the parameters in this section.
+
+---
+
+## 🛠️ For developers
+
+Tatimer is a self-contained web application in `index.html`, with no external dependencies or framework. Persistence and communication between windows are done with `localStorage`, so it works the same when served (GitHub Pages) or locally (`file://`).
+
+It includes a service worker (`sw.js`, stale-while-revalidate strategy) and a `manifest.json` for real offline operation and PWA installation. Both are optional: if the browser doesn't support them or the file is opened from an insecure context (`file://`, `content://`), the application works just the same, simply without that extra caching layer.
+
+It takes care of keyboard accessibility (`:focus-visible`, `aria-pressed`/`aria-expanded` on the toggles, focus trap in the sessions panel) and WCAG AA contrast in both themes.
+
+**Control-button state colours (`state-start`/`state-resume`/`state-yellow`/`state-red`/`state-blue`).** Very faint background (8-12% alpha) + coloured border and text on top of the usual button base — no solid blocks, so as not to break the discreet tone of the rest of the interface. They reuse the same semantic palette the timer already uses (green = running, amber = warning, red = danger) instead of inventing new colours. Start and Resume share the same button (`#btn-startstop`) and therefore the same "pill" shape (`.primary`, only while not running) but carry different colours — green for Start, teal for Resume — centralised in `setStartButtonLabel(isResume)`, a function called by `toggleTimer()`, `pauseTimer()`, `resetTimer()`, `restoreTimerState()` and `setLang()` instead of each one touching `textContent`/`classList` on its own, so that text and colour always change together without relying on remembering to update both in every place.
+
+**Customisable alert colours (`--alert-warning`/`--alert-danger`, `color-warning`/`color-danger`).** Two CSS custom properties that replace the loose hex values (`#e8a000`, `#FF6363`, `#c8a800`, `#d42b00`...) that used to be scattered across `#display.warning/.danger`, `#progress-fill.warning/.danger`, `#overtime-banner` and their equivalents in the Stage view — and which, along the way, fix a real inconsistency that already existed: in dark theme, the operator digit's yellow warning used `var(--accent)`, which in dark theme is literally the same as `var(--danger)` (`#FF6363`), so it came out red instead of amber. `applyAlertColors(colors)` sets (or removes, if there is no customisation) `--alert-warning`/`--alert-danger` as an inline style on `<html>` — a single place that cascades to all the selectors at once. Without customisation, each theme keeps using its own default value (defined in `:root`/`body.light`, as always); as soon as a colour is chosen from the `<input type="color">`, that inline style wins the cascade and applies equally in both themes until it is customised again. Persisted in `localStorage` (`tatimer_alert_colors`) and propagated to the Stage view — which is a separate document (`window.open`), without the operator's `<html>` — with the same read-on-open + `storage` listener pattern for live updates already used by the Stage view's own options; the listener parses `e.newValue` directly (it doesn't re-read `localStorage`), like the rest of the listeners in that same function, instead of depending on an additional side channel.
+
+The timer state (`mode`, `elapsed`, `totalSeconds`, `running`, `ts`) is emitted on every tick to `localStorage` (`tatimer_bc_timer`), the same channel that synchronises the Stage/Audience views. When the page loads, `restoreTimerState()` reads that last state and corrects `elapsed` with the real drift (`Date.now() - ts`) before resuming — so a reload or an operator crash mid-count doesn't lose the elapsed time. It always yields to an explicit state that is already running (e.g. `?action=start` via URL). It validates the numeric fields before using them (a `LS_TIMER` from an earlier version without `ts`, or a corrupt one, is ignored instead of propagating `NaN` to the display) and discards states more than 2 h old, treating them as a forgotten previous session rather than a recent crash.
+
+The running count (`toggleTimer()`) doesn't blindly increment `elapsed` on each `setInterval` firing — it always recalculates it from a real wall-clock anchor (`tickAnchorWallClock`/`tickAnchorElapsed` + `Date.now()`). This matters for long live shows: a background tab, a tab the browser throttles, or simply a GC pause can make the 1000 ms `setInterval` fail to fire on time for minutes — with a blind counter the timer falls behind without warning; with the anchor, as soon as the tick fires again it self-corrects to real time. Verified with `@sinonjs/fake-timers` simulating a background tab for several minutes.
+
+`restoreTimerState()` and `handleURLParams()` run wrapped in `try/catch` at startup: if either fails (for example, an element id that changes in a future layout tweak), the error is logged to the console but the rest of the startup — input listeners, Wake Lock, etc. — completes anyway. Before, an exception there would have silently cut the rest of the `<script>`.
+
+`broadcastTimerState()` no longer depends only on the running timer's ticks: there is an unconditional `setInterval(broadcastTimerState, 2000)` at startup, so the Stage view receives fresh state every 2 s no matter what (stopped, paused, running). Before, while paused or before starting the count, no broadcast went out and after 4 s Stage fell to "waiting for signal" even though everything was working fine; its wait margin (`connTimeout`) went up from 4 s to 6 s to give more cushion over the 2 s heartbeat.
+
+The `.warning`/`.danger` classes on the big number (operator and Stage) now only change colour — the blinking animation (`pulse-warning`/`pulse-danger`, `pw`/`pd`) was removed on explicit request: the colour change is warning enough, without distracting on screen.
+
+**Self-hosted typography, no `fonts.googleapis.com`.** The operator page declared `font-family: 'Bebas Neue'` on `#display` and `.mode-label` but never imported it (it only imported `Inter`) — the big number always fell back to the default system font, with or without internet, locally or over `https`. Now all three views (operator, Stage, Audience) carry `Inter` and `Bebas Neue` embedded as `@font-face` in base64 inside the HTML itself (`latin` subset, covering Spanish/Catalan: `á é í ó ú ñ ü ç ¿ ¡`). Zero network requests for typography, in any view, ever — consistent with Tatimer being "no dependencies, no server". This adds ~180 KB to the file (base64 fonts weigh ~33% more than the original binary), acceptable for a local file. Verified that the `@font-face` rules parse without errors and that the base64 data decodes exactly to the original size of each font (no truncation).
+
+**Live time editing (`startEditTime()`/`commitEditTime()`).** `#display` becomes an `<input>` on click (or pressing `T`); `parseTimeEdit()` accepts `MM:SS`, bare seconds without `:`, and a leading `-`/`−` sign to set overtime directly. On confirming with Enter: in countdown / until-time it sets `totalSeconds = elapsed + typedValue` — leaving `elapsed` intact on purpose, because it is the real-clock anchor of the count (see below), so an edit in the middle of a live show doesn't throw the tick off; in count-up it adjusts `elapsed` directly and resynchronises the anchor if running, as `addMinute()`/`subtractThirty()` do. It calls `broadcastTimerState()` right after applying, so Stage/Audience reflect the change instantly instead of waiting for the 2 s heartbeat. Escape or losing focus cancels without applying anything. Verified with tests for running countdown, paused, running count-up (confirming it keeps counting correctly after the edit), direct overtime input, cancellation, and invalid input.
+
+`escHtml()` (used when rendering each speaker's name/title in the sessions panel) now casts with `String(str ?? '')` before escaping. Before, a non-string value in `speaker.name`/`speaker.title` — for example after importing a JSON with a numeric field instead of text — made `renderSessionsPanel()` throw an uncaught exception, leaving the sessions panel half-painted (without the speaker cards) for the rest of the live show, with no visible warning. Verified by forcing that case: before it broke, now it renders normally.
+
+**Stage view display options (`overlayNumbersOnly`/`overlayBarOnly`/`overlayBothOnly`/`escScalePct`/`escOpacityPct`, `applyEscOverlayVisuals()`).** Read from `?display=numbers`, `?display=bar`, `?display=both`, `?size=<50-400>` and `?opacity=<0-100>` when the view starts — but they are `let`, not `const`: they are recalculated live if the operator's popover changes while this window is still open (same origin), via a `storage` listener on the `tatimer_esc_options` key that the popover also uses to persist its state. The URL only rules at startup, or permanently when there is no operator on the same origin writing that key (e.g. the URL pasted directly as a source in OBS, in its own embedded, isolated Chromium — there no `storage` event arrives and the behaviour is as ever, fixed by URL).
+
+`display=numbers` adds the `overlay-mode` class (hides bar/clock/overtime banner); `display=bar` adds `overlay-bar-mode` (the reverse, hides the number); `display=both` adds `overlay-both-mode` (shows number and bar together, hides only the clock/overtime banner). All three hide with `!important` because those elements are also touched by `applyTimer()` via inline `style.display` — an `!important` rule in the stylesheet does win over a normal inline style, so there is no need to touch that logic.
+
+Background and border with adjustable opacity (100% by default = solid), both applied as inline style inside `applyEscOverlayVisuals()` — a separate function that both `applyTimer()` (on every tick, with the operator's live theme) and the live-options listener (with the last known theme, stored in `currentTheme`) can call without duplicating logic. `document.body.style.backgroundColor` instead of CSS because the base colour (black or light) depends on `d.theme`, which is only known on receiving each state tick; a CSS variable was tried first (`background:rgba(0,0,0,var(--x))`) but the CSS engine used in the automated tests (jsdom) doesn't resolve a `var()` nested inside `rgba()` — a well-supported standard in real browsers, but to be able to verify it with the project's tests it was switched to direct calculation in JS.
+
+The border fades together with the background (`0.15 * opacity`), on purpose, to serve the two real uses without getting in each other's way: at high opacity (a normal browser window dragged by hand over the moderator view, with no mixing board — the original case for this feature) it helps to see the window's edge; at opacity 0 (embedded with a real alpha channel via an OBS/vMix Browser Source, NDI with alpha, etc.) it disappears entirely so as not to leave a visible frame over the composited signal. The number and the bar also carry a fixed shadow — `text-shadow` on the number, `box-shadow` on the bar — that does NOT depend on opacity, because with a real alpha channel the background can become truly transparent and the shadow is the only thing that keeps the number legible over any background image, whatever it is.
+
+**A real transparency bug, now fixed: the background went only on `body`, but `<html>` still had a fixed `background:#000` in its own CSS rule (`html,body{...background:#000...}`).** Since `<html>` is painted behind `<body>`, even though `applyEscOverlayVisuals()` set the correct `rgba()` on `body`, `<html>` still contributed a solid black underneath — so no value of the opacity slider, not even 0%, gave real transparency for a compositor with an alpha channel (it still looked opaque anyway). Fixed by splitting the rule: `html,body{...}` no longer carries `background`, and `body{background:#000}` goes separately, on `body` only. `<html>` is left with no background of its own (transparent by default) in all three themes/states, so now with the slider at 0% the final result is truly transparent through the whole stack, not just in appearance.
+
+`size` is translated to the CSS variable `--esc-scale` (clamp 50-400, default 100) applied as `transform: scale()` to `#esc-timer` and `#esc-bar-wrap` — valid both in overlay and in the full view; from about 250-300% in "numbers only" mode, the number overflows the original viewport (`body` keeps `overflow:hidden`) and is cleanly cropped at the edges, which is exactly the intended effect of filling the whole screen with just digits. `opacity` only has an effect with `display=numbers`, `display=bar` or `display=both` active — the full view (without `display`) is deliberately left out of this treatment, so as not to surprise whoever has long used it as a dedicated stage monitor. Without these parameters the behaviour doesn't change — explicitly verified with a regression case.
+
+These options can also be enabled from a gear button (`#btn-escenario-options`) next to the **Stage** button: a popover with four radios (full view / numbers only / bar only / number + bar), a size slider and a background-opacity slider (the latter only effective outside "full view"), without having to type the URL by hand. `openView('escenario')` translates the selection into the corresponding parameters when opening the window. The state is saved in `localStorage` (`tatimer_esc_options`) and restored on reload. If the Stage window is already open, changes in the popover are applied there live, without closing or reloading it — there is no need to reopen it to see the effect. It only affects `openView('escenario')` — `openView('audience')` never carries these parameters.
+
+```
+Tatimer/
+│
+├── README.md
+├── LICENSE
+├── manifest.json
+├── icon.svg
+├── sw.js
+└── index.html
+```
+
+⚠️ **If you only distribute/download `index.html` on its own** (such as when downloading it straight from the repo or from a link, without the rest of the files), the `<link rel="manifest">` and `navigator.serviceWorker.register('sw.js')` fail silently (they carry `.catch(()=>{})`, so nothing breaks) — but you lose PWA installation and the real service worker cache. For local use via `file://` this doesn't matter (the app works the same, as it is already self-contained in JS/CSS/fonts), but it is worth knowing that those two extra layers of robustness are only active if `sw.js`/`manifest.json` travel alongside `index.html`, or if it is served from the repo (GitHub Pages).
+
+---
+
+## 🧭 Architecture and structural improvements to consider
+
+Notes from a full audit of the file (3,360 lines, ~310 KB with embedded fonts). None of this is urgent for the next live show — these are medium-term maintainability improvements, not active bugs:
+
+- **Triplication across the 3 views.** Operator, Stage and Audience are independent documents (Stage/Audience are generated as HTML+CSS+JS embedded in *strings* inside an IIFE, injected into a new window). This means shared CSS (fonts, alert colours, etc.) lives copied 2-3 times. It has already bitten us twice in this session: the font fix and the removal of the alert flash had to be applied in triplicate. In the medium term, a small build script (no need for webpack/bundlers — a `node build.js` with templates and `fs.readFileSync` would suffice) that generates the final `index.html` from shared pieces (a font stylesheet, an alert-styles block) would eliminate this class of bug by design, while still keeping a single final file to distribute.
+- **No persisted test suite.** Everything verified today (clock drift, crash recovery, Stage heartbeat, live editing, HTML escaping) lives in loose scripts from a work session, not in the repo. It is worth keeping a `tests/` folder with Node + `jsdom` (development dependencies, which don't affect the final `index.html`) and an `npm test` that loads the page and verifies these scenarios — so a future change doesn't silently reintroduce any of these already-caught bugs.
+- **No version number or changelog in the file itself.** With the number of patches in this session, it would be easy in a few months not to know exactly which build is being used at a venue. A simple comment at the start of the `<script>` (`// Tatimer build: 2026-09-12`) or a `CHANGELOG.md` in the repo would help track it.
+- **File size.** ~310 KB is perfectly manageable for a local single-operator tool — it isn't a public website with a loading budget. If it grows much more in the future (more languages, more views), then it would start to make sense to split it into modules with the build mentioned above.
+
+---
+
+## 🔗 More tools
+
+Other tools for live event production:
+
+- 🎪 **Tarimeo** — Design and organise the layout of platforms and stages. [View project](https://github.com/javitatay/Tarimeo) · [Demo](https://javitatay.github.io/Tarimeo/)
+- 📡 **RFTDT** — Look up free DTT frequencies for wireless microphones. [View project](https://github.com/javitatay/RFTDT) · [Demo](https://javitatay.github.io/RFTDT/)
+- 🔷 **VectorSlice** — Converts Illustrator vectors into Resolume Arena Slices. [View project](https://github.com/javitatay/VectorSlice) · [Demo](https://javitatay.github.io/VectorSlice/)
+- 🎬 **QLab Live Scripts** — Control PowerPoint, Chrome, Zoom, PDF and Spotify from QLab 5. [View project](https://github.com/javitatay/QLab-Scripts-Live-Events) · [Demo](https://javitatay.github.io/QLab-Scripts-Live-Events/)
+- 🎓 **AVV Lab** — Interactive educational platform for Live Visual Animation. [View project](https://github.com/javitatay/AVV) · [Demo](https://javitatay.github.io/AVV/)
+
+---
+
+## 📄 License
+
+Tatimer is distributed under the **[GNU General Public License v3.0](LICENSE)**.
+
+You are free to use, study, modify and share this software. The one important condition is that, if you distribute a modified version, it must also be kept open source under this same license, so that improvements remain available to everyone.
+
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-c89838?style=flat-square)](LICENSE)
+
+---
+
+## ✉️ Contact
 
 **Javier Tatay Rubio**
 📧 j.tatayrubio@edu.gva.es · javitatay@gmail.com
